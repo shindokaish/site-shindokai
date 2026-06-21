@@ -50,9 +50,10 @@ function migrateData() {
   const data = getData();
   let changed = false;
 
-  /* S'assure que discipline et settings existent */
+  /* S'assure que discipline, settings et textes existent */
   if (!data.discipline) { data.discipline = DEFAULT_DATA.discipline; changed = true; }
-  if (!data.settings) { data.settings = DEFAULT_DATA.settings; changed = true; }
+  if (!data.settings)   { data.settings   = DEFAULT_DATA.settings;   changed = true; }
+  if (!data.textes)     { data.textes     = DEFAULT_DATA.textes;     changed = true; }
 
   /* S'assure que membres a toutes ses sous-clés */
   if (!data.membres) { data.membres = DEFAULT_DATA.membres; changed = true; }
@@ -112,6 +113,7 @@ function loadSection(key) {
     actus: 'Actualités',
     galerie: 'Galerie',
     tarifs: 'Tarifs',
+    textes: 'Textes du site',
     discipline: 'Page Discipline',
     inscription: 'Formulaire d\'inscription',
     contact: 'Contact & formulaire',
@@ -131,6 +133,7 @@ function loadSection(key) {
     actus: renderActusSection,
     galerie: renderGalerieSection,
     tarifs: renderTarifsSection,
+    textes: renderTextesSection,
     discipline: renderDisciplineSection,
     inscription: renderInscriptionSection,
     contact: renderContactSection,
@@ -768,6 +771,185 @@ function openTarifModal(index) {
     renderTarifsList();
     closeModal();
     showToast('Formule enregistrée ✓');
+  });
+}
+
+/* ============ SECTION TEXTES ============ */
+function renderTextesSection(container) {
+  const tx = getSection('textes') || DEFAULT_DATA.textes || {};
+
+  const TABS = [
+    { key: 'accueil',    label: '🏠 Accueil' },
+    { key: 'coachs',     label: '🥋 Coachs' },
+    { key: 'dojos',      label: '🏯 Dojos' },
+    { key: 'actus',      label: '📰 Actualités' },
+    { key: 'cours',      label: '📅 Cours' },
+    { key: 'tarifs',     label: '💰 Tarifs' },
+    { key: 'galerie',    label: '🖼️ Galerie' },
+    { key: 'inscription',label: '📋 Inscription' },
+    { key: 'contact',    label: '📞 Contact' },
+  ];
+
+  let activeTab = 'accueil';
+
+  function field(label, id, val, type='input', rows=2) {
+    if (type === 'textarea') {
+      return `<div class="admin-field"><label>${label}</label><textarea id="${id}" rows="${rows}" class="admin-modal-input" style="resize:vertical;">${esc(val||'')}</textarea></div>`;
+    }
+    return `<div class="admin-field"><label>${label}</label><input id="${id}" value="${esc(val||'')}" class="admin-modal-input"></div>`;
+  }
+  function row2(...fields) { return `<div class="admin-form-grid">${fields.join('')}</div>`; }
+  function card(title, content) { return `<div class="admin-card" style="margin-bottom:1.2rem;"><div class="admin-card__title">${title}</div><div style="margin-top:1rem;display:flex;flex-direction:column;gap:.8rem;">${content}</div></div>`; }
+
+  function buildAccueil(d) { return `
+    ${card('Héro', row2(field('Eyebrow','tx-acc-discEyebrow',d.disciplineEyebrow), field('Titre (\\n = saut de ligne)','tx-acc-discTitre',d.disciplineTitre)))}
+    ${card('Section Cours', row2(field('Eyebrow','tx-acc-coursEyebrow',d.coursEyebrow), field('Titre','tx-acc-coursTitre',d.coursTitre)) + field('Accroche','tx-acc-coursLede',d.coursLede))}
+    ${card('Carte Enfants', row2(field('Âge','tx-acc-c0age',(d.cards||[])[0]?.age), field('Titre','tx-acc-c0titre',(d.cards||[])[0]?.titre)) + field('Description','tx-acc-c0desc',(d.cards||[])[0]?.desc,'textarea',3))}
+    ${card('Carte Adolescents', row2(field('Âge','tx-acc-c1age',(d.cards||[])[1]?.age), field('Titre','tx-acc-c1titre',(d.cards||[])[1]?.titre)) + field('Description','tx-acc-c1desc',(d.cards||[])[1]?.desc,'textarea',3))}
+    ${card('Carte Adultes', row2(field('Âge','tx-acc-c2age',(d.cards||[])[2]?.age), field('Titre','tx-acc-c2titre',(d.cards||[])[2]?.titre)) + field('Description','tx-acc-c2desc',(d.cards||[])[2]?.desc,'textarea',3))}
+    ${card('Section Dojos', row2(field('Eyebrow','tx-acc-dojosEyebrow',d.dojosEyebrow), field('Titre','tx-acc-dojosTitre',d.dojosTitre)) + field('Accroche','tx-acc-dojosLede',d.dojosLede))}
+    ${card('Section Coachs', row2(field('Eyebrow','tx-acc-coachsEyebrow',d.coachsEyebrow), field('Titre','tx-acc-coachsTitre',d.coachsTitre)) + field('Accroche','tx-acc-coachsLede',d.coachsLede))}
+    ${card('Section Actus', row2(field('Eyebrow','tx-acc-actusEyebrow',d.actusEyebrow), field('Titre','tx-acc-actusTitre',d.actusTitre)) + field('Accroche','tx-acc-actusLede',d.actusLede))}
+    ${card('Section Tarifs', row2(field('Eyebrow','tx-acc-tarifsEyebrow',d.tarifsEyebrow), field('Titre','tx-acc-tarifsTitre',d.tarifsTitre)) + field('Accroche','tx-acc-tarifsLede',d.tarifsLede))}
+    ${card('Bandeau CTA', row2(field('Titre','tx-acc-ctaTitre',d.ctaTitre), field('Sous-titre','tx-acc-ctaSub',d.ctaSub)))}
+  `; }
+
+  function buildSimple(prefix, d, sections) {
+    return sections.map(s => {
+      if (s.type === 'hero') {
+        return card('Héro', row2(field('Eyebrow', `${prefix}-heroEyebrow`, d.heroEyebrow), '') +
+          row2(field('Ligne 1', `${prefix}-heroT1`, (d.heroTitre||[])[0]), field('Ligne 2', `${prefix}-heroT2`, (d.heroTitre||[])[1])));
+      }
+      if (s.type === 'cta') {
+        return card('Bandeau CTA', row2(field('Titre', `${prefix}-ctaTitre`, d.ctaTitre), field('Sous-titre', `${prefix}-ctaSub`, d.ctaSub)));
+      }
+      const lede = s.lede ? field('Accroche', `${prefix}-${s.id}Lede`, d[s.id+'Lede']) : '';
+      return card(s.label, row2(field('Eyebrow', `${prefix}-${s.id}Eyebrow`, d[s.id+'Eyebrow']), field('Titre', `${prefix}-${s.id}Titre`, d[s.id+'Titre'])) + lede);
+    }).join('');
+  }
+
+  function buildTab(key) {
+    const d = tx[key] || {};
+    switch(key) {
+      case 'accueil': return buildAccueil(d);
+      case 'coachs': return buildSimple('ch', d, [
+        { type:'hero' },
+        { id:'s1', label:'Section principale', lede:true },
+        { id:'s2', label:'Section diplômes', lede:true },
+        { id:'s3', label:'Section formation continue', lede:false },
+        { type:'cta' }
+      ]);
+      case 'dojos': return buildSimple('dj', d, [
+        { type:'hero' },
+        { id:'s1', label:'Section localisation', lede:true },
+        { id:'s2', label:'Section infos pratiques', lede:false },
+        { type:'cta' }
+      ]);
+      case 'actus': return buildSimple('ac', d, [
+        { type:'hero' },
+        { id:'s1', label:'Section actualités', lede:true },
+        { type:'cta' }
+      ]);
+      case 'cours': return buildSimple('co', d, [
+        { type:'hero' },
+        { id:'s1', label:'Section niveaux', lede:true },
+        { id:'s2', label:'Section déroulement', lede:true },
+        { id:'s3', label:'Section premier cours', lede:false },
+        { type:'cta' }
+      ]);
+      case 'tarifs': return buildSimple('ta', d, [
+        { type:'hero' },
+        { id:'s1', label:'Section formules', lede:true },
+        { id:'s2', label:'Section FAQ', lede:false },
+        { id:'s3', label:'Section comparatif', lede:false },
+        { type:'cta' }
+      ]);
+      case 'galerie': return buildSimple('ga', d, [
+        { type:'hero' },
+        { id:'s1', label:'Section galerie', lede:true },
+        { type:'cta' }
+      ]);
+      case 'inscription': return card('Héro', field('Eyebrow','tx-ins-heroEyebrow', d.heroEyebrow));
+      case 'contact': return card('Héro', row2(field('Eyebrow','tx-con-heroEyebrow', d.heroEyebrow), '') +
+        row2(field('Ligne 1','tx-con-heroT1',(d.heroTitre||[])[0]), field('Ligne 2','tx-con-heroT2',(d.heroTitre||[])[1])));
+      default: return '';
+    }
+  }
+
+  function collect(key) {
+    const d = {...(tx[key] || {})};
+    switch(key) {
+      case 'accueil': {
+        const cards = (d.cards || [{},{},{}]).map((c,i) => ({
+          age:  fv(`tx-acc-c${i}age`)  || c.age,
+          titre:fv(`tx-acc-c${i}titre`)|| c.titre,
+          desc: (document.getElementById(`tx-acc-c${i}desc`)||{}).value || c.desc,
+          couleur: c.couleur || ['#e0241b','#c9a227','#9a98a0'][i]
+        }));
+        return {
+          disciplineEyebrow: fv('tx-acc-discEyebrow'),  disciplineTitre: fv('tx-acc-discTitre'),
+          coursEyebrow: fv('tx-acc-coursEyebrow'),      coursTitre: fv('tx-acc-coursTitre'),      coursLede: fv('tx-acc-coursLede'),
+          cards,
+          dojosEyebrow: fv('tx-acc-dojosEyebrow'),     dojosTitre: fv('tx-acc-dojosTitre'),     dojosLede: fv('tx-acc-dojosLede'),
+          coachsEyebrow:fv('tx-acc-coachsEyebrow'),    coachsTitre:fv('tx-acc-coachsTitre'),    coachsLede:fv('tx-acc-coachsLede'),
+          actusEyebrow: fv('tx-acc-actusEyebrow'),     actusTitre: fv('tx-acc-actusTitre'),     actusLede: fv('tx-acc-actusLede'),
+          tarifsEyebrow:fv('tx-acc-tarifsEyebrow'),    tarifsTitre:fv('tx-acc-tarifsTitre'),    tarifsLede:fv('tx-acc-tarifsLede'),
+          ctaTitre: fv('tx-acc-ctaTitre'), ctaSub: fv('tx-acc-ctaSub')
+        };
+      }
+      case 'coachs': return { heroEyebrow:fv('ch-heroEyebrow'), heroTitre:[fv('ch-heroT1'),fv('ch-heroT2')], s1Eyebrow:fv('ch-s1Eyebrow'),s1Titre:fv('ch-s1Titre'),s1Lede:fv('ch-s1Lede'), s2Eyebrow:fv('ch-s2Eyebrow'),s2Titre:fv('ch-s2Titre'),s2Lede:fv('ch-s2Lede'), s3Eyebrow:fv('ch-s3Eyebrow'),s3Titre:fv('ch-s3Titre'), ctaTitre:fv('ch-ctaTitre'),ctaSub:fv('ch-ctaSub') };
+      case 'dojos':  return { heroEyebrow:fv('dj-heroEyebrow'), heroTitre:[fv('dj-heroT1'),fv('dj-heroT2')], s1Eyebrow:fv('dj-s1Eyebrow'),s1Titre:fv('dj-s1Titre'),s1Lede:fv('dj-s1Lede'), s2Eyebrow:fv('dj-s2Eyebrow'),s2Titre:fv('dj-s2Titre'), ctaTitre:fv('dj-ctaTitre'),ctaSub:fv('dj-ctaSub') };
+      case 'actus':  return { heroEyebrow:fv('ac-heroEyebrow'), heroTitre:[fv('ac-heroT1')], s1Eyebrow:fv('ac-s1Eyebrow'),s1Titre:fv('ac-s1Titre'),s1Lede:fv('ac-s1Lede'), ctaTitre:fv('ac-ctaTitre'),ctaSub:fv('ac-ctaSub') };
+      case 'cours':  return { heroEyebrow:fv('co-heroEyebrow'), heroTitre:[fv('co-heroT1'),fv('co-heroT2')], s1Eyebrow:fv('co-s1Eyebrow'),s1Titre:fv('co-s1Titre'),s1Lede:fv('co-s1Lede'), s2Eyebrow:fv('co-s2Eyebrow'),s2Titre:fv('co-s2Titre'),s2Lede:fv('co-s2Lede'), s3Eyebrow:fv('co-s3Eyebrow'),s3Titre:fv('co-s3Titre'), ctaTitre:fv('co-ctaTitre'),ctaSub:fv('co-ctaSub') };
+      case 'tarifs': return { heroEyebrow:fv('ta-heroEyebrow'), heroTitre:[fv('ta-heroT1'),fv('ta-heroT2')], s1Eyebrow:fv('ta-s1Eyebrow'),s1Titre:fv('ta-s1Titre'),s1Lede:fv('ta-s1Lede'), s2Eyebrow:fv('ta-s2Eyebrow'),s2Titre:fv('ta-s2Titre'), s3Eyebrow:fv('ta-s3Eyebrow'),s3Titre:fv('ta-s3Titre'), ctaTitre:fv('ta-ctaTitre'),ctaSub:fv('ta-ctaSub') };
+      case 'galerie':return { heroEyebrow:fv('ga-heroEyebrow'), heroTitre:[fv('ga-heroT1'),fv('ga-heroT2')], s1Eyebrow:fv('ga-s1Eyebrow'),s1Titre:fv('ga-s1Titre'),s1Lede:fv('ga-s1Lede'), ctaTitre:fv('ga-ctaTitre'),ctaSub:fv('ga-ctaSub') };
+      case 'inscription': return { heroEyebrow:fv('tx-ins-heroEyebrow') };
+      case 'contact':     return { heroEyebrow:fv('tx-con-heroEyebrow'), heroTitre:[fv('tx-con-heroT1'),fv('tx-con-heroT2')] };
+      default: return d;
+    }
+  }
+
+  function renderTabContent() {
+    const body = document.getElementById('txTabBody');
+    body.innerHTML = buildTab(activeTab);
+  }
+
+  container.innerHTML = `
+<div class="admin-section-form" style="max-width:100%;">
+  <div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1.4rem;" id="txTabs"></div>
+  <div id="txTabBody"></div>
+  <div style="display:flex;gap:1rem;align-items:center;margin-top:1rem;">
+    <button class="btn btn--primary" id="txSaveBtn">💾 Enregistrer la page</button>
+    <span id="txSaveStatus" style="font-family:var(--mono);font-size:.75rem;color:var(--crimson-2);display:none;">Sauvegardé ✓</span>
+  </div>
+</div>`;
+
+  // Build tabs
+  const tabsEl = document.getElementById('txTabs');
+  TABS.forEach(t => {
+    const btn = document.createElement('button');
+    btn.className = 'admin-btn admin-btn--edit';
+    btn.textContent = t.label;
+    btn.dataset.key = t.key;
+    if (t.key === activeTab) btn.style.cssText = 'background:rgba(224,36,27,.15);border-color:var(--crimson-2);color:var(--bone);';
+    btn.addEventListener('click', () => {
+      activeTab = t.key;
+      tabsEl.querySelectorAll('button').forEach(b => b.style.cssText = '');
+      btn.style.cssText = 'background:rgba(224,36,27,.15);border-color:var(--crimson-2);color:var(--bone);';
+      renderTabContent();
+    });
+    tabsEl.appendChild(btn);
+  });
+
+  renderTabContent();
+
+  document.getElementById('txSaveBtn').addEventListener('click', () => {
+    const newTx = {...(getSection('textes') || {})};
+    newTx[activeTab] = collect(activeTab);
+    saveSection('textes', newTx);
+    const st = document.getElementById('txSaveStatus');
+    st.style.display = 'block';
+    setTimeout(() => st.style.display = 'none', 2000);
   });
 }
 

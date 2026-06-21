@@ -33,10 +33,10 @@
   </svg>
   <div class="wrap">
     <div class="hero-mini__content">
-      <span class="eyebrow-text hero-mini__eyebrow">Galerie</span>
+      <span class="eyebrow-text hero-mini__eyebrow" id="ga-hero-eyebrow">Galerie</span>
       <h1 class="hero-mini__title">
-        <span class="line"><span>Photos</span></span>
-        <span class="line"><span>& vidéos.</span></span>
+        <span class="line" id="ga-hero-l1"><span>Photos</span></span>
+        <span class="line" id="ga-hero-l2"><span>& vidéos.</span></span>
       </h1>
     </div>
   </div>
@@ -45,9 +45,9 @@
 <section class="section">
   <div class="wrap">
     <div class="section__head reveal">
-      <span class="eyebrow-text">Galerie</span>
-      <h2 class="section__title">Le Shindokai<br>en images.</h2>
-      <p class="section__lede">Compétitions, stages, entraînements, passages de grades — les moments forts du club en images.</p>
+      <span class="eyebrow-text" id="ga-s1-eyebrow">Galerie</span>
+      <h2 class="section__title" id="ga-s1-titre">Le Shindokai<br>en images.</h2>
+      <p class="section__lede" id="ga-s1-lede">Compétitions, stages, entraînements, passages de grades — les moments forts du club en images.</p>
     </div>
     <div id="galerieContainer"></div>
   </div>
@@ -63,8 +63,8 @@
 <!-- CTA -->
 <section class="cta-band">
   <div class="wrap">
-    <h2 class="cta-band__title reveal">Venez vivre l'expérience.</h2>
-    <p class="cta-band__sub reveal">Les photos ne font que refléter l'intensité des entraînements. Rejoignez-nous pour le vivre.</p>
+    <h2 class="cta-band__title reveal" id="ga-cta-titre">Venez vivre l'expérience.</h2>
+    <p class="cta-band__sub reveal" id="ga-cta-sub">Les photos ne font que refléter l'intensité des entraînements. Rejoignez-nous pour le vivre.</p>
     <div class="cta-band__btns reveal">
       <a href="tarifs.html" class="btn btn--primary">Essai gratuit</a>
       <a href="actus.html" class="btn btn--ghost">Nos actualités</a>
@@ -151,6 +151,13 @@ document.addEventListener('keydown', e => {
   }
 });
 
+
+// Textes dynamiques
+const tx = applyPageTextes('galerie');
+setT('ga-hero-eyebrow', tx.heroEyebrow);
+setLines('ga-hero-l', tx.heroTitre);
+setT('ga-s1-eyebrow', tx.s1Eyebrow); setH('ga-s1-titre', tx.s1Titre); setT('ga-s1-lede', tx.s1Lede);
+setT('ga-cta-titre', tx.ctaTitre); setT('ga-cta-sub', tx.ctaSub);
 initScrollReveal();
 }); // fin initData
 </script>

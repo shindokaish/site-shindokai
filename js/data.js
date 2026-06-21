@@ -139,6 +139,111 @@ const DEFAULT_DATA = {
   settings: {
     web3formsKey: '109f2859-b8c5-49fa-b6e9-4fd2fee3c5ab'
   },
+  textes: {
+    accueil: {
+      disciplineEyebrow: 'La discipline',
+      disciplineTitre: 'Voie de\nla vérité.',
+      coursEyebrow: 'Nos cours',
+      coursTitre: 'Pour chaque\nâge, un programme.',
+      coursLede: 'Du baby-karaté à la compétition, chacun trouve sa place au Shindokai-Kan.',
+      cards: [
+        { age: '4 – 11 ans', titre: 'Enfants', desc: 'Mini Karaté pour les 4-6 ans (motricité, jeux, premiers kata) et cours Enfants pour les 7-11 ans (technique, passage de grades). Un cadre ludique et bienveillant.', couleur: '#e0241b' },
+        { age: '12 – 15 ans', titre: 'Adolescents', desc: 'Technique poussée, kumite (combat), apprentissage des projections et des clés articulaires. Idéal pour canaliser l\'énergie et développer la confiance en soi.', couleur: '#c9a227' },
+        { age: '16 ans et +', titre: 'Adultes', desc: 'Cours tous niveaux et entraînement compétition. Karaté contact, boxe, soumission au sol — une formation complète pour les pratiquants exigeants.', couleur: '#9a98a0' }
+      ],
+      dojosEyebrow: 'Nos dojos',
+      dojosTitre: 'Trois sites,\nune discipline.',
+      dojosLede: 'Choisissez le dojo le plus proche de chez vous. Même enseignement, mêmes coachs diplômés.',
+      coachsEyebrow: 'L\'encadrement',
+      coachsTitre: 'Des coachs diplômés,\npassionnés.',
+      coachsLede: 'Une pédagogie exigeante et bienveillante, adaptée à chaque âge et chaque objectif.',
+      actusEyebrow: 'Actualités',
+      actusTitre: 'La vie\ndu club.',
+      actusLede: 'Compétitions, stages, passages de grades, événements — toute l\'actualité du Shindokai-Kan I-S-L.',
+      tarifsEyebrow: 'Inscription',
+      tarifsTitre: 'Rejoignez\nle dojo.',
+      tarifsLede: 'Premier cours toujours offert, sans engagement. Venez essayer avant de vous inscrire.',
+      ctaTitre: 'Prêt à franchir le pas ?',
+      ctaSub: 'Premier cours offert, sans engagement. Venez découvrir le Shindokai dans l\'un de nos trois dojos.'
+    },
+    coachs: {
+      heroEyebrow: 'L\'encadrement',
+      heroTitre: ['Nos', 'coachs.'],
+      s1Eyebrow: 'L\'équipe',
+      s1Titre: 'Diplômés,\npassionnés, exigeants.',
+      s1Lede: 'Tous nos coachs sont titulaires de diplômes fédéraux FFKDA et s\'engagent dans une formation continue pour vous offrir le meilleur enseignement.',
+      s2Eyebrow: 'Formation',
+      s2Titre: 'Nos diplômes\n& grades.',
+      s2Lede: 'La FFKDA (Fédération Française de Karaté et Disciplines Associées) délivre les diplômes qui garantissent la qualité de l\'enseignement.',
+      s3Eyebrow: 'Formation continue',
+      s3Titre: 'Toujours apprendre,\ntoujours progresser.',
+      ctaTitre: 'Venez rencontrer l\'équipe.',
+      ctaSub: 'Premier cours offert, sans engagement. Nos coachs vous accueillent quel que soit votre niveau.'
+    },
+    dojos: {
+      heroEyebrow: 'Nos dojos',
+      heroTitre: ['Trois sites,', 'une discipline.'],
+      s1Eyebrow: 'Localisation',
+      s1Titre: 'Choisissez votre\ndojo.',
+      s1Lede: 'Mêmes coachs diplômés, même enseignement, même exigence sur les trois sites. Choisissez celui qui vous convient géographiquement.',
+      s2Eyebrow: 'Informations',
+      s2Titre: 'Infos pratiques.',
+      ctaTitre: 'Prêt à nous rejoindre ?',
+      ctaSub: 'Venez essayer gratuitement dans le dojo de votre choix. Aucun équipement requis.'
+    },
+    actus: {
+      heroEyebrow: 'La vie du club',
+      heroTitre: ['Actualités.'],
+      s1Eyebrow: 'Toutes les actus',
+      s1Titre: 'Compétitions,\nstages, grades.',
+      s1Lede: 'Suivez toute l\'actualité du Shindokai-Kan I-S-L — résultats, événements, passages de grades et informations pratiques.',
+      ctaTitre: 'Rejoignez le club.',
+      ctaSub: 'Vivez ces moments de l\'intérieur — inscrivez-vous et faites partie de l\'aventure Shindokai.'
+    },
+    cours: {
+      heroEyebrow: 'Les cours',
+      heroTitre: ['Un programme', 'pour chaque âge.'],
+      s1Eyebrow: 'Niveaux',
+      s1Titre: 'Chaque pratiquant\ntrouve sa place.',
+      s1Lede: 'Du baby-karaté à la compétition — un parcours pensé pour progresser à son rythme, de l\'initiation au haut niveau.',
+      s2Eyebrow: 'Organisation',
+      s2Titre: 'Comment se déroule\nun cours ?',
+      s2Lede: 'Chaque séance est structurée en trois phases progressives pour un travail complet et sécurisé.',
+      s3Eyebrow: 'Votre premier cours',
+      s3Titre: 'Commencez sans\nhésiter.',
+      ctaTitre: 'Votre premier cours est offert.',
+      ctaSub: 'Aucun engagement, aucun équipement requis. Venez simplement essayer.'
+    },
+    tarifs: {
+      heroEyebrow: 'Inscription',
+      heroTitre: ['Rejoignez', 'le dojo.'],
+      s1Eyebrow: 'Formules',
+      s1Titre: 'Des tarifs\ntransparents.',
+      s1Lede: 'Premier cours toujours offert, sans engagement. Venez essayer avant de vous inscrire. Licence FFKDA incluse dans toutes les formules.',
+      s2Eyebrow: 'Questions fréquentes',
+      s2Titre: 'Vous avez\ndes questions ?',
+      s3Eyebrow: 'Comparatif',
+      s3Titre: 'Quelle formule\nvous correspond ?',
+      ctaTitre: 'Prêt à commencer ?',
+      ctaSub: 'Contactez-nous ou venez directement au prochain cours. Le premier essai est offert.'
+    },
+    galerie: {
+      heroEyebrow: 'Galerie',
+      heroTitre: ['Photos', '& vidéos.'],
+      s1Eyebrow: 'Galerie',
+      s1Titre: 'Le Shindokai\nen images.',
+      s1Lede: 'Compétitions, stages, entraînements, passages de grades — les moments forts du club en images.',
+      ctaTitre: 'Venez vivre l\'expérience.',
+      ctaSub: 'Les photos ne font que refléter l\'intensité des entraînements. Rejoignez-nous pour le vivre.'
+    },
+    inscription: {
+      heroEyebrow: 'Rejoindre le club'
+    },
+    contact: {
+      heroEyebrow: 'Contact',
+      heroTitre: ['Venez nous', 'rencontrer.']
+    }
+  },
   inscription: {
     titre: "Demande d'inscription",
     intro: "Remplissez ce formulaire pour vous inscrire ou inscrire votre enfant au Shindokai-Kan I-S-L. Un responsable vous contactera sous 48h pour confirmer votre inscription.",
@@ -230,7 +335,7 @@ async function initData() {
 /* Pousse toutes les sections par défaut vers Supabase (premier démarrage) */
 async function _pushAllDefaults(sb) {
   const keys = ['club','adminPassword','stats','coaches','courses','dojos',
-                 'actus','galerie','tarifs','disciplineBadges','discipline','membres','inscription','settings'];
+                 'actus','galerie','tarifs','disciplineBadges','discipline','membres','inscription','settings','textes'];
   const rows = keys.map(k => ({ key: k, value: DEFAULT_DATA[k] }));
   await sb.from('data_store').upsert(rows, { onConflict: 'key' });
 }

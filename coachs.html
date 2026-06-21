@@ -33,10 +33,10 @@
   </svg>
   <div class="wrap">
     <div class="hero-mini__content">
-      <span class="eyebrow-text hero-mini__eyebrow">L'encadrement</span>
+      <span class="eyebrow-text hero-mini__eyebrow" id="ch-hero-eyebrow">L'encadrement</span>
       <h1 class="hero-mini__title">
-        <span class="line"><span>Nos</span></span>
-        <span class="line"><span>coachs.</span></span>
+        <span class="line" id="ch-hero-l1"><span>Nos</span></span>
+        <span class="line" id="ch-hero-l2"><span>coachs.</span></span>
       </h1>
     </div>
   </div>
@@ -46,9 +46,9 @@
 <section class="section">
   <div class="wrap">
     <div class="section__head reveal">
-      <span class="eyebrow-text">L'équipe</span>
-      <h2 class="section__title">Diplômés,<br>passionnés, exigeants.</h2>
-      <p class="section__lede">Tous nos coachs sont titulaires de diplômes fédéraux FFKDA et s'engagent dans une formation continue pour vous offrir le meilleur enseignement.</p>
+      <span class="eyebrow-text" id="ch-s1-eyebrow">L'équipe</span>
+      <h2 class="section__title" id="ch-s1-titre">Diplômés,<br>passionnés, exigeants.</h2>
+      <p class="section__lede" id="ch-s1-lede">Tous nos coachs sont titulaires de diplômes fédéraux FFKDA et s'engagent dans une formation continue pour vous offrir le meilleur enseignement.</p>
     </div>
     <div class="coach-grid" id="coachGrid"></div>
   </div>
@@ -58,9 +58,9 @@
 <section class="section section--alt">
   <div class="wrap">
     <div class="section__head reveal">
-      <span class="eyebrow-text">Formation</span>
-      <h2 class="section__title">Nos diplômes<br>& grades.</h2>
-      <p class="section__lede">La FFKDA (Fédération Française de Karaté et Disciplines Associées) délivre les diplômes qui garantissent la qualité de l'enseignement.</p>
+      <span class="eyebrow-text" id="ch-s2-eyebrow">Formation</span>
+      <h2 class="section__title" id="ch-s2-titre">Nos diplômes<br>& grades.</h2>
+      <p class="section__lede" id="ch-s2-lede">La FFKDA (Fédération Française de Karaté et Disciplines Associées) délivre les diplômes qui garantissent la qualité de l'enseignement.</p>
     </div>
     <div class="diplomes-grid">
       <div class="diplome-card reveal">
@@ -87,8 +87,8 @@
   <div class="wrap">
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;" class="reveal">
       <div>
-        <span class="eyebrow-text" style="margin-bottom:1rem;display:inline-flex;">Formation continue</span>
-        <h2 class="section__title" style="margin-top:.6rem;margin-bottom:1.2rem;">Toujours apprendre,<br>toujours progresser.</h2>
+        <span class="eyebrow-text" style="margin-bottom:1rem;display:inline-flex;" id="ch-s3-eyebrow">Formation continue</span>
+        <h2 class="section__title" style="margin-top:.6rem;margin-bottom:1.2rem;" id="ch-s3-titre">Toujours apprendre,<br>toujours progresser.</h2>
         <p style="color:var(--ash);margin-bottom:1rem;">Nos coachs participent régulièrement à des stages nationaux, des séminaires techniques et des formations continues organisées par la FFKDA et le fondateur du Shindokai.</p>
         <p style="color:var(--ash);margin-bottom:1.8rem;">Cette exigence envers eux-mêmes se reflète dans la qualité de leur enseignement et dans les progrès de leurs élèves, à tous les niveaux.</p>
         <a href="cours.html" class="btn btn--primary">Voir les cours</a>
@@ -109,8 +109,8 @@
 <!-- ============ CTA ============ -->
 <section class="cta-band">
   <div class="wrap">
-    <h2 class="cta-band__title reveal">Venez rencontrer l'équipe.</h2>
-    <p class="cta-band__sub reveal">Premier cours offert, sans engagement. Nos coachs vous accueillent quel que soit votre niveau.</p>
+    <h2 class="cta-band__title reveal" id="ch-cta-titre">Venez rencontrer l'équipe.</h2>
+    <p class="cta-band__sub reveal" id="ch-cta-sub">Premier cours offert, sans engagement. Nos coachs vous accueillent quel que soit votre niveau.</p>
     <div class="cta-band__btns reveal">
       <a href="tarifs.html" class="btn btn--primary">Essai gratuit</a>
       <a href="contact.html" class="btn btn--ghost">Nous contacter</a>
@@ -131,6 +131,15 @@ pageInit('coachs');
 const coaches = getSection('coaches');
 const coachGrid = document.getElementById('coachGrid');
 coaches.forEach(c => coachGrid.appendChild(buildCoachCard(c, true)));
+
+// Textes dynamiques
+const tx = applyPageTextes('coachs');
+setT('ch-hero-eyebrow', tx.heroEyebrow);
+setLines('ch-hero-l', tx.heroTitre);
+setT('ch-s1-eyebrow', tx.s1Eyebrow); setH('ch-s1-titre', tx.s1Titre); setT('ch-s1-lede', tx.s1Lede);
+setT('ch-s2-eyebrow', tx.s2Eyebrow); setH('ch-s2-titre', tx.s2Titre); setT('ch-s2-lede', tx.s2Lede);
+setT('ch-s3-eyebrow', tx.s3Eyebrow); setH('ch-s3-titre', tx.s3Titre);
+setT('ch-cta-titre', tx.ctaTitre); setT('ch-cta-sub', tx.ctaSub);
 initScrollReveal();
 }); // fin initData
 </script>

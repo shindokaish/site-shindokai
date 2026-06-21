@@ -33,10 +33,10 @@
   </svg>
   <div class="wrap">
     <div class="hero-mini__content">
-      <span class="eyebrow-text hero-mini__eyebrow">Nos dojos</span>
+      <span class="eyebrow-text hero-mini__eyebrow" id="dj-hero-eyebrow">Nos dojos</span>
       <h1 class="hero-mini__title">
-        <span class="line"><span>Trois sites,</span></span>
-        <span class="line"><span>une discipline.</span></span>
+        <span class="line" id="dj-hero-l1"><span>Trois sites,</span></span>
+        <span class="line" id="dj-hero-l2"><span>une discipline.</span></span>
       </h1>
     </div>
   </div>
@@ -46,9 +46,9 @@
 <section class="section">
   <div class="wrap">
     <div class="section__head reveal">
-      <span class="eyebrow-text">Localisation</span>
-      <h2 class="section__title">Choisissez votre<br>dojo.</h2>
-      <p class="section__lede">Mêmes coachs diplômés, même enseignement, même exigence sur les trois sites. Choisissez celui qui vous convient géographiquement.</p>
+      <span class="eyebrow-text" id="dj-s1-eyebrow">Localisation</span>
+      <h2 class="section__title" id="dj-s1-titre">Choisissez votre<br>dojo.</h2>
+      <p class="section__lede" id="dj-s1-lede">Mêmes coachs diplômés, même enseignement, même exigence sur les trois sites. Choisissez celui qui vous convient géographiquement.</p>
     </div>
     <div class="dojos-tabs reveal" id="dojosTabs"></div>
     <div id="dojosPanels"></div>
@@ -59,8 +59,8 @@
 <section class="section section--alt">
   <div class="wrap">
     <div class="section__head reveal">
-      <span class="eyebrow-text">Informations</span>
-      <h2 class="section__title">Infos pratiques.</h2>
+      <span class="eyebrow-text" id="dj-s2-eyebrow">Informations</span>
+      <h2 class="section__title" id="dj-s2-titre">Infos pratiques.</h2>
     </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:var(--gap);">
       <div class="reveal" style="background:var(--char);border:1px solid var(--line);padding:2rem;">
@@ -82,8 +82,8 @@
 <!-- ============ CTA ============ -->
 <section class="cta-band">
   <div class="wrap">
-    <h2 class="cta-band__title reveal">Prêt à nous rejoindre ?</h2>
-    <p class="cta-band__sub reveal">Venez essayer gratuitement dans le dojo de votre choix. Aucun équipement requis.</p>
+    <h2 class="cta-band__title reveal" id="dj-cta-titre">Prêt à nous rejoindre ?</h2>
+    <p class="cta-band__sub reveal" id="dj-cta-sub">Venez essayer gratuitement dans le dojo de votre choix. Aucun équipement requis.</p>
     <div class="cta-band__btns reveal">
       <a href="tarifs.html" class="btn btn--primary">Essai gratuit</a>
       <a href="contact.html" class="btn btn--ghost">Nous contacter</a>
@@ -156,6 +156,14 @@ dojosTabs.addEventListener('click', e => {
   dojosPanels.querySelector(`[data-index="${idx}"]`).classList.add('is-active');
 });
 
+
+// Textes dynamiques
+const tx = applyPageTextes('dojos');
+setT('dj-hero-eyebrow', tx.heroEyebrow);
+setLines('dj-hero-l', tx.heroTitre);
+setT('dj-s1-eyebrow', tx.s1Eyebrow); setH('dj-s1-titre', tx.s1Titre); setT('dj-s1-lede', tx.s1Lede);
+setT('dj-s2-eyebrow', tx.s2Eyebrow); setH('dj-s2-titre', tx.s2Titre);
+setT('dj-cta-titre', tx.ctaTitre); setT('dj-cta-sub', tx.ctaSub);
 initScrollReveal();
 }); // fin initData
 </script>

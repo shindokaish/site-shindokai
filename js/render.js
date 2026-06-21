@@ -269,3 +269,19 @@ function pageInit(activePage) {
   renderAdminTrigger();
   initScrollReveal();
 }
+
+/* ============ APPLY TEXTES ============ */
+/* setT: textContent simple | setH: innerHTML avec \n→<br> | setLines: hero-mini lines */
+function setT(id, v) { const e = document.getElementById(id); if (e && v != null) e.textContent = v; }
+function setH(id, v) { const e = document.getElementById(id); if (e && v != null) e.innerHTML = esc(v).replace(/\n/g, '<br>'); }
+function setLines(prefix, arr) {
+  if (!arr) return;
+  arr.forEach((txt, i) => {
+    const el = document.getElementById(prefix + (i + 1));
+    if (el) el.querySelector('span').textContent = txt;
+  });
+}
+function applyPageTextes(pageKey) {
+  const tx = getSection('textes') || {};
+  return tx[pageKey] || {};
+}

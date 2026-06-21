@@ -33,10 +33,10 @@
   </svg>
   <div class="wrap">
     <div class="hero-mini__content">
-      <span class="eyebrow-text hero-mini__eyebrow">Les cours</span>
+      <span class="eyebrow-text hero-mini__eyebrow" id="co-hero-eyebrow">Les cours</span>
       <h1 class="hero-mini__title">
-        <span class="line"><span>Un programme</span></span>
-        <span class="line"><span>pour chaque âge.</span></span>
+        <span class="line" id="co-hero-l1"><span>Un programme</span></span>
+        <span class="line" id="co-hero-l2"><span>pour chaque âge.</span></span>
       </h1>
     </div>
   </div>
@@ -46,9 +46,9 @@
 <section class="section">
   <div class="wrap">
     <div class="section__head reveal">
-      <span class="eyebrow-text">Niveaux</span>
-      <h2 class="section__title">Chaque pratiquant<br>trouve sa place.</h2>
-      <p class="section__lede">Du baby-karaté à la compétition — un parcours pensé pour progresser à son rythme, de l'initiation au haut niveau.</p>
+      <span class="eyebrow-text" id="co-s1-eyebrow">Niveaux</span>
+      <h2 class="section__title" id="co-s1-titre">Chaque pratiquant<br>trouve sa place.</h2>
+      <p class="section__lede" id="co-s1-lede">Du baby-karaté à la compétition — un parcours pensé pour progresser à son rythme, de l'initiation au haut niveau.</p>
     </div>
     <div class="cours-grid" id="coursGrid"></div>
     <div class="planning reveal">
@@ -61,9 +61,9 @@
 <section class="section section--alt">
   <div class="wrap">
     <div class="section__head reveal">
-      <span class="eyebrow-text">Organisation</span>
-      <h2 class="section__title">Comment se déroule<br>un cours ?</h2>
-      <p class="section__lede">Chaque séance est structurée en trois phases progressives pour un travail complet et sécurisé.</p>
+      <span class="eyebrow-text" id="co-s2-eyebrow">Organisation</span>
+      <h2 class="section__title" id="co-s2-titre">Comment se déroule<br>un cours ?</h2>
+      <p class="section__lede" id="co-s2-lede">Chaque séance est structurée en trois phases progressives pour un travail complet et sécurisé.</p>
     </div>
     <div class="etapes-grid">
       <div class="etape-card reveal">
@@ -93,8 +93,8 @@
   <div class="wrap">
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;">
       <div class="reveal">
-        <span class="eyebrow-text" style="margin-bottom:1rem;display:inline-flex;">Votre premier cours</span>
-        <h2 class="section__title" style="margin-top:.6rem;margin-bottom:1.2rem;">Commencez sans<br>hésiter.</h2>
+        <span class="eyebrow-text" style="margin-bottom:1rem;display:inline-flex;" id="co-s3-eyebrow">Votre premier cours</span>
+        <h2 class="section__title" style="margin-top:.6rem;margin-bottom:1.2rem;" id="co-s3-titre">Commencez sans<br>hésiter.</h2>
         <p style="color:var(--ash);margin-bottom:1rem;">Le premier cours est toujours offert, sans inscription préalable, sans engagement. Vous venez découvrir, observer, participer — à votre rythme.</p>
         <p style="color:var(--ash);margin-bottom:1rem;">Pas besoin de kimono pour le premier cours. Une tenue de sport suffit. Pieds nus sur le tatami.</p>
         <p style="color:var(--ash);margin-bottom:1.8rem;">Nos coachs vous accueillent quel que soit votre âge ou votre niveau. Débutant complet, pratiquant d'un autre art martial, retour après une pause — tous les profils sont les bienvenus.</p>
@@ -122,8 +122,8 @@
 <!-- ============ CTA ============ -->
 <section class="cta-band">
   <div class="wrap">
-    <h2 class="cta-band__title reveal">Votre premier cours est offert.</h2>
-    <p class="cta-band__sub reveal">Aucun engagement, aucun équipement requis. Venez simplement essayer.</p>
+    <h2 class="cta-band__title reveal" id="co-cta-titre">Votre premier cours est offert.</h2>
+    <p class="cta-band__sub reveal" id="co-cta-sub">Aucun engagement, aucun équipement requis. Venez simplement essayer.</p>
     <div class="cta-band__btns reveal">
       <a href="tarifs.html" class="btn btn--primary">Voir les tarifs</a>
       <a href="dojos.html" class="btn btn--ghost">Trouver un dojo</a>
@@ -170,6 +170,15 @@ courses.forEach(c => {
 });
 table.appendChild(tbody);
 
+
+// Textes dynamiques
+const tx = applyPageTextes('cours');
+setT('co-hero-eyebrow', tx.heroEyebrow);
+setLines('co-hero-l', tx.heroTitre);
+setT('co-s1-eyebrow', tx.s1Eyebrow); setH('co-s1-titre', tx.s1Titre); setT('co-s1-lede', tx.s1Lede);
+setT('co-s2-eyebrow', tx.s2Eyebrow); setH('co-s2-titre', tx.s2Titre); setT('co-s2-lede', tx.s2Lede);
+setT('co-s3-eyebrow', tx.s3Eyebrow); setH('co-s3-titre', tx.s3Titre);
+setT('co-cta-titre', tx.ctaTitre); setT('co-cta-sub', tx.ctaSub);
 initScrollReveal();
 }); // fin initData
 </script>

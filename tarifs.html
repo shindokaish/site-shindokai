@@ -33,10 +33,10 @@
   </svg>
   <div class="wrap">
     <div class="hero-mini__content">
-      <span class="eyebrow-text hero-mini__eyebrow">Inscription</span>
+      <span class="eyebrow-text hero-mini__eyebrow" id="ta-hero-eyebrow">Inscription</span>
       <h1 class="hero-mini__title">
-        <span class="line"><span>Rejoignez</span></span>
-        <span class="line"><span>le dojo.</span></span>
+        <span class="line" id="ta-hero-l1"><span>Rejoignez</span></span>
+        <span class="line" id="ta-hero-l2"><span>le dojo.</span></span>
       </h1>
     </div>
   </div>
@@ -46,9 +46,9 @@
 <section class="section">
   <div class="wrap">
     <div class="section__head reveal">
-      <span class="eyebrow-text">Formules</span>
-      <h2 class="section__title">Des tarifs<br>transparents.</h2>
-      <p class="section__lede">Premier cours toujours offert, sans engagement. Venez essayer avant de vous inscrire. Licence FFKDA incluse dans toutes les formules.</p>
+      <span class="eyebrow-text" id="ta-s1-eyebrow">Formules</span>
+      <h2 class="section__title" id="ta-s1-titre">Des tarifs<br>transparents.</h2>
+      <p class="section__lede" id="ta-s1-lede">Premier cours toujours offert, sans engagement. Venez essayer avant de vous inscrire. Licence FFKDA incluse dans toutes les formules.</p>
     </div>
     <div class="tarifs-grid" id="tarifsGrid"></div>
   </div>
@@ -58,8 +58,8 @@
 <section class="section section--alt">
   <div class="wrap">
     <div class="section__head reveal">
-      <span class="eyebrow-text">Questions fréquentes</span>
-      <h2 class="section__title">Vous avez<br>des questions ?</h2>
+      <span class="eyebrow-text" id="ta-s2-eyebrow">Questions fréquentes</span>
+      <h2 class="section__title" id="ta-s2-titre">Vous avez<br>des questions ?</h2>
     </div>
     <div class="faq-list reveal" id="faqList">
       <div class="faq-item">
@@ -94,8 +94,8 @@
 <section class="section">
   <div class="wrap">
     <div class="section__head reveal">
-      <span class="eyebrow-text">Comparatif</span>
-      <h2 class="section__title">Quelle formule<br>vous correspond ?</h2>
+      <span class="eyebrow-text" id="ta-s3-eyebrow">Comparatif</span>
+      <h2 class="section__title" id="ta-s3-titre">Quelle formule<br>vous correspond ?</h2>
     </div>
     <div class="tarif-compare reveal" id="tarifCompare"></div>
   </div>
@@ -104,8 +104,8 @@
 <!-- ============ CTA ============ -->
 <section class="cta-band">
   <div class="wrap">
-    <h2 class="cta-band__title reveal">Prêt à commencer ?</h2>
-    <p class="cta-band__sub reveal">Contactez-nous ou venez directement au prochain cours. Le premier essai est offert.</p>
+    <h2 class="cta-band__title reveal" id="ta-cta-titre">Prêt à commencer ?</h2>
+    <p class="cta-band__sub reveal" id="ta-cta-sub">Contactez-nous ou venez directement au prochain cours. Le premier essai est offert.</p>
     <div class="cta-band__btns reveal">
       <a href="contact.html" class="btn btn--primary">Nous contacter</a>
       <a href="dojos.html" class="btn btn--ghost">Trouver un dojo</a>
@@ -160,6 +160,15 @@ document.querySelectorAll('.faq-item__q').forEach(q => {
   });
 });
 
+
+// Textes dynamiques
+const tx = applyPageTextes('tarifs');
+setT('ta-hero-eyebrow', tx.heroEyebrow);
+setLines('ta-hero-l', tx.heroTitre);
+setT('ta-s1-eyebrow', tx.s1Eyebrow); setH('ta-s1-titre', tx.s1Titre); setT('ta-s1-lede', tx.s1Lede);
+setT('ta-s2-eyebrow', tx.s2Eyebrow); setH('ta-s2-titre', tx.s2Titre);
+setT('ta-s3-eyebrow', tx.s3Eyebrow); setH('ta-s3-titre', tx.s3Titre);
+setT('ta-cta-titre', tx.ctaTitre); setT('ta-cta-sub', tx.ctaSub);
 initScrollReveal();
 }); // fin initData
 </script>
