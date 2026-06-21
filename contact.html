@@ -5,6 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Contact — Shindokai-Kan I-S-L</title>
 <meta name="description" content="Contactez le Shindokai-Kan I-S-L. Adresses, horaires et formulaire de contact pour vos questions sur l'inscription, les cours et les dojos.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://site-shindokai.vercel.app/contact.html">
+<meta property="og:title" content="Contact — Shindokai-Kan I-S-L">
+<meta property="og:description" content="Contactez le Shindokai-Kan I-S-L. Adresses, horaires et formulaire de contact pour vos questions sur l'inscription, les cours et les dojos.">
+<meta property="og:image" content="https://site-shindokai.vercel.app/shinodkai.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Contact — Shindokai-Kan I-S-L">
+<meta name="twitter:description" content="Contactez le Shindokai-Kan I-S-L. Adresses, horaires et formulaire de contact pour vos questions sur l'inscription, les cours et les dojos.">
+<meta name="twitter:image" content="https://site-shindokai.vercel.app/shinodkai.png">
 <link rel="icon" href="shinodkai.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@400;500;600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -180,32 +189,36 @@ document.getElementById('contactForm').addEventListener('submit', async function
     return;
   }
 
-  const data = getData();
-  if (data.club.formspreeId) {
-    btn.disabled = true;
-    btn.textContent = 'Envoi en cours…';
-    try {
-      const res = await fetch(`https://formspree.io/f/${data.club.formspreeId}`, {
-        method: 'POST',
-        headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, dojo, sujet, message: msg })
-      });
-      if (res.ok) {
-        status.textContent = 'Message envoyé ! Nous vous répondrons sous 48h.';
-        status.className = 'form__status form__status--ok is-visible';
-        this.reset();
-      } else throw new Error();
-    } catch {
-      status.textContent = 'Erreur lors de l\'envoi. Contactez-nous directement par email.';
-      status.className = 'form__status form__status--err is-visible';
-    }
-    btn.disabled = false;
-    btn.textContent = 'Envoyer le message';
-  } else {
-    const subject = encodeURIComponent(`Contact site — ${name}${dojo ? ' (' + dojo + ')' : ''}${sujet ? ' [' + sujet + ']' : ''}`);
-    const body = encodeURIComponent(`${msg}\n\nDojo : ${dojo || 'non précisé'}\nEmail : ${email}`);
-    window.location.href = `mailto:${club.email}?subject=${subject}&body=${body}`;
+  const settings = getSection('settings') || {};
+  const web3key = settings.web3formsKey || '109f2859-b8c5-49fa-b6e9-4fd2fee3c5ab';
+  btn.disabled = true;
+  btn.textContent = 'Envoi en cours…';
+  try {
+    const res = await fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({
+        access_key: web3key,
+        subject: `Nouveau message — ${name}${sujet ? ' [' + sujet + ']' : ''}`,
+        from_name: 'Site Shindokai-Kan I-S-L',
+        name, email,
+        dojo: dojo || 'Non précisé',
+        sujet: sujet || 'Non précisé',
+        message: msg
+      })
+    });
+    const json = await res.json();
+    if (json.success) {
+      status.textContent = 'Message envoyé ! Nous vous répondrons sous 48h.';
+      status.className = 'form__status form__status--ok is-visible';
+      this.reset();
+    } else throw new Error(json.message || 'Erreur');
+  } catch(err) {
+    status.textContent = 'Erreur lors de l\'envoi. Contactez-nous directement par email.';
+    status.className = 'form__status form__status--err is-visible';
   }
+  btn.disabled = false;
+  btn.textContent = 'Envoyer le message';
 });
 
 initScrollReveal();
