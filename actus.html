@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Actualités — Shindokai-Kan I-S-L</title>
+<meta name="description" content="Toutes les actualités du club Shindokai-Kan I-S-L : compétitions, stages, passages de grades, événements.">
+<link rel="icon" href="shinodkai.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@400;500;600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div id="nav-placeholder"></div>
+
+<main>
+
+<section class="hero-mini">
+  <div class="hero-mini__bg"></div>
+  <img class="hero-mini__logo-bg" src="shinodkai.png" alt="" aria-hidden="true">
+  <svg class="hero-mini__strike" viewBox="0 0 400 1000" preserveAspectRatio="none" fill="none">
+    <path d="M380 0 L20 1000" stroke="#e0241b" stroke-width="2" opacity="0.4"/>
+  </svg>
+  <div class="wrap">
+    <div class="hero-mini__content">
+      <span class="eyebrow-text hero-mini__eyebrow">La vie du club</span>
+      <h1 class="hero-mini__title">
+        <span class="line"><span>Actualités.</span></span>
+      </h1>
+    </div>
+  </div>
+</section>
+
+<section class="section section--actu">
+  <div class="wrap">
+    <div class="section__head reveal">
+      <span class="eyebrow-text">Toutes les actus</span>
+      <h2 class="section__title">Compétitions,<br>stages, grades.</h2>
+      <p class="section__lede">Suivez toute l'actualité du Shindokai-Kan I-S-L — résultats, événements, passages de grades et informations pratiques.</p>
+    </div>
+
+    <!-- Filtres -->
+    <div class="actu-filters" id="actuFilters">
+      <button class="filter-btn is-active" data-filter="">Tout</button>
+      <button class="filter-btn" data-filter="compétition">Compétition</button>
+      <button class="filter-btn" data-filter="stage">Stage</button>
+      <button class="filter-btn" data-filter="grades">Grades</button>
+      <button class="filter-btn" data-filter="info">Info</button>
+    </div>
+
+    <div class="actu-grid" id="actuGrid"></div>
+
+    <div id="actuEmpty" style="display:none;text-align:center;padding:4rem 0;">
+      <p style="font-family:var(--mono);font-size:.85rem;color:var(--ash-2);">Aucune actualité dans cette catégorie pour le moment.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CTA ============ -->
+<section class="cta-band">
+  <div class="wrap">
+    <h2 class="cta-band__title reveal">Rejoignez le club.</h2>
+    <p class="cta-band__sub reveal">Vivez ces moments de l'intérieur — inscrivez-vous et faites partie de l'aventure Shindokai.</p>
+    <div class="cta-band__btns reveal">
+      <a href="tarifs.html" class="btn btn--primary">Essai gratuit</a>
+      <a href="contact.html" class="btn btn--ghost">Nous contacter</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<div id="footer-placeholder"></div>
+
+<script src="js/data.js"></script>
+<script src="js/render.js"></script>
+<script>
+pageInit('actus');
+const actus = getSection('actus');
+const grid = document.getElementById('actuGrid');
+const empty = document.getElementById('actuEmpty');
+const revealObs = initScrollReveal();
+
+function renderActus(filter) {
+  grid.innerHTML = '';
+  const filtered = filter
+    ? actus.filter(a => (a.tag || '').toLowerCase() === filter)
+    : actus;
+
+  if (!filtered.length) {
+    empty.style.display = 'block';
+    grid.style.display = 'none';
+  } else {
+    empty.style.display = 'none';
+    grid.style.display = '';
+    filtered.forEach(a => {
+      const card = buildActuCard(a);
+      grid.appendChild(card);
+      revealObs.observe(card);
+    });
+  }
+}
+
+// Filtres
+document.getElementById('actuFilters').addEventListener('click', e => {
+  const btn = e.target.closest('.filter-btn');
+  if (!btn) return;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('is-active'));
+  btn.classList.add('is-active');
+  renderActus(btn.dataset.filter);
+});
+
+renderActus('');
+</script>
+</body>
+</html>

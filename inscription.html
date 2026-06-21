@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inscription — Shindokai-Kan I-S-L</title>
+<meta name="description" content="Formulaire d'inscription au Shindokai-Kan I-S-L. Karaté contact, dès 4 ans.">
+<link rel="icon" href="shinodkai.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@400;500;600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<style>
+
+/* ── Hero mini ── */
+.hero-mini{
+  padding:8rem 0 4rem;
+  background:var(--void);
+  position:relative;
+  overflow:hidden;
+  border-bottom:1px solid var(--line);
+}
+.hero-mini::after{
+  content:'';
+  position:absolute; top:0; right:0; bottom:0;
+  width:40%; background:linear-gradient(135deg, transparent, rgba(224,36,27,.06));
+  pointer-events:none;
+}
+
+/* ── Formulaire ── */
+.insc-layout{
+  display:grid;
+  grid-template-columns:1fr 340px;
+  gap:var(--gap);
+  align-items:start;
+}
+@media(max-width:860px){ .insc-layout{ grid-template-columns:1fr; } }
+
+.insc-form-wrap{
+  background:var(--char);
+  border:1px solid var(--line);
+  padding:2.4rem;
+}
+
+/* Groupes de champs */
+.field-group{
+  margin-bottom:2rem;
+}
+.field-group__title{
+  font-family:var(--eyebrow);
+  font-size:.72rem;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--crimson-2);
+  border-bottom:1px solid var(--line);
+  padding-bottom:.6rem;
+  margin-bottom:1.2rem;
+  display:flex;
+  align-items:center;
+  gap:.6rem;
+}
+.field-group__title::before{
+  content:'';
+  width:14px; height:2px;
+  background:var(--crimson-2);
+}
+.field-group__grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:.9rem;
+}
+.field-group__grid .field--full{ grid-column:1/-1; }
+@media(max-width:600px){ .field-group__grid{ grid-template-columns:1fr; } }
+
+/* Champs */
+.field{ display:flex; flex-direction:column; gap:.35rem; }
+.field label{
+  font-family:var(--eyebrow);
+  font-size:.68rem;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--ash-2);
+}
+.field label .req{ color:var(--crimson-2); margin-left:2px; }
+.field input,
+.field select,
+.field textarea{
+  background:var(--char-2);
+  border:1px solid var(--line);
+  color:var(--bone);
+  padding:.8rem 1rem;
+  font-family:var(--body);
+  font-size:.92rem;
+  border-radius:var(--radius);
+  width:100%;
+  transition:border-color .2s;
+}
+.field input:focus,
+.field select:focus,
+.field textarea:focus{ border-color:var(--crimson-2); outline:none; }
+.field input.error,
+.field select.error,
+.field textarea.error{ border-color:var(--crimson); }
+.field__error{
+  font-family:var(--mono);
+  font-size:.7rem;
+  color:var(--crimson-2);
+  display:none;
+}
+.field__error.visible{ display:block; }
+
+/* Checkbox */
+.field--check{
+  flex-direction:row;
+  align-items:flex-start;
+  gap:.8rem;
+  padding:.8rem 0;
+  border-top:1px solid var(--line);
+}
+.field--check:first-child{ border-top:none; }
+.field--check input[type=checkbox]{
+  width:18px; height:18px; flex-shrink:0;
+  accent-color:var(--crimson-2);
+  margin-top:2px;
+  cursor:pointer;
+}
+.field--check label{
+  font-family:var(--body);
+  font-size:.88rem;
+  letter-spacing:0;
+  text-transform:none;
+  color:var(--ash);
+  cursor:pointer;
+  line-height:1.5;
+}
+
+/* Statut envoi */
+.form-status{
+  padding:1rem 1.2rem;
+  border-radius:var(--radius);
+  font-family:var(--mono);
+  font-size:.82rem;
+  margin-top:1rem;
+  display:none;
+}
+.form-status.ok{
+  background:rgba(100,200,100,.1);
+  border:1px solid rgba(100,200,100,.3);
+  color:#7ecf7e;
+  display:block;
+}
+.form-status.err{
+  background:rgba(224,36,27,.1);
+  border:1px solid rgba(224,36,27,.3);
+  color:var(--crimson-2);
+  display:block;
+}
+
+/* ── Sidebar infos ── */
+.insc-sidebar{ display:flex; flex-direction:column; gap:1.4rem; }
+.info-block{
+  background:var(--char);
+  border:1px solid var(--line);
+  padding:1.6rem;
+}
+.info-block__title{
+  font-family:var(--eyebrow);
+  font-size:.75rem;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:var(--crimson-2);
+  margin-bottom:1rem;
+  display:flex; align-items:center; gap:.5rem;
+}
+.info-block__title::before{ content:''; width:14px; height:2px; background:var(--crimson-2); }
+.info-block p{ font-size:.88rem; color:var(--ash); line-height:1.65; margin-bottom:.6rem; }
+.info-block p:last-child{ margin-bottom:0; }
+.info-step{
+  display:flex; gap:1rem; padding:.7rem 0;
+  border-bottom:1px solid var(--line); align-items:flex-start;
+}
+.info-step:last-child{ border-bottom:none; }
+.info-step__num{
+  width:26px; height:26px; border-radius:50%;
+  background:var(--crimson); color:#fff;
+  font-family:var(--mono); font-size:.75rem;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+}
+.info-step__text{ font-size:.85rem; color:var(--ash); line-height:1.5; }
+.doc-item{
+  display:flex; align-items:center; gap:.7rem;
+  padding:.5rem 0; border-bottom:1px solid var(--line);
+  font-size:.85rem; color:var(--ash);
+}
+.doc-item:last-child{ border-bottom:none; }
+.doc-item::before{ content:'📄'; font-size:.8rem; }
+
+/* ── Succès ── */
+.success-screen{
+  display:none;
+  flex-direction:column;
+  align-items:center;
+  text-align:center;
+  padding:4rem 2rem;
+  gap:1.2rem;
+}
+.success-screen.visible{ display:flex; }
+.success-icon{
+  width:72px; height:72px; border-radius:50%;
+  background:linear-gradient(135deg, var(--crimson), var(--crimson-2));
+  display:flex; align-items:center; justify-content:center;
+  font-size:2rem;
+}
+.success-screen h2{ font-family:var(--display); font-size:2rem; text-transform:uppercase; }
+.success-screen p{ color:var(--ash); max-width:480px; }
+
+</style>
+</head>
+<body>
+
+<div id="nav-placeholder"></div>
+
+<!-- ── Hero mini ── -->
+<section class="hero-mini">
+  <div class="wrap">
+    <span class="eyebrow-text" style="margin-bottom:1rem;display:block;">Rejoindre le club</span>
+    <h1 style="font-family:var(--display);font-size:clamp(2rem,5vw,3.6rem);text-transform:uppercase;line-height:.98;" id="insc-titre">Demande d'inscription</h1>
+    <p style="color:var(--ash);margin-top:.8rem;max-width:560px;font-size:.95rem;" id="insc-intro"></p>
+  </div>
+</section>
+
+<!-- ── Corps ── -->
+<section class="section" style="padding-top:3.5rem;">
+  <div class="wrap">
+    <div class="insc-layout">
+
+      <!-- Formulaire -->
+      <div class="insc-form-wrap">
+        <div id="formContainer">
+          <form id="inscriptionForm" novalidate></form>
+          <div class="form-status" id="formStatus"></div>
+        </div>
+        <div class="success-screen" id="successScreen">
+          <div class="success-icon">✓</div>
+          <h2>Demande envoyée !</h2>
+          <p id="successMsg">Merci pour votre inscription. Un responsable du club vous contactera sous 48h pour finaliser votre adhésion.</p>
+          <a href="index.html" class="btn btn--ghost" style="margin-top:.5rem;">Retour à l'accueil</a>
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <aside class="insc-sidebar">
+
+        <div class="info-block">
+          <div class="info-block__title">Comment ça marche ?</div>
+          <div class="info-step"><span class="info-step__num">1</span><span class="info-step__text">Remplissez ce formulaire en ligne</span></div>
+          <div class="info-step"><span class="info-step__num">2</span><span class="info-step__text">Un responsable vous contacte sous 48h</span></div>
+          <div class="info-step"><span class="info-step__num">3</span><span class="info-step__text">Venez faire votre cours d'essai gratuit</span></div>
+          <div class="info-step"><span class="info-step__num">4</span><span class="info-step__text">Finalisez l'inscription avec les documents</span></div>
+        </div>
+
+        <div class="info-block">
+          <div class="info-block__title">Documents à fournir</div>
+          <div class="doc-item">Certificat médical d'aptitude au karaté contact</div>
+          <div class="doc-item">Photo d'identité</div>
+          <div class="doc-item">Règlement de la cotisation</div>
+          <div class="doc-item">Autorisation parentale (mineurs)</div>
+        </div>
+
+        <div class="info-block">
+          <div class="info-block__title">Premier cours offert</div>
+          <p>Avant toute inscription définitive, venez essayer gratuitement. Aucun équipement requis, venez en tenue de sport.</p>
+        </div>
+
+        <div class="info-block" id="sidebar-contact"></div>
+
+      </aside>
+    </div>
+  </div>
+</section>
+
+<div id="footer-placeholder"></div>
+<button class="admin-trigger" onclick="window.location.href='admin.html'" title="Administration" aria-label="Administration">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
+    <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+  </svg>
+</button>
+
+<script src="js/data.js"></script>
+<script src="js/render.js"></script>
+<script>
+renderNav('inscription');
+renderFooter();
+
+const data        = getData();
+const insc        = data.inscription;
+const dojos       = data.dojos;
+const courses     = data.courses;
+const tarifs      = data.tarifs;
+const club        = data.club;
+
+/* Titre & intro */
+document.getElementById('insc-titre').textContent = insc.titre || "Demande d'inscription";
+document.getElementById('insc-intro').textContent = insc.intro || '';
+
+/* Sidebar contact */
+document.getElementById('sidebar-contact').innerHTML = `
+  <div class="info-block__title">Contact</div>
+  <p>📧 <a href="mailto:${esc(club.email)}" style="color:var(--crimson-2);">${esc(club.email)}</a></p>
+  <p>📞 ${esc(club.phone)}</p>`;
+
+/* ── Construction du formulaire ── */
+const form = document.getElementById('inscriptionForm');
+
+/* Grouper les champs actifs par groupe */
+const activeFields = insc.fields.filter(f => f.enabled);
+const groups = {};
+activeFields.forEach(f => {
+  if (!groups[f.group]) groups[f.group] = [];
+  groups[f.group].push(f);
+});
+
+Object.entries(groups).forEach(([groupName, fields]) => {
+  const groupEl = document.createElement('div');
+  groupEl.className = 'field-group';
+  groupEl.innerHTML = `<div class="field-group__title">${esc(groupName)}</div>`;
+  const grid = document.createElement('div');
+  grid.className = 'field-group__grid';
+
+  /* Champs checkbox dans un bloc séparé (pas dans la grille) */
+  const checkboxFields = fields.filter(f => f.type === 'checkbox');
+  const regularFields  = fields.filter(f => f.type !== 'checkbox');
+
+  regularFields.forEach(f => {
+    const wrapper = document.createElement('div');
+    const isFullWidth = ['textarea','select-dojos','select-cours','select-tarifs'].includes(f.type);
+    wrapper.className = `field${isFullWidth ? ' field--full' : ''}`;
+
+    let inputHTML = '';
+    if (f.type === 'select' || f.type === 'select-dojos' || f.type === 'select-cours' || f.type === 'select-tarifs') {
+      let opts = '';
+      if (f.type === 'select-dojos') opts = dojos.map(d => `<option value="${esc(d.name)}">${esc(d.name)}</option>`).join('');
+      else if (f.type === 'select-cours') opts = courses.map(c => `<option value="${esc(c.name)}">${esc(c.name)} (${esc(c.age)})</option>`).join('');
+      else if (f.type === 'select-tarifs') opts = tarifs.map(t => `<option value="${esc(t.name)}">${esc(t.name)} — ${esc(t.price)}${esc(t.period)}</option>`).join('');
+      else opts = (f.options || []).map(o => `<option value="${esc(o)}">${esc(o)}</option>`).join('');
+      inputHTML = `<select id="f-${esc(f.id)}" name="${esc(f.id)}"${f.required?' required':''}><option value="">— Choisir —</option>${opts}</select>`;
+    } else if (f.type === 'textarea') {
+      inputHTML = `<textarea id="f-${esc(f.id)}" name="${esc(f.id)}" rows="3" placeholder="${esc(f.placeholder||'')}"${f.required?' required':''}></textarea>`;
+    } else {
+      inputHTML = `<input type="${esc(f.type)}" id="f-${esc(f.id)}" name="${esc(f.id)}" placeholder="${esc(f.placeholder||'')}"${f.required?' required':''}>`;
+    }
+
+    wrapper.innerHTML = `
+      <label for="f-${esc(f.id)}">${esc(f.label)}${f.required ? '<span class="req">*</span>' : ''}</label>
+      ${inputHTML}
+      <span class="field__error" id="err-${esc(f.id)}">Ce champ est obligatoire.</span>`;
+    grid.appendChild(wrapper);
+  });
+
+  groupEl.appendChild(grid);
+
+  /* Checkboxes */
+  if (checkboxFields.length) {
+    const checkBlock = document.createElement('div');
+    checkBlock.style.marginTop = '1rem';
+    checkboxFields.forEach(f => {
+      const wrap = document.createElement('div');
+      wrap.className = 'field field--check';
+      wrap.innerHTML = `
+        <input type="checkbox" id="f-${esc(f.id)}" name="${esc(f.id)}"${f.required?' required':''}>
+        <label for="f-${esc(f.id)}">${esc(f.label)}${f.required ? ' <span class="req">*</span>' : ''}</label>`;
+      checkBlock.appendChild(wrap);
+    });
+    groupEl.appendChild(checkBlock);
+  }
+
+  form.appendChild(groupEl);
+});
+
+/* Bouton submit */
+const submitBtn = document.createElement('button');
+submitBtn.type = 'submit';
+submitBtn.className = 'btn btn--primary';
+submitBtn.style.cssText = 'margin-top:1.4rem;width:100%;justify-content:center;';
+submitBtn.textContent = 'Envoyer ma demande d\'inscription';
+form.appendChild(submitBtn);
+
+/* ── Validation & envoi ── */
+form.addEventListener('submit', async function(e) {
+  e.preventDefault();
+  let valid = true;
+
+  activeFields.forEach(f => {
+    const el = document.getElementById(`f-${f.id}`);
+    const errEl = document.getElementById(`err-${f.id}`);
+    if (!el) return;
+    const isEmpty = f.type === 'checkbox' ? !el.checked : !el.value.trim();
+    if (f.required && isEmpty) {
+      el.classList.add('error');
+      if (errEl) errEl.classList.add('visible');
+      valid = false;
+    } else {
+      el.classList.remove('error');
+      if (errEl) errEl.classList.remove('visible');
+    }
+  });
+
+  if (!valid) {
+    const status = document.getElementById('formStatus');
+    status.textContent = 'Merci de remplir tous les champs obligatoires (marqués *).';
+    status.className = 'form-status err';
+    form.querySelector('.error')?.scrollIntoView({ behavior:'smooth', block:'center' });
+    return;
+  }
+
+  /* Collecte des données */
+  const submission = { id: Date.now(), date: new Date().toLocaleDateString('fr-FR'), fields: {} };
+  activeFields.forEach(f => {
+    const el = document.getElementById(`f-${f.id}`);
+    if (!el) return;
+    submission.fields[f.id] = f.type === 'checkbox' ? el.checked : el.value;
+  });
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Envoi en cours…';
+
+  /* Sauvegarde locale */
+  const d = getData();
+  if (!d.inscription.submissions) d.inscription.submissions = [];
+  d.inscription.submissions.unshift(submission);
+  saveData(d);
+
+  /* Envoi Formspree ou mailto */
+  if (insc.formspreeId) {
+    try {
+      const body = {};
+      activeFields.forEach(f => {
+        const el = document.getElementById(`f-${f.id}`);
+        if (el) body[f.label] = f.type === 'checkbox' ? (el.checked ? 'Oui' : 'Non') : el.value;
+      });
+      const res = await fetch(`https://formspree.io/f/${insc.formspreeId}`, {
+        method:'POST',
+        headers:{'Accept':'application/json','Content-Type':'application/json'},
+        body: JSON.stringify(body)
+      });
+      if (!res.ok) throw new Error();
+    } catch {
+      /* silencieux — données déjà sauvées localement */
+    }
+  } else {
+    /* mailto de secours */
+    const lines = activeFields.map(f => {
+      const el = document.getElementById(`f-${f.id}`);
+      if (!el) return '';
+      const val = f.type === 'checkbox' ? (el.checked ? 'Oui' : 'Non') : el.value;
+      return `${f.label}: ${val}`;
+    }).filter(Boolean).join('\n');
+    const nom = document.getElementById('f-nom')?.value || '';
+    const prenom = document.getElementById('f-prenom')?.value || '';
+    window.location.href = `mailto:${club.email}?subject=${encodeURIComponent('Inscription — ' + prenom + ' ' + nom)}&body=${encodeURIComponent(lines)}`;
+  }
+
+  /* Affichage succès */
+  document.getElementById('formContainer').style.display = 'none';
+  document.getElementById('successScreen').classList.add('visible');
+});
+
+/* Effacer erreur au focus */
+form.addEventListener('focusin', e => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA') {
+    e.target.classList.remove('error');
+    const id = e.target.id.replace('f-','');
+    const errEl = document.getElementById(`err-${id}`);
+    if (errEl) errEl.classList.remove('visible');
+  }
+});
+
+initScrollReveal();
+</script>
+</body>
+</html>

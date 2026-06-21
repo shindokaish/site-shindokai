@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mes Badges — Shindokai-Kan I-S-L</title>
+<link rel="icon" href="../shinodkai.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@400;500;600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+body { background: #0d0d10; min-height: 100vh; }
+
+.m-header { background: var(--char); border-bottom: 1px solid rgba(201,162,39,.2); padding: 1rem 0; }
+.m-header .wrap { display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
+.m-header__logo { display:flex; align-items:center; gap:.6rem; }
+.m-header__logo img { width:32px; height:32px; border-radius:50%; border:1px solid rgba(201,162,39,.3); }
+.m-header__logo span { font-family:var(--display); font-size:1rem; color:var(--gold); text-transform:uppercase; }
+.btn-back { font-family:var(--mono); font-size:.7rem; color:var(--ash-2); transition:color .2s; }
+.btn-back:hover { color:var(--gold); }
+
+.badges-wrap { max-width: 960px; margin: 0 auto; padding: 2.5rem 1.5rem; }
+
+/* HERO */
+.badges-hero { margin-bottom: 2.5rem; }
+.badges-hero__title {
+  font-family: var(--display); font-size: clamp(2rem, 5vw, 3rem);
+  text-transform: uppercase; line-height: 1; margin-bottom: .5rem;
+}
+.badges-hero__title em { color: var(--gold); font-style: normal; }
+
+/* CEINTURE VIRTUELLE */
+.virt-belt {
+  display: inline-flex; align-items: center; gap: 1rem;
+  background: var(--char); border: 1px solid rgba(201,162,39,.2);
+  padding: 1rem 1.5rem; margin: 1.2rem 0;
+}
+.virt-belt__strip {
+  width: 60px; height: 12px; border-radius: 2px;
+  box-shadow: 0 0 10px 2px rgba(0,0,0,.4);
+}
+.virt-belt__info { }
+.virt-belt__label { font-family: var(--display); font-size: 1.4rem; text-transform: uppercase; }
+.virt-belt__kanji { font-size: 1.8rem; }
+.virt-belt__desc { font-family: var(--eyebrow); font-size: .72rem; color: var(--ash); letter-spacing: .06em; margin-top: .2rem; }
+
+/* PROGRESS */
+.b-prog { max-width: 500px; margin-bottom: 2rem; }
+.b-prog__label { display:flex; justify-content:space-between; font-family:var(--mono); font-size:.75rem; color:var(--ash-2); margin-bottom:.5rem; }
+.b-prog__bar { height: 8px; background: var(--line); border-radius: 4px; overflow: hidden; }
+.b-prog__fill {
+  height: 100%; border-radius: 4px;
+  background: linear-gradient(90deg, var(--gold), #e8c050);
+  transition: width 1s cubic-bezier(.2,.8,.2,1);
+  width: 0;
+}
+
+/* CATÉGORIES */
+.b-cat-title {
+  font-family: var(--eyebrow); font-size: .72rem; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--ash-2);
+  border-bottom: 1px solid var(--line); padding-bottom: .5rem;
+  margin: 2rem 0 1rem;
+}
+.b-cat-title span { color: var(--gold); }
+
+/* GRILLE */
+.badges-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+/* BADGE CARD */
+.badge-card {
+  background: var(--char); border: 1px solid var(--line);
+  padding: 1.5rem 1.2rem; text-align: center;
+  position: relative; overflow: hidden;
+  transition: transform .25s, border-color .25s, box-shadow .25s;
+}
+.badge-card.earned {
+  border-color: rgba(201,162,39,.35);
+}
+.badge-card.earned:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px -12px rgba(201,162,39,.3);
+  border-color: rgba(201,162,39,.6);
+}
+.badge-card.locked {
+  opacity: .45;
+  filter: grayscale(.6);
+}
+
+/* Shimmer sur badges gagnés */
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+.badge-card.earned::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  background-size: 200% auto;
+  animation: shimmer 3s linear infinite;
+}
+
+.badge-card__emoji { font-size: 3rem; margin-bottom: .8rem; display: block; line-height: 1; }
+.badge-card.earned .badge-card__emoji {
+  text-shadow: 0 0 20px rgba(201,162,39,.4);
+}
+
+.badge-card__lock {
+  position: absolute; top: .8rem; right: .8rem;
+  font-size: .85rem; opacity: .4;
+}
+
+.badge-card__nom {
+  font-family: var(--eyebrow); font-size: .82rem; font-weight: 600;
+  letter-spacing: .04em; text-transform: uppercase;
+  margin-bottom: .4rem; color: var(--bone);
+}
+.badge-card.earned .badge-card__nom {
+  background: linear-gradient(90deg, var(--gold), #e8c050, var(--gold));
+  background-size: 200% auto;
+  animation: shimmer 3s linear infinite;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.badge-card__desc {
+  font-size: .75rem; color: var(--ash-2); line-height: 1.4;
+  font-family: var(--body);
+}
+.badge-card__date {
+  font-family: var(--mono); font-size: .65rem; color: var(--gold);
+  margin-top: .6rem; opacity: .8;
+}
+
+/* PARTAGER */
+.share-btn {
+  background: none; border: 1px solid var(--line);
+  color: var(--ash); font-family: var(--eyebrow); font-size: .75rem;
+  letter-spacing: .08em; text-transform: uppercase;
+  padding: .6rem 1.2rem; cursor: pointer; border-radius: var(--radius);
+  transition: all .2s; margin-top: 2rem;
+}
+.share-btn:hover { border-color: rgba(201,162,39,.3); color: var(--gold); }
+
+.share-toast {
+  display: none;
+  background: rgba(201,162,39,.12); border: 1px solid rgba(201,162,39,.25);
+  color: var(--gold); font-family: var(--mono); font-size: .78rem;
+  padding: .7rem 1rem; margin-top: .8rem; max-width: 500px;
+  white-space: pre-wrap; border-radius: var(--radius);
+}
+</style>
+</head>
+<body>
+
+<header class="m-header">
+  <div class="wrap">
+    <div class="m-header__logo">
+      <img src="../shinodkai.png" alt="" onerror="this.style.display='none'">
+      <span>Badges</span>
+    </div>
+    <a href="espace.html" class="btn-back">← Mon espace</a>
+  </div>
+</header>
+
+<div class="badges-wrap">
+
+  <div class="badges-hero">
+    <div class="badges-hero__title">Ma <em>collection</em></div>
+    <p style="color:var(--ash);font-family:var(--eyebrow);font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;margin-bottom:.5rem;" id="badgesSubtitle">…</p>
+
+    <div class="virt-belt" id="virtBelt">
+      <div class="virt-belt__strip" id="beltStrip"></div>
+      <div class="virt-belt__info">
+        <div class="virt-belt__label" id="beltLabel">…</div>
+        <div class="virt-belt__desc" id="beltDesc">…</div>
+      </div>
+      <div class="virt-belt__kanji" id="beltKanji">白</div>
+    </div>
+
+    <div class="b-prog">
+      <div class="b-prog__label">
+        <span>Progression</span>
+        <span id="progLabel">0 / 15</span>
+      </div>
+      <div class="b-prog__bar"><div class="b-prog__fill" id="progFill"></div></div>
+    </div>
+  </div>
+
+  <!-- BADGES PAR JEU -->
+  <div id="badgesContainer"></div>
+
+  <button class="share-btn" id="shareBtn">📤 Partager ma progression</button>
+  <div class="share-toast" id="shareToast"></div>
+
+</div>
+
+<script src="../js/data.js"></script>
+<script>
+/* ── AUTH ── */
+const sess = (() => { try { return JSON.parse(sessionStorage.getItem('shindokai_membre')); } catch(e) { return null; } })();
+if (!sess) { window.location.href = 'index.html'; throw 0; }
+const PRENOM = sess.prenom;
+const PROG_KEY = 'shindokai_progression_' + PRENOM.toLowerCase();
+
+function getProg() { try { return JSON.parse(localStorage.getItem(PROG_KEY) || '{}'); } catch(e) { return {}; } }
+
+const ALL_BADGES = [
+  { id:"quiz_first",    emoji:"🥋", nom:"Premier pas",              desc:"Compléter le quiz pour la première fois",         jeu:"Quiz" },
+  { id:"quiz_half",     emoji:"⭐", nom:"Sur la bonne voie",        desc:"Obtenir 10/20 ou plus au quiz",                   jeu:"Quiz" },
+  { id:"quiz_good",     emoji:"⭐⭐", nom:"Bon élève",              desc:"Obtenir 15/20 ou plus au quiz",                   jeu:"Quiz" },
+  { id:"quiz_perfect",  emoji:"⭐⭐⭐", nom:"Perfection",           desc:"Obtenir 20/20 au quiz",                           jeu:"Quiz" },
+  { id:"quiz_vocab",    emoji:"🎓", nom:"Maître des mots",          desc:"Toutes les questions vocabulaire correctes",      jeu:"Quiz" },
+  { id:"quiz_rules",    emoji:"📜", nom:"Gardien des règles",       desc:"Toutes les questions règles correctes",           jeu:"Quiz" },
+  { id:"flash_first",   emoji:"📖", nom:"Première lecture",         desc:"Retourner sa première flashcard",                jeu:"Flashcards" },
+  { id:"flash_half",    emoji:"📚", nom:"À mi-chemin",              desc:"Maîtriser 12 mots sur 24",                       jeu:"Flashcards" },
+  { id:"flash_all",     emoji:"🎌", nom:"Sensei du vocabulaire",    desc:"Maîtriser les 24 mots japonais",                 jeu:"Flashcards" },
+  { id:"mem_first",     emoji:"🃏", nom:"La mémoire s'éveille",     desc:"Terminer une partie de memory",                 jeu:"Memory" },
+  { id:"mem_fast",      emoji:"⚡", nom:"Éclair",                   desc:"Terminer en moins de 60 secondes",              jeu:"Memory" },
+  { id:"mem_precise",   emoji:"🧠", nom:"Esprit acéré",             desc:"Terminer en moins de 15 tentatives",            jeu:"Memory" },
+  { id:"mem_master",    emoji:"🏆", nom:"Maître de la mémoire",     desc:"Moins de 45s ET moins de 15 tentatives",        jeu:"Memory" },
+  { id:"all_games",     emoji:"🌟", nom:"Explorateur",              desc:"Avoir joué aux 3 jeux au moins une fois",       jeu:"Global" },
+  { id:"ceinture_noire",emoji:"🖤", nom:"Ceinture noire virtuelle", desc:"Obtenir les 14 autres badges",                  jeu:"Global" }
+];
+
+const CEINTURES = [
+  { couleur:"Blanche", hex:"#f3efe7", kanji:"白", min:0,  max:2,  desc:"Le début du chemin. L'esprit est vide, prêt à apprendre." },
+  { couleur:"Jaune",   hex:"#f5d020", kanji:"黄", min:3,  max:5,  desc:"Les premiers rayons de soleil. La connaissance commence à poindre." },
+  { couleur:"Orange",  hex:"#f0780a", kanji:"橙", min:6,  max:8,  desc:"Le soleil se lève. La technique se consolide." },
+  { couleur:"Verte",   hex:"#2d8a4e", kanji:"緑", min:9,  max:11, desc:"La plante pousse. Le pratiquant s'épanouit." },
+  { couleur:"Bleue",   hex:"#1a5fa8", kanji:"青", min:12, max:13, desc:"Le ciel et l'eau. La technique devient fluide." },
+  { couleur:"Marron",  hex:"#7b4f2e", kanji:"茶", min:14, max:14, desc:"La terre nourricière. La maturité approche." },
+  { couleur:"Noire",   hex:"#1a1a1a", kanji:"黒", min:15, max:15, desc:"Toutes les couleurs réunies. Le début de la vraie maîtrise." }
+];
+
+function getCeinture(n) {
+  return CEINTURES.find(c => n >= c.min && n <= c.max) || CEINTURES[0];
+}
+
+function render() {
+  const prog = getProg();
+  const earned = prog.badges || [];
+  const nb = earned.length;
+  const ceinture = getCeinture(nb);
+
+  // Subtitle
+  document.getElementById('badgesSubtitle').textContent = PRENOM + ' — ' + nb + ' badge' + (nb > 1 ? 's' : '') + ' obtenu' + (nb > 1 ? 's' : '');
+
+  // Ceinture virtuelle
+  document.getElementById('beltStrip').style.background = ceinture.hex;
+  document.getElementById('beltStrip').style.boxShadow = '0 0 12px 3px ' + ceinture.hex + '55';
+  document.getElementById('beltLabel').textContent = 'Ceinture ' + ceinture.couleur;
+  document.getElementById('beltDesc').textContent = ceinture.desc;
+  document.getElementById('beltKanji').textContent = ceinture.kanji;
+
+  // Progression
+  document.getElementById('progLabel').textContent = nb + ' / 15';
+  setTimeout(() => {
+    document.getElementById('progFill').style.width = Math.round(nb / 15 * 100) + '%';
+  }, 100);
+
+  // Grouper par jeu
+  const groups = {};
+  ALL_BADGES.forEach(b => {
+    if (!groups[b.jeu]) groups[b.jeu] = [];
+    groups[b.jeu].push(b);
+  });
+
+  const container = document.getElementById('badgesContainer');
+  const icons = { Quiz:'🎯', Flashcards:'📚', Memory:'🃏', Global:'🌟' };
+  container.innerHTML = Object.entries(groups).map(([jeu, badges]) => {
+    const earnedInCat = badges.filter(b => earned.includes(b.id)).length;
+    return `
+      <div class="b-cat-title">${icons[jeu] || ''} ${jeu} <span>${earnedInCat}/${badges.length}</span></div>
+      <div class="badges-grid">
+        ${badges.map(b => {
+          const isEarned = earned.includes(b.id);
+          return `<div class="badge-card ${isEarned ? 'earned' : 'locked'}">
+            ${!isEarned ? '<span class="badge-card__lock">🔒</span>' : ''}
+            <span class="badge-card__emoji">${b.emoji}</span>
+            <div class="badge-card__nom">${b.nom}</div>
+            <div class="badge-card__desc">${b.desc}</div>
+          </div>`;
+        }).join('')}
+      </div>`;
+  }).join('');
+}
+
+document.getElementById('shareBtn').addEventListener('click', () => {
+  const prog = getProg();
+  const earned = (prog.badges || []).length;
+  const ceinture = getCeinture(earned);
+  const text = [
+    `🥋 ${PRENOM} — Shindokai-Kan I-S-L`,
+    `🏅 ${earned}/15 badges obtenus`,
+    `${ceinture.kanji} Ceinture ${ceinture.couleur} virtuelle`,
+    ``,
+    (prog.quizBestScore != null ? `🎯 Quiz : ${prog.quizBestScore}/20` : ''),
+    (prog.flashMaitrises != null ? `📚 Flashcards : ${prog.flashMaitrises}/24 mots maîtrisés` : ''),
+    (prog.memBestTime != null ? `🃏 Memory : ${prog.memBestTime}s en ${prog.memBestTries} tentatives` : '')
+  ].filter(Boolean).join('\n');
+
+  const toast = document.getElementById('shareToast');
+  toast.textContent = text;
+  toast.style.display = '';
+
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.getElementById('shareBtn');
+      btn.textContent = '✓ Copié dans le presse-papiers !';
+      setTimeout(() => { btn.textContent = '📤 Partager ma progression'; }, 2500);
+    });
+  }
+});
+
+render();
+</script>
+</body>
+</html>

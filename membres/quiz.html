@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz — Shindokai-Kan I-S-L</title>
+<link rel="icon" href="../shinodkai.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@400;500;600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+body { background: #0d0d10; min-height: 100vh; }
+
+/* HEADER */
+.m-header { background: var(--char); border-bottom: 1px solid rgba(201,162,39,.2); padding: 1rem 0; }
+.m-header .wrap { display:flex; align-items:center; justify-content:space-between; gap:1rem; }
+.m-header__logo { display:flex; align-items:center; gap:.6rem; }
+.m-header__logo img { width:32px; height:32px; border-radius:50%; border:1px solid rgba(201,162,39,.3); }
+.m-header__logo span { font-family:var(--display); font-size:1rem; color:var(--gold); text-transform:uppercase; }
+.btn-back { font-family:var(--mono); font-size:.7rem; color:var(--ash-2); transition:color .2s; }
+.btn-back:hover { color:var(--gold); }
+
+/* QUIZ LAYOUT */
+.quiz-wrap { max-width: 720px; margin: 0 auto; padding: 2.5rem 1.5rem; }
+
+/* FILTRES */
+.quiz-filters {
+  display: flex; gap: .6rem; flex-wrap: wrap; margin-bottom: 2rem;
+}
+.filter-btn {
+  font-family: var(--eyebrow); font-size: .72rem; letter-spacing: .08em; text-transform: uppercase;
+  padding: .45rem .9rem; cursor: pointer; border-radius: var(--radius);
+  border: 1px solid var(--line); background: none; color: var(--ash);
+  transition: all .2s;
+}
+.filter-btn:hover { color: var(--bone); border-color: rgba(201,162,39,.3); }
+.filter-btn.is-active { background: rgba(201,162,39,.15); border-color: var(--gold); color: var(--gold); }
+
+/* PROGRESS BAR */
+.q-progress { margin-bottom: 2rem; }
+.q-progress__label { display:flex; justify-content:space-between; font-family:var(--mono); font-size:.72rem; color:var(--ash-2); margin-bottom:.5rem; }
+.q-progress__bar { height: 4px; background: var(--line); border-radius: 2px; overflow: hidden; }
+.q-progress__fill { height: 100%; background: linear-gradient(90deg, var(--gold), #e8c050); border-radius:2px; transition: width .4s; }
+
+/* CARD QUESTION */
+.q-card {
+  background: var(--char); border: 1px solid var(--line);
+  padding: 2rem; margin-bottom: 1.5rem;
+  animation: fadeIn .3s ease;
+}
+@keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+
+.q-meta { font-family:var(--mono); font-size:.7rem; color:var(--ash-2); margin-bottom:1rem; display:flex; gap:.8rem; }
+.q-meta span { background:rgba(201,162,39,.1); border:1px solid rgba(201,162,39,.15); padding:.2rem .5rem; }
+
+.q-question {
+  font-family: var(--eyebrow); font-size: 1.2rem; font-weight: 600;
+  color: var(--bone); margin-bottom: 1.5rem; line-height: 1.4;
+}
+
+/* TIMER */
+.q-timer {
+  display: flex; align-items: center; gap: .8rem;
+  margin-bottom: 1.2rem;
+}
+.q-timer__bar { flex: 1; height: 4px; background: var(--line); border-radius: 2px; overflow: hidden; }
+.q-timer__fill { height: 100%; background: var(--gold); transition: width .1s linear; border-radius: 2px; }
+.q-timer__num { font-family: var(--mono); font-size: .82rem; color: var(--ash-2); width: 24px; text-align: right; }
+.q-timer__fill.danger { background: var(--crimson); }
+
+/* RÉPONSES */
+.q-answers { display: grid; grid-template-columns: 1fr 1fr; gap: .8rem; }
+@media (max-width: 500px) { .q-answers { grid-template-columns: 1fr; } }
+
+.q-answer {
+  padding: 1rem 1.2rem;
+  background: var(--char-2); border: 2px solid var(--line);
+  cursor: pointer; font-family: var(--eyebrow); font-size: .95rem;
+  text-align: left; color: var(--bone); border-radius: var(--radius);
+  transition: all .2s; position: relative; overflow: hidden;
+}
+.q-answer:hover:not([disabled]) { border-color: rgba(201,162,39,.5); background: rgba(201,162,39,.06); transform: translateY(-1px); }
+.q-answer.correct  { border-color: #4caf50; background: rgba(76,175,80,.15); color: #7ecf7e; }
+.q-answer.wrong    { border-color: var(--crimson); background: rgba(224,36,27,.15); color: var(--crimson-2); }
+.q-answer.reveal   { border-color: #4caf50; background: rgba(76,175,80,.08); color: #7ecf7e; opacity: .8; }
+.q-answer[disabled] { cursor: default; }
+
+/* FEEDBACK */
+.q-feedback {
+  margin-top: 1rem; padding: .9rem 1.2rem;
+  font-family: var(--eyebrow); font-size: .88rem;
+  border-radius: var(--radius); display: none;
+}
+.q-feedback.ok { background: rgba(76,175,80,.12); border: 1px solid rgba(76,175,80,.25); color: #7ecf7e; }
+.q-feedback.ko { background: rgba(224,36,27,.12); border: 1px solid rgba(224,36,27,.25); color: var(--crimson-2); }
+
+.q-next-btn {
+  background: linear-gradient(135deg, var(--gold), #e8c050);
+  color: #111; font-family: var(--eyebrow); font-size: .85rem;
+  letter-spacing: .1em; text-transform: uppercase; padding: .85rem 2rem;
+  border: none; cursor: pointer; margin-top: 1rem; display: none;
+  border-radius: var(--radius); transition: transform .2s, box-shadow .2s;
+  font-weight: 600;
+}
+.q-next-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px -6px rgba(201,162,39,.5); }
+
+/* RESULTS */
+.q-results {
+  text-align: center; padding: 3rem 2rem; display: none;
+  animation: fadeIn .4s ease;
+}
+.q-results__score {
+  font-family: var(--display); font-size: 5rem; line-height: 1;
+  color: var(--gold);
+}
+.q-results__label { font-family: var(--eyebrow); font-size: .85rem; color: var(--ash); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 1.5rem; }
+.q-results__badges { display:flex; gap:.8rem; justify-content:center; flex-wrap:wrap; margin: 1.5rem 0; }
+.q-badge-new {
+  display:inline-flex; align-items:center; gap:.5rem;
+  background: rgba(201,162,39,.15); border: 1px solid rgba(201,162,39,.35);
+  padding: .5rem 1rem; font-family: var(--eyebrow); font-size: .78rem;
+  color: var(--gold); border-radius: var(--radius);
+  animation: popIn .4s cubic-bezier(.2,1,.2,1);
+}
+@keyframes popIn { from { transform: scale(.6); opacity:0; } to { transform: scale(1); opacity:1; } }
+
+.q-results__actions { display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; margin-top:1.5rem; }
+.btn-replay {
+  background: linear-gradient(135deg, var(--gold), #e8c050);
+  color: #111; font-family: var(--eyebrow); font-size: .85rem;
+  letter-spacing: .1em; text-transform: uppercase; padding: .85rem 2rem;
+  border: none; cursor: pointer; border-radius: var(--radius); font-weight:600;
+  transition: transform .2s; display:inline-block;
+}
+.btn-replay:hover { transform: translateY(-2px); }
+
+.q-score-bar { display:flex; gap:1.5rem; justify-content:center; margin:1.5rem 0; }
+.q-score-stat { text-align:center; }
+.q-score-stat__val { font-family:var(--display); font-size:2rem; color:var(--bone); }
+.q-score-stat__val.green { color:#7ecf7e; }
+.q-score-stat__val.red { color:var(--crimson-2); }
+.q-score-stat__lbl { font-family:var(--mono); font-size:.68rem; color:var(--ash-2); }
+</style>
+</head>
+<body>
+
+<header class="m-header">
+  <div class="wrap">
+    <div class="m-header__logo">
+      <img src="../shinodkai.png" alt="" onerror="this.style.display='none'">
+      <span>Quiz</span>
+    </div>
+    <a href="espace.html" class="btn-back">← Mon espace</a>
+  </div>
+</header>
+
+<div class="quiz-wrap">
+
+  <!-- FILTRES -->
+  <div class="quiz-filters" id="filters">
+    <button class="filter-btn is-active" data-cat="Tout">Tout</button>
+    <button class="filter-btn" data-cat="Ceintures">Ceintures</button>
+    <button class="filter-btn" data-cat="Vocabulaire">Vocabulaire</button>
+    <button class="filter-btn" data-cat="Histoire">Histoire</button>
+    <button class="filter-btn" data-cat="Règles">Règles</button>
+  </div>
+
+  <!-- PROGRESSION -->
+  <div class="q-progress" id="qProgress">
+    <div class="q-progress__label">
+      <span id="qProgressText">Question 1 / 20</span>
+      <span id="qScoreLive">Score : 0</span>
+    </div>
+    <div class="q-progress__bar"><div class="q-progress__fill" id="qProgressFill" style="width:0%"></div></div>
+  </div>
+
+  <!-- CARD -->
+  <div class="q-card" id="qCard">
+    <div class="q-meta" id="qMeta"></div>
+    <div class="q-timer" id="qTimer">
+      <div class="q-timer__bar"><div class="q-timer__fill" id="qTimerFill" style="width:100%"></div></div>
+      <div class="q-timer__num" id="qTimerNum">30</div>
+    </div>
+    <div class="q-question" id="qQuestion"></div>
+    <div class="q-answers" id="qAnswers"></div>
+    <div class="q-feedback" id="qFeedback"></div>
+    <button class="q-next-btn" id="qNext">Question suivante →</button>
+  </div>
+
+  <!-- RÉSULTATS -->
+  <div class="q-results" id="qResults">
+    <div class="q-results__score" id="rScore">0/0</div>
+    <div class="q-results__label" id="rLabel"></div>
+    <div class="q-score-bar">
+      <div class="q-score-stat"><div class="q-score-stat__val green" id="rCorrect">0</div><div class="q-score-stat__lbl">Correctes</div></div>
+      <div class="q-score-stat"><div class="q-score-stat__val red" id="rWrong">0</div><div class="q-score-stat__lbl">Incorrectes</div></div>
+    </div>
+    <div class="q-results__badges" id="rBadges"></div>
+    <div class="q-results__actions">
+      <button class="btn-replay" id="replayBtn">Rejouer</button>
+      <a href="badges.html" class="btn--ghost btn" style="padding:.85rem 2rem;">Voir mes badges</a>
+      <a href="espace.html" class="btn--ghost btn" style="padding:.85rem 2rem;">Mon espace</a>
+    </div>
+  </div>
+
+</div>
+
+<script src="../js/data.js"></script>
+<script>
+/* ── AUTH ── */
+const sess = (() => { try { return JSON.parse(sessionStorage.getItem('shindokai_membre')); } catch(e) { return null; } })();
+if (!sess) { window.location.href = 'index.html'; throw 0; }
+const PRENOM = sess.prenom;
+const PROG_KEY = 'shindokai_progression_' + PRENOM.toLowerCase();
+
+function getProg() { try { return JSON.parse(localStorage.getItem(PROG_KEY) || '{}'); } catch(e) { return {}; } }
+function saveProg(p) { try { localStorage.setItem(PROG_KEY, JSON.stringify(p)); } catch(e) {} }
+
+const ALL_BADGES = [
+  { id:"quiz_first",   emoji:"🥋", nom:"Premier pas" },
+  { id:"quiz_half",    emoji:"⭐", nom:"Sur la bonne voie" },
+  { id:"quiz_good",    emoji:"⭐⭐", nom:"Bon élève" },
+  { id:"quiz_perfect", emoji:"⭐⭐⭐", nom:"Perfection" },
+  { id:"quiz_vocab",   emoji:"🎓", nom:"Maître des mots" },
+  { id:"quiz_rules",   emoji:"📜", nom:"Gardien des règles" },
+  { id:"all_games",    emoji:"🌟", nom:"Explorateur" },
+  { id:"ceinture_noire",emoji:"🖤", nom:"Ceinture noire virtuelle" }
+];
+
+/* ── DATA ── */
+const data = getData();
+let ALL_QUESTIONS = (data.membres && data.membres.quiz) ? [...data.membres.quiz] : [];
+let questions = [];
+let current = 0;
+let score = 0;
+let correctCount = 0;
+let wrongCount = 0;
+let catFilter = 'Tout';
+let timerInterval = null;
+let timeLeft = 30;
+const TIMER_DURATION = 30;
+
+/* ── SHUFFLE ── */
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+/* ── FILTRES ── */
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('is-active'));
+    btn.classList.add('is-active');
+    catFilter = btn.dataset.cat;
+    startQuiz();
+  });
+});
+
+/* ── QUIZ LOGIC ── */
+function startQuiz() {
+  const pool = catFilter === 'Tout' ? ALL_QUESTIONS : ALL_QUESTIONS.filter(q => q.categorie === catFilter);
+  questions = shuffle(pool);
+  current = 0; score = 0; correctCount = 0; wrongCount = 0;
+  document.getElementById('qCard').style.display = '';
+  document.getElementById('qProgress').style.display = '';
+  document.getElementById('qResults').style.display = 'none';
+  showQuestion();
+}
+
+function showQuestion() {
+  if (current >= questions.length) { showResults(); return; }
+  const q = questions[current];
+  const total = questions.length;
+
+  document.getElementById('qProgressText').textContent = `Question ${current+1} / ${total}`;
+  document.getElementById('qScoreLive').textContent = `Score : ${score}`;
+  document.getElementById('qProgressFill').style.width = (current / total * 100) + '%';
+
+  const stars = '★'.repeat(q.difficulte) + '☆'.repeat(3 - q.difficulte);
+  document.getElementById('qMeta').innerHTML = `<span>${q.categorie}</span><span>${stars}</span>`;
+  document.getElementById('qQuestion').textContent = q.question;
+  document.getElementById('qFeedback').style.display = 'none';
+  document.getElementById('qNext').style.display = 'none';
+
+  const answersEl = document.getElementById('qAnswers');
+  const shuffledReponses = q.reponses.map((r, i) => ({ text: r, origIndex: i }));
+  answersEl.innerHTML = shuffledReponses.map((r, i) => `
+    <button class="q-answer" data-orig="${r.origIndex}">${r.text}</button>
+  `).join('');
+
+  answersEl.querySelectorAll('.q-answer').forEach(btn => {
+    btn.addEventListener('click', () => selectAnswer(btn, q));
+  });
+
+  // Timer
+  startTimer(q);
+
+  // re-animation
+  document.getElementById('qCard').style.animation = 'none';
+  requestAnimationFrame(() => { document.getElementById('qCard').style.animation = ''; });
+}
+
+function startTimer(q) {
+  clearInterval(timerInterval);
+  timeLeft = TIMER_DURATION;
+  updateTimerUI();
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    updateTimerUI();
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      timeOut(q);
+    }
+  }, 1000);
+}
+
+function updateTimerUI() {
+  document.getElementById('qTimerNum').textContent = timeLeft;
+  const fill = document.getElementById('qTimerFill');
+  fill.style.width = (timeLeft / TIMER_DURATION * 100) + '%';
+  fill.classList.toggle('danger', timeLeft <= 10);
+}
+
+function timeOut(q) {
+  disableAnswers();
+  document.querySelectorAll('.q-answer').forEach(btn => {
+    if (+btn.dataset.orig === q.correct) btn.classList.add('reveal');
+  });
+  showFeedback(false, `⏱ Temps écoulé ! La bonne réponse était : ${q.reponses[q.correct]}`);
+  wrongCount++;
+  document.getElementById('qNext').style.display = '';
+}
+
+function selectAnswer(btn, q) {
+  clearInterval(timerInterval);
+  disableAnswers();
+  const isCorrect = +btn.dataset.orig === q.correct;
+
+  document.querySelectorAll('.q-answer').forEach(b => {
+    if (+b.dataset.orig === q.correct) b.classList.add(isCorrect ? 'correct' : 'reveal');
+  });
+  if (!isCorrect) btn.classList.add('wrong');
+
+  if (isCorrect) {
+    score++;
+    correctCount++;
+    showFeedback(true, '✓ Bonne réponse !');
+  } else {
+    wrongCount++;
+    showFeedback(false, `✗ Mauvaise réponse. La bonne était : "${q.reponses[q.correct]}"`);
+  }
+  document.getElementById('qNext').style.display = '';
+  document.getElementById('qScoreLive').textContent = `Score : ${score}`;
+}
+
+function disableAnswers() {
+  document.querySelectorAll('.q-answer').forEach(b => b.disabled = true);
+}
+
+function showFeedback(ok, msg) {
+  const el = document.getElementById('qFeedback');
+  el.textContent = msg;
+  el.className = 'q-feedback ' + (ok ? 'ok' : 'ko');
+  el.style.display = '';
+}
+
+document.getElementById('qNext').addEventListener('click', () => {
+  current++;
+  showQuestion();
+});
+
+/* ── RÉSULTATS & BADGES ── */
+function showResults() {
+  clearInterval(timerInterval);
+  document.getElementById('qCard').style.display = 'none';
+  document.getElementById('qProgress').style.display = 'none';
+  const res = document.getElementById('qResults');
+  res.style.display = '';
+
+  const total = questions.length;
+  document.getElementById('rScore').textContent = score + '/' + total;
+  document.getElementById('rCorrect').textContent = correctCount;
+  document.getElementById('rWrong').textContent = wrongCount;
+
+  const pct = score / total;
+  let label = pct < .5 ? "Continue à t'entraîner !" : pct < .75 ? "Bon travail, continue !" : pct < 1 ? "Excellent !" : "PARFAIT ! Shindokai Master !";
+  document.getElementById('rLabel').textContent = label;
+
+  // Badges
+  const prog = getProg();
+  if (!prog.badges) prog.badges = [];
+  if (!prog.quizPlayed) prog.quizPlayed = 0;
+  prog.quizPlayed++;
+  if (prog.quizBestScore == null || score > prog.quizBestScore) prog.quizBestScore = score;
+
+  // Stats par catégorie
+  const catStats = {};
+  questions.forEach((q, i) => {
+    if (!catStats[q.categorie]) catStats[q.categorie] = { total: 0, correct: 0 };
+    catStats[q.categorie].total++;
+    // Besoin de stocker les résultats individuels — on reconstruit en comparant
+  });
+
+  const newBadges = [];
+  function tryBadge(id) {
+    if (!prog.badges.includes(id)) { prog.badges.push(id); newBadges.push(id); }
+  }
+
+  // Quiz badges basés sur stats reconstruites
+  if (prog.quizPlayed >= 1) tryBadge('quiz_first');
+  if (score >= 10) tryBadge('quiz_half');
+  if (score >= 15) tryBadge('quiz_good');
+  if (score === total && total === 20) tryBadge('quiz_perfect');
+
+  // Badges globaux
+  if (prog.flashMaitrises >= 0 && prog.memPlayed >= 1) tryBadge('all_games');
+  if (prog.badges.length >= 14) tryBadge('ceinture_noire');
+
+  // Marquer quiz joué pour all_games
+  prog.quizPlayed = (prog.quizPlayed || 0);
+  if ((prog.flashMaitrises != null) && (prog.memPlayed != null)) tryBadge('all_games');
+  if (prog.badges.length >= 14) tryBadge('ceinture_noire');
+
+  saveProg(prog);
+
+  const badgesEl = document.getElementById('rBadges');
+  if (newBadges.length > 0) {
+    badgesEl.innerHTML = '<div style="font-family:var(--eyebrow);font-size:.78rem;color:var(--ash);margin-bottom:.5rem;width:100%;text-align:center;">🏅 Nouveaux badges débloqués !</div>' +
+      newBadges.map(bid => {
+        const b = ALL_BADGES.find(x => x.id === bid);
+        if (!b) return '';
+        return `<div class="q-badge-new">${b.emoji} ${b.nom}</div>`;
+      }).join('');
+  } else {
+    badgesEl.innerHTML = '';
+  }
+}
+
+document.getElementById('replayBtn').addEventListener('click', startQuiz);
+
+/* ── START ── */
+startQuiz();
+</script>
+</body>
+</html>

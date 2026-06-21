@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mon Espace — Shindokai-Kan I-S-L</title>
+<link rel="icon" href="../shinodkai.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@400;500;600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+body { background: #0d0d10; min-height: 100vh; }
+
+/* ── HEADER MEMBRES ── */
+.m-header {
+  background: var(--char);
+  border-bottom: 1px solid rgba(201,162,39,.2);
+  padding: 1rem 0;
+  position: sticky; top: 0; z-index: 50;
+}
+.m-header .wrap { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+.m-header__logo { display: flex; align-items: center; gap: .6rem; }
+.m-header__logo img { width: 36px; height: 36px; border-radius: 50%; border: 1px solid rgba(201,162,39,.3); }
+.m-header__logo span { font-family: var(--display); font-size: 1.1rem; color: var(--gold); text-transform: uppercase; }
+.m-header__right { display: flex; align-items: center; gap: 1rem; }
+.m-hello { font-family: var(--eyebrow); font-size: .85rem; color: var(--ash); }
+.m-hello strong { color: var(--bone); }
+.btn-deconnect {
+  font-family: var(--mono); font-size: .7rem; color: var(--ash-2);
+  border: 1px solid var(--line); padding: .4rem .8rem;
+  cursor: pointer; transition: color .2s, border-color .2s;
+  background: none; border-radius: var(--radius);
+}
+.btn-deconnect:hover { color: var(--crimson-2); border-color: rgba(224,36,27,.3); }
+.btn-back { font-family: var(--mono); font-size: .7rem; color: var(--ash-2); transition: color .2s; }
+.btn-back:hover { color: var(--gold); }
+
+/* ── HERO ── */
+.m-hero {
+  padding: 3rem 0 2rem;
+  border-bottom: 1px solid var(--line);
+  position: relative; overflow: hidden;
+}
+.m-hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 50% 80% at 100% 50%, rgba(201,162,39,.07) 0%, transparent 60%);
+  pointer-events: none;
+}
+.m-hero__greeting {
+  font-family: var(--display); font-size: clamp(2rem, 5vw, 3.5rem);
+  text-transform: uppercase; line-height: 1;
+  margin-bottom: .5rem;
+}
+.m-hero__greeting em { color: var(--gold); font-style: normal; }
+.m-hero__belt {
+  display: inline-flex; align-items: center; gap: .7rem;
+  font-family: var(--eyebrow); font-size: .8rem; letter-spacing: .08em;
+  padding: .4rem .9rem; margin-top: 1rem;
+  border: 1px solid rgba(255,255,255,.1);
+  background: rgba(255,255,255,.04);
+}
+.m-hero__belt-dot { width: 12px; height: 12px; border-radius: 50%; }
+.m-hero__kanji { font-size: 1.4rem; }
+
+/* ── PROGRESSION ── */
+.m-prog-bar-wrap { margin-top: 1.5rem; max-width: 420px; }
+.m-prog-label {
+  display: flex; justify-content: space-between;
+  font-family: var(--mono); font-size: .72rem; color: var(--ash-2);
+  margin-bottom: .4rem;
+}
+.m-prog-bar {
+  height: 6px; background: var(--line); border-radius: 3px; overflow: hidden;
+}
+.m-prog-bar__fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold), #e8c050);
+  border-radius: 3px;
+  transition: width 1s cubic-bezier(.2,.8,.2,1);
+  width: 0;
+}
+
+/* ── JEUX CARDS ── */
+.m-section-title {
+  font-family: var(--display); font-size: 1.6rem; text-transform: uppercase;
+  margin-bottom: 1.5rem; color: var(--bone);
+}
+.m-section-title span { color: var(--gold); }
+
+.m-games {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1.2rem;
+  margin-bottom: 3rem;
+}
+
+.m-game-card {
+  background: var(--char);
+  border: 1px solid var(--line);
+  padding: 1.8rem 1.5rem;
+  display: flex; flex-direction: column; gap: .8rem;
+  position: relative; overflow: hidden;
+  transition: border-color .25s, transform .25s, box-shadow .25s;
+  cursor: pointer; text-decoration: none; color: inherit;
+}
+.m-game-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, var(--gold), #e8c050);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform .3s;
+}
+.m-game-card:hover { border-color: rgba(201,162,39,.4); transform: translateY(-3px); box-shadow: 0 12px 32px -12px rgba(201,162,39,.2); }
+.m-game-card:hover::before { transform: scaleX(1); }
+.m-game-card.disabled { opacity: .4; pointer-events: none; }
+
+.m-game-card__icon { font-size: 2.4rem; line-height: 1; }
+.m-game-card__title { font-family: var(--display); font-size: 1.3rem; text-transform: uppercase; }
+.m-game-card__sub { font-family: var(--eyebrow); font-size: .72rem; color: var(--ash-2); letter-spacing: .06em; text-transform: uppercase; }
+.m-game-card__score { font-family: var(--mono); font-size: .78rem; color: var(--gold); margin-top: .3rem; }
+.m-game-card__btn {
+  margin-top: auto;
+  background: linear-gradient(135deg, var(--gold), #e8c050);
+  color: #111; font-family: var(--eyebrow);
+  font-size: .75rem; letter-spacing: .1em; text-transform: uppercase;
+  padding: .6rem 1rem; font-weight: 600;
+  display: inline-block; transition: opacity .2s;
+  border-radius: var(--radius); border: none; cursor: pointer;
+}
+.m-game-card:hover .m-game-card__btn { opacity: .9; }
+
+/* ── BADGES RÉCENTS ── */
+.m-recent-badges {
+  display: flex; gap: 1rem; flex-wrap: wrap;
+  margin-bottom: 3rem;
+}
+.m-badge-chip {
+  display: flex; align-items: center; gap: .5rem;
+  background: rgba(201,162,39,.1); border: 1px solid rgba(201,162,39,.25);
+  padding: .5rem 1rem; font-family: var(--eyebrow);
+  font-size: .75rem; letter-spacing: .05em;
+  color: var(--gold);
+}
+.m-badge-chip__emoji { font-size: 1.1rem; }
+
+.m-empty-badges {
+  font-family: var(--mono); font-size: .82rem; color: var(--ash-2);
+  padding: 1rem 0;
+}
+
+section { padding: 2.5rem 0; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="m-header">
+  <div class="wrap">
+    <div class="m-header__logo">
+      <img src="../shinodkai.png" alt="Logo" onerror="this.style.display='none'">
+      <span>Shindokai</span>
+    </div>
+    <div class="m-header__right">
+      <a href="../index.html" class="btn-back">← Retour au site</a>
+      <div class="m-hello">Bonjour <strong id="headerPrenom">…</strong> 👋</div>
+      <button class="btn-deconnect" id="deconnectBtn">Déconnexion</button>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="m-hero">
+  <div class="wrap">
+    <div class="m-hero__greeting">Bonjour <em id="heroPrenom">…</em> !</div>
+    <p style="color:var(--ash);font-family:var(--eyebrow);font-size:.88rem;letter-spacing:.06em;margin-top:.4rem;">
+      BIENVENUE DANS TON ESPACE D'ENTRAÎNEMENT
+    </p>
+    <div class="m-hero__belt" id="heroBelt">
+      <span class="m-hero__belt-dot" id="beltDot"></span>
+      <span id="beltLabel">Chargement…</span>
+      <span class="m-hero__kanji" id="beltKanji"></span>
+    </div>
+    <div class="m-prog-bar-wrap">
+      <div class="m-prog-label">
+        <span>Progression globale</span>
+        <span id="progCount">0 / 15 badges</span>
+      </div>
+      <div class="m-prog-bar"><div class="m-prog-bar__fill" id="progFill"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- JEUX -->
+<section>
+  <div class="wrap">
+    <div class="m-section-title">Tes <span>jeux</span></div>
+    <div class="m-games" id="gamesGrid">
+      <!-- injecté par JS -->
+    </div>
+
+    <div class="m-section-title" style="margin-bottom:1rem;">Derniers <span>badges</span></div>
+    <div class="m-recent-badges" id="recentBadges">
+      <p class="m-empty-badges" id="noBadgesMsg">Tu n'as pas encore de badge. Lance-toi !</p>
+    </div>
+  </div>
+</section>
+
+<script src="../js/data.js"></script>
+<script>
+/* ── AUTH ── */
+const sess = (() => { try { return JSON.parse(sessionStorage.getItem('shindokai_membre')); } catch(e) { return null; } })();
+if (!sess) { window.location.href = 'index.html'; throw 0; }
+const PRENOM = sess.prenom;
+const PROG_KEY = 'shindokai_progression_' + PRENOM.toLowerCase();
+
+function getProg() { try { return JSON.parse(localStorage.getItem(PROG_KEY) || '{}'); } catch(e) { return {}; } }
+function saveProg(p) { try { localStorage.setItem(PROG_KEY, JSON.stringify(p)); } catch(e) {} }
+
+const ALL_BADGES = [
+  { id:"quiz_first",    emoji:"🥋", nom:"Premier pas",             jeu:"quiz" },
+  { id:"quiz_half",     emoji:"⭐", nom:"Sur la bonne voie",       jeu:"quiz" },
+  { id:"quiz_good",     emoji:"⭐⭐", nom:"Bon élève",             jeu:"quiz" },
+  { id:"quiz_perfect",  emoji:"⭐⭐⭐", nom:"Perfection",          jeu:"quiz" },
+  { id:"quiz_vocab",    emoji:"🎓", nom:"Maître des mots",         jeu:"quiz" },
+  { id:"quiz_rules",    emoji:"📜", nom:"Gardien des règles",      jeu:"quiz" },
+  { id:"flash_first",   emoji:"📖", nom:"Première lecture",        jeu:"flashcards" },
+  { id:"flash_half",    emoji:"📚", nom:"À mi-chemin",             jeu:"flashcards" },
+  { id:"flash_all",     emoji:"🎌", nom:"Sensei du vocabulaire",   jeu:"flashcards" },
+  { id:"mem_first",     emoji:"🃏", nom:"La mémoire s'éveille",    jeu:"memory" },
+  { id:"mem_fast",      emoji:"⚡", nom:"Éclair",                  jeu:"memory" },
+  { id:"mem_precise",   emoji:"🧠", nom:"Esprit acéré",            jeu:"memory" },
+  { id:"mem_master",    emoji:"🏆", nom:"Maître de la mémoire",    jeu:"memory" },
+  { id:"all_games",     emoji:"🌟", nom:"Explorateur",             jeu:"global" },
+  { id:"ceinture_noire",emoji:"🖤", nom:"Ceinture noire virtuelle",jeu:"global" }
+];
+
+const CEINTURES = [
+  { couleur:"Blanche", hex:"#f3efe7", kanji:"白" },
+  { couleur:"Jaune",   hex:"#f5d020", kanji:"黄" },
+  { couleur:"Orange",  hex:"#f0780a", kanji:"橙" },
+  { couleur:"Verte",   hex:"#2d8a4e", kanji:"緑" },
+  { couleur:"Bleue",   hex:"#1a5fa8", kanji:"青" },
+  { couleur:"Marron",  hex:"#7b4f2e", kanji:"茶" },
+  { couleur:"Noire",   hex:"#1a1a1a", kanji:"黒" }
+];
+
+function getCeinture(nbBadges) {
+  if (nbBadges <= 2) return CEINTURES[0];
+  if (nbBadges <= 5) return CEINTURES[1];
+  if (nbBadges <= 8) return CEINTURES[2];
+  if (nbBadges <= 11) return CEINTURES[3];
+  if (nbBadges <= 13) return CEINTURES[4];
+  if (nbBadges <= 14) return CEINTURES[5];
+  return CEINTURES[6];
+}
+
+function render() {
+  const prog = getProg();
+  const badges = prog.badges || [];
+  const nbBadges = badges.length;
+  const ceinture = getCeinture(nbBadges);
+  const data = getData();
+  const jeux = (data.membres && data.membres.jeux) || { quiz: true, flashcards: true, memory: true };
+
+  // Header & Hero
+  document.getElementById('headerPrenom').textContent = PRENOM;
+  document.getElementById('heroPrenom').textContent = PRENOM;
+  document.getElementById('beltDot').style.background = ceinture.hex;
+  document.getElementById('beltDot').style.boxShadow = `0 0 8px 2px ${ceinture.hex}55`;
+  document.getElementById('beltLabel').textContent = 'Ceinture ' + ceinture.couleur;
+  document.getElementById('beltKanji').textContent = ceinture.kanji;
+
+  // Progression
+  document.getElementById('progCount').textContent = nbBadges + ' / 15 badges';
+  setTimeout(() => {
+    document.getElementById('progFill').style.width = Math.round(nbBadges / 15 * 100) + '%';
+  }, 100);
+
+  // Jeux
+  const quizScore = prog.quizBestScore != null ? prog.quizBestScore + '/20' : '—';
+  const flashScore = prog.flashMaitrises != null ? prog.flashMaitrises + '/24' : '—';
+  const memBest = prog.memBestTime != null ? prog.memBestTime + 's' : '—';
+
+  const games = [
+    { key:'quiz',       emoji:'🎯', titre:'Quiz',       sub:'20 questions', href:'quiz.html',       score:'Meilleur score: ' + quizScore },
+    { key:'flashcards', emoji:'📚', titre:'Flashcards', sub:'24 mots japonais', href:'flashcards.html', score:'Maîtrisés: ' + flashScore },
+    { key:'memory',     emoji:'🃏', titre:'Memory',     sub:'12 paires de cartes', href:'memory.html',     score:'Meilleur temps: ' + memBest },
+    { key:'badges',     emoji:'🏆', titre:'Badges',     sub:nbBadges + '/15 obtenus', href:'badges.html',     score:'' }
+  ];
+
+  const grid = document.getElementById('gamesGrid');
+  grid.innerHTML = games.map(g => {
+    const disabled = g.key !== 'badges' && jeux[g.key] === false;
+    return `<a href="${g.href}" class="m-game-card${disabled ? ' disabled' : ''}">
+      <div class="m-game-card__icon">${g.emoji}</div>
+      <div class="m-game-card__title">${g.titre}</div>
+      <div class="m-game-card__sub">${g.sub}</div>
+      ${g.score ? `<div class="m-game-card__score">${g.score}</div>` : ''}
+      <span class="m-game-card__btn">${disabled ? 'Désactivé' : 'Jouer →'}</span>
+    </a>`;
+  }).join('');
+
+  // Badges récents
+  const recentEl = document.getElementById('recentBadges');
+  const noBadgesMsg = document.getElementById('noBadgesMsg');
+  if (badges.length === 0) {
+    noBadgesMsg.style.display = '';
+  } else {
+    noBadgesMsg.style.display = 'none';
+    const recent = badges.slice(-3).reverse();
+    recentEl.innerHTML = recent.map(bid => {
+      const b = ALL_BADGES.find(x => x.id === bid);
+      if (!b) return '';
+      return `<div class="m-badge-chip"><span class="m-badge-chip__emoji">${b.emoji}</span>${b.nom}</div>`;
+    }).join('');
+  }
+}
+
+document.getElementById('deconnectBtn').addEventListener('click', () => {
+  sessionStorage.removeItem('shindokai_membre');
+  window.location.href = 'index.html';
+});
+
+render();
+</script>
+</body>
+</html>

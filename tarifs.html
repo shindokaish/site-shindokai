@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tarifs & inscription — Shindokai-Kan I-S-L</title>
+<meta name="description" content="Tarifs des cours de karaté Shindokai-Kan I-S-L. Premier cours offert, sans engagement. Formules enfants, ados/adultes et famille.">
+<link rel="icon" href="shinodkai.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@400;500;600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div id="nav-placeholder"></div>
+
+<main>
+
+<section class="hero-mini">
+  <div class="hero-mini__bg"></div>
+  <img class="hero-mini__logo-bg" src="shinodkai.png" alt="" aria-hidden="true">
+  <svg class="hero-mini__strike" viewBox="0 0 400 1000" preserveAspectRatio="none" fill="none">
+    <path d="M380 0 L20 1000" stroke="#e0241b" stroke-width="2" opacity="0.4"/>
+  </svg>
+  <div class="wrap">
+    <div class="hero-mini__content">
+      <span class="eyebrow-text hero-mini__eyebrow">Inscription</span>
+      <h1 class="hero-mini__title">
+        <span class="line"><span>Rejoignez</span></span>
+        <span class="line"><span>le dojo.</span></span>
+      </h1>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TARIFS ============ -->
+<section class="section">
+  <div class="wrap">
+    <div class="section__head reveal">
+      <span class="eyebrow-text">Formules</span>
+      <h2 class="section__title">Des tarifs<br>transparents.</h2>
+      <p class="section__lede">Premier cours toujours offert, sans engagement. Venez essayer avant de vous inscrire. Licence FFKDA incluse dans toutes les formules.</p>
+    </div>
+    <div class="tarifs-grid" id="tarifsGrid"></div>
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section class="section section--alt">
+  <div class="wrap">
+    <div class="section__head reveal">
+      <span class="eyebrow-text">Questions fréquentes</span>
+      <h2 class="section__title">Vous avez<br>des questions ?</h2>
+    </div>
+    <div class="faq-list reveal" id="faqList">
+      <div class="faq-item">
+        <div class="faq-item__q">Comment se déroule le premier cours ? <span class="arrow">›</span></div>
+        <div class="faq-item__a"><p>Le premier cours est entièrement gratuit et sans inscription préalable. Venez simplement à l'heure du cours avec une tenue de sport. Le coach vous accueillera et vous intégrera au groupe selon votre niveau.</p></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-item__q">Faut-il un équipement spécifique pour commencer ? <span class="arrow">›</span></div>
+        <div class="faq-item__a"><p>Non, une tenue de sport suffit pour le premier cours. Après l'inscription, vous aurez besoin d'un kimono (karategi) disponible dans nos boutiques partenaires, ainsi que de protections pour le combat (coquille, protège-tibias, gants) selon les niveaux.</p></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-item__q">Qu'est-ce que la licence FFKDA ? <span class="arrow">›</span></div>
+        <div class="faq-item__a"><p>La licence FFKDA (Fédération Française de Karaté et Disciplines Associées) est obligatoire pour pratiquer. Elle inclut une assurance responsabilité civile et dommages corporels, et permet de passer des grades officiels. Elle est incluse dans toutes nos formules.</p></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-item__q">Peut-on payer en plusieurs fois ? <span class="arrow">›</span></div>
+        <div class="faq-item__a"><p>Oui, un étalement en 3 fois sans frais est possible selon les formules. Renseignez-vous auprès de votre coach lors de l'inscription. Des aides peuvent également être disponibles via les CEV (Coupons Sport), les comités d'entreprise ou les CAF.</p></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-item__q">À partir de quel âge peut-on commencer le Shindokai ? <span class="arrow">›</span></div>
+        <div class="faq-item__a"><p>Dès 4 ans avec le Mini Karaté — un cours adapté aux tout-petits basé sur la motricité et le jeu. À partir de 7 ans, le cours Enfants intègre progressivement la technique et les passages de grades.</p></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-item__q">Peut-on changer de formule en cours d'année ? <span class="arrow">›</span></div>
+        <div class="faq-item__a"><p>Des ajustements sont possibles en cours d'année selon les cas. Parlez-en à votre coach — il trouvera la meilleure solution selon votre situation.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TABLEAU COMPARATIF ============ -->
+<section class="section">
+  <div class="wrap">
+    <div class="section__head reveal">
+      <span class="eyebrow-text">Comparatif</span>
+      <h2 class="section__title">Quelle formule<br>vous correspond ?</h2>
+    </div>
+    <div class="tarif-compare reveal" id="tarifCompare"></div>
+  </div>
+</section>
+
+<!-- ============ CTA ============ -->
+<section class="cta-band">
+  <div class="wrap">
+    <h2 class="cta-band__title reveal">Prêt à commencer ?</h2>
+    <p class="cta-band__sub reveal">Contactez-nous ou venez directement au prochain cours. Le premier essai est offert.</p>
+    <div class="cta-band__btns reveal">
+      <a href="contact.html" class="btn btn--primary">Nous contacter</a>
+      <a href="dojos.html" class="btn btn--ghost">Trouver un dojo</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<div id="footer-placeholder"></div>
+
+<script src="js/data.js"></script>
+<script src="js/render.js"></script>
+<script>
+pageInit('tarifs');
+const tarifs = getSection('tarifs');
+
+// Grille tarifs
+const tarifsGrid = document.getElementById('tarifsGrid');
+tarifs.forEach(t => {
+  const div = document.createElement('div');
+  div.className = `tarif-card reveal${t.featured ? ' tarif-card--featured' : ''}`;
+  div.innerHTML = `
+    <div class="tarif-card__name">${esc(t.name)}</div>
+    <div class="tarif-card__price">${esc(t.price)}<span class="period"> ${esc(t.period)}</span></div>
+    <ul class="tarif-card__features">${t.features.map(f => `<li>${esc(f)}</li>`).join('')}</ul>
+    <a href="contact.html" class="btn ${t.featured ? 'btn--primary' : 'btn--ghost'}">Je m'inscris</a>`;
+  tarifsGrid.appendChild(div);
+});
+
+// Tableau comparatif dynamique
+const compare = document.getElementById('tarifCompare');
+// Collecter tous les avantages uniques
+const allFeatures = [...new Set(tarifs.flatMap(t => t.features))];
+let thead = `<thead><tr><th>Avantage</th>${tarifs.map(t => `<th>${esc(t.name)}</th>`).join('')}</tr></thead>`;
+let tbody = '<tbody>' + allFeatures.map(f => `
+  <tr>
+    <td>${esc(f)}</td>
+    ${tarifs.map(t => t.features.includes(f)
+      ? '<td><span class="check-ok">✓</span></td>'
+      : '<td><span class="check-no">—</span></td>').join('')}
+  </tr>`).join('') + '</tbody>';
+compare.innerHTML = `<table>${thead}${tbody}</table>`;
+
+// FAQ accordion
+document.querySelectorAll('.faq-item__q').forEach(q => {
+  q.addEventListener('click', () => {
+    const item = q.closest('.faq-item');
+    item.classList.toggle('is-open');
+  });
+});
+
+initScrollReveal();
+</script>
+</body>
+</html>

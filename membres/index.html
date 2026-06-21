@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Espace Membres — Shindokai-Kan I-S-L</title>
+<link rel="icon" href="../shinodkai.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@400;500;600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+/* ── PAGE LOGIN MEMBRES ── */
+body { overflow: hidden; background: #0d0d10; }
+
+.login-bg {
+  position: fixed; inset: 0; z-index: 0;
+  background:
+    radial-gradient(ellipse 60% 40% at 50% 0%, rgba(201,162,39,.12) 0%, transparent 70%),
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 40px,
+      rgba(201,162,39,.025) 40px,
+      rgba(201,162,39,.025) 41px
+    );
+}
+
+.login-wrap {
+  position: relative; z-index: 1;
+  min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  padding: 2rem;
+}
+
+.login-box {
+  background: var(--char);
+  border: 1px solid rgba(201,162,39,.25);
+  padding: 3rem 2.5rem;
+  width: 100%; max-width: 420px;
+  display: flex; flex-direction: column; gap: 1.6rem;
+  box-shadow: 0 0 80px -20px rgba(201,162,39,.2);
+}
+
+.login-logo-wrap {
+  display: flex; flex-direction: column; align-items: center; gap: 1rem;
+  text-align: center;
+}
+
+.login-logo {
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  border: 2px solid rgba(201,162,39,.4);
+  padding: 6px;
+  animation: spinSlow 20s linear infinite;
+}
+
+@keyframes spinSlow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.login-logo img {
+  width: 100%; height: 100%; object-fit: contain; border-radius: 50%;
+}
+
+.login-title {
+  font-family: var(--display);
+  font-size: 2rem; text-transform: uppercase;
+  background: linear-gradient(135deg, #e8c050, var(--gold));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  line-height: 1;
+}
+
+.login-subtitle {
+  font-family: var(--eyebrow);
+  font-size: .72rem; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--ash);
+}
+
+.m-field { display: flex; flex-direction: column; gap: .4rem; }
+.m-label {
+  font-family: var(--eyebrow);
+  font-size: .7rem; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--ash-2);
+}
+.m-input {
+  background: var(--char-2); border: 1px solid var(--line);
+  color: var(--bone); padding: .9rem 1rem;
+  font-family: var(--body); font-size: 1rem; width: 100%;
+  border-radius: var(--radius); transition: border-color .2s;
+}
+.m-input:focus { border-color: var(--gold); outline: none; }
+
+.btn-dojo {
+  background: linear-gradient(135deg, var(--gold), #e8c050);
+  color: #111; font-family: var(--eyebrow);
+  font-size: .88rem; letter-spacing: .1em; text-transform: uppercase;
+  padding: 1rem; border-radius: var(--radius);
+  font-weight: 600; cursor: pointer; border: none; width: 100%;
+  transition: transform .25s, box-shadow .25s;
+}
+.btn-dojo:hover { transform: translateY(-2px); box-shadow: 0 8px 24px -8px rgba(201,162,39,.6); }
+.btn-dojo:active { transform: translateY(0); }
+
+#loginErr {
+  font-family: var(--mono); font-size: .78rem;
+  color: var(--crimson-2);
+  background: rgba(224,36,27,.1); border: 1px solid rgba(224,36,27,.2);
+  padding: .6rem .9rem; display: none;
+}
+
+.login-back {
+  text-align: center;
+  font-family: var(--mono); font-size: .72rem; color: var(--ash-2);
+}
+.login-back a { color: var(--ash); transition: color .2s; }
+.login-back a:hover { color: var(--gold); }
+</style>
+</head>
+<body>
+<div class="login-bg"></div>
+
+<div class="login-wrap">
+  <div class="login-box">
+    <div class="login-logo-wrap">
+      <div class="login-logo">
+        <img src="../shinodkai.png" alt="Logo Shindokai-Kan" onerror="this.style.display='none'">
+      </div>
+      <div>
+        <div class="login-title">Espace Membres</div>
+        <div class="login-subtitle">Entraîne-toi · Apprends · Progresse</div>
+      </div>
+    </div>
+
+    <div class="m-field">
+      <label class="m-label" for="prenomInput">Ton prénom</label>
+      <input id="prenomInput" class="m-input" type="text" placeholder="Ex: Lucas, Emma…" autocomplete="given-name" autocapitalize="words" spellcheck="false">
+    </div>
+
+    <div class="m-field">
+      <label class="m-label" for="pwdInput">Mot de passe du club</label>
+      <input id="pwdInput" class="m-input" type="password" placeholder="••••••••">
+    </div>
+
+    <div id="loginErr">Prénom ou mot de passe incorrect.</div>
+
+    <button class="btn-dojo" id="loginBtn">Entrer dans le dojo</button>
+
+    <div class="login-back">
+      <a href="../index.html">← Retour au site principal</a>
+    </div>
+  </div>
+</div>
+
+<script src="../js/data.js"></script>
+<script>
+(function() {
+  // Si déjà connecté, rediriger
+  try {
+    const sess = sessionStorage.getItem('shindokai_membre');
+    if (sess) { window.location.href = 'espace.html'; return; }
+  } catch(e) {}
+
+  const prenomEl = document.getElementById('prenomInput');
+  const pwdEl    = document.getElementById('pwdInput');
+  const errEl    = document.getElementById('loginErr');
+  const btn      = document.getElementById('loginBtn');
+
+  function tryLogin() {
+    const prenom = prenomEl.value.trim();
+    const pwd    = pwdEl.value.trim();
+    if (!prenom || !pwd) { errEl.style.display = 'block'; errEl.textContent = 'Remplis les deux champs.'; return; }
+    const data = getData();
+    const correctPwd = (data.membres && data.membres.password) ? data.membres.password : 'dojo2025';
+    if (pwd !== correctPwd) { errEl.style.display = 'block'; errEl.textContent = 'Mot de passe incorrect.'; pwdEl.value = ''; pwdEl.focus(); return; }
+    errEl.style.display = 'none';
+    // Stocker session
+    sessionStorage.setItem('shindokai_membre', JSON.stringify({ prenom, loginDate: new Date().toISOString() }));
+    // Mettre à jour lastLogin dans progression
+    const key = 'shindokai_progression_' + prenom.toLowerCase();
+    try {
+      const prog = JSON.parse(localStorage.getItem(key) || '{}');
+      prog.lastLogin = new Date().toLocaleDateString('fr-FR');
+      localStorage.setItem(key, JSON.stringify(prog));
+    } catch(e) {}
+    window.location.href = 'espace.html';
+  }
+
+  btn.addEventListener('click', tryLogin);
+  pwdEl.addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
+  prenomEl.addEventListener('keydown', e => { if (e.key === 'Enter') pwdEl.focus(); });
+  prenomEl.focus();
+})();
+</script>
+</body>
+</html>

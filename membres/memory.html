@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Memory — Shindokai-Kan I-S-L</title>
+<link rel="icon" href="../shinodkai.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@400;500;600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+body { background: #0d0d10; min-height: 100vh; }
+
+.m-header { background: var(--char); border-bottom: 1px solid rgba(201,162,39,.2); padding: 1rem 0; }
+.m-header .wrap { display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
+.m-header__logo { display:flex; align-items:center; gap:.6rem; }
+.m-header__logo img { width:32px; height:32px; border-radius:50%; border:1px solid rgba(201,162,39,.3); }
+.m-header__logo span { font-family:var(--display); font-size:1rem; color:var(--gold); text-transform:uppercase; }
+.btn-back { font-family:var(--mono); font-size:.7rem; color:var(--ash-2); transition:color .2s; }
+.btn-back:hover { color:var(--gold); }
+
+.mem-wrap { max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+/* STATS BAR */
+.mem-hud {
+  display: flex; gap: 2rem; align-items: center; margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+.mem-stat { text-align: center; }
+.mem-stat__val { font-family: var(--display); font-size: 2rem; line-height: 1; color: var(--gold); }
+.mem-stat__lbl { font-family: var(--mono); font-size: .65rem; color: var(--ash-2); }
+
+.mem-best { font-family: var(--mono); font-size: .75rem; color: var(--ash-2); margin-left: auto; }
+.mem-best strong { color: var(--gold); }
+
+/* GRILLE */
+.mem-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: .5rem;
+  margin-bottom: 2rem;
+}
+@media (max-width: 600px) {
+  .mem-grid { grid-template-columns: repeat(4, 1fr); gap: .35rem; }
+}
+
+/* CARTE MEMORY */
+.mem-card {
+  perspective: 800px;
+  cursor: pointer;
+  aspect-ratio: 3/4;
+}
+.mem-card__inner {
+  position: relative; width: 100%; height: 100%;
+  transform-style: preserve-3d;
+  transition: transform .45s cubic-bezier(.2,.8,.2,1);
+}
+.mem-card.is-flipped .mem-card__inner,
+.mem-card.is-matched .mem-card__inner { transform: rotateY(180deg); }
+
+.mem-card__front, .mem-card__back {
+  position: absolute; inset: 0;
+  backface-visibility: hidden;
+  border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  padding: .4rem;
+  font-size: .75rem; text-align: center; line-height: 1.2;
+}
+
+/* Dos : fond sombre avec logo en watermark doré */
+.mem-card__front {
+  background: var(--char); border: 1px solid var(--line);
+  overflow: hidden;
+}
+.mem-card__front::before {
+  content: '空';
+  position: absolute;
+  font-family: var(--display); font-size: 3.5rem;
+  color: rgba(201,162,39,.08);
+  user-select: none;
+  transition: color .3s;
+}
+.mem-card:hover .mem-card__front::before { color: rgba(201,162,39,.15); }
+.mem-card__front-logo {
+  width: 60%; height: 60%; object-fit: contain;
+  opacity: .08; filter: sepia(1) hue-rotate(10deg);
+  transition: opacity .3s;
+}
+.mem-card:hover .mem-card__front-logo { opacity: .14; }
+
+/* Face : japonais ou traduction */
+.mem-card__back {
+  transform: rotateY(180deg);
+  background: var(--char-2); border: 2px solid rgba(201,162,39,.3);
+}
+.mem-card__back.is-jp {
+  font-family: var(--display); font-size: 1rem; letter-spacing: .04em;
+  color: var(--bone); text-transform: uppercase;
+}
+.mem-card__back.is-fr {
+  font-family: var(--eyebrow); font-size: .7rem; letter-spacing: .04em; text-transform: uppercase;
+  color: var(--ash);
+}
+.mem-card.is-matched .mem-card__back {
+  border-color: var(--gold);
+  background: rgba(201,162,39,.12);
+  color: var(--gold);
+}
+
+/* NO CLICK WHILE PROCESSING */
+.mem-grid.blocked { pointer-events: none; }
+
+/* RESULT PANEL */
+.mem-result {
+  display: none; text-align: center; padding: 3rem 2rem;
+  animation: fadeIn .4s ease;
+}
+@keyframes fadeIn { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+.mem-result__emoji { font-size: 4rem; margin-bottom: 1rem; }
+.mem-result__title { font-family: var(--display); font-size: 2.2rem; text-transform: uppercase; color: var(--gold); margin-bottom: .5rem; }
+.mem-result__stats { display: flex; gap: 2.5rem; justify-content: center; margin: 1.5rem 0; flex-wrap: wrap; }
+.mem-result__stat-val { font-family: var(--display); font-size: 2rem; color: var(--bone); }
+.mem-result__stat-lbl { font-family: var(--mono); font-size: .68rem; color: var(--ash-2); }
+.mem-result__badges { display: flex; gap: .7rem; justify-content: center; flex-wrap: wrap; margin: 1rem 0; }
+.mem-badge-new {
+  display:inline-flex; align-items:center; gap:.5rem;
+  background: rgba(201,162,39,.15); border: 1px solid rgba(201,162,39,.35);
+  padding: .5rem 1rem; font-family: var(--eyebrow); font-size: .78rem;
+  color: var(--gold); border-radius: var(--radius);
+  animation: popIn .4s cubic-bezier(.2,1,.2,1);
+}
+@keyframes popIn { from{transform:scale(.6);opacity:0;}to{transform:scale(1);opacity:1;} }
+
+.btn-gold {
+  background: linear-gradient(135deg, var(--gold), #e8c050);
+  color: #111; font-family: var(--eyebrow); font-size: .85rem;
+  letter-spacing: .1em; text-transform: uppercase; padding: .85rem 2rem;
+  border: none; cursor: pointer; border-radius: var(--radius); font-weight: 600;
+  transition: transform .2s; display: inline-block;
+}
+.btn-gold:hover { transform: translateY(-2px); }
+</style>
+</head>
+<body>
+
+<header class="m-header">
+  <div class="wrap">
+    <div class="m-header__logo">
+      <img src="../shinodkai.png" alt="" onerror="this.style.display='none'">
+      <span>Memory</span>
+    </div>
+    <a href="espace.html" class="btn-back">← Mon espace</a>
+  </div>
+</header>
+
+<div class="mem-wrap">
+
+  <div class="mem-hud" id="memHud">
+    <div class="mem-stat">
+      <div class="mem-stat__val" id="hudTimer">0s</div>
+      <div class="mem-stat__lbl">Temps</div>
+    </div>
+    <div class="mem-stat">
+      <div class="mem-stat__val" id="hudTries">0</div>
+      <div class="mem-stat__lbl">Tentatives</div>
+    </div>
+    <div class="mem-stat">
+      <div class="mem-stat__val" id="hudPairs">0/…</div>
+      <div class="mem-stat__lbl">Paires</div>
+    </div>
+    <div class="mem-best" id="memBest"></div>
+  </div>
+
+  <div class="mem-grid" id="memGrid"></div>
+
+  <div class="mem-result" id="memResult">
+    <div class="mem-result__emoji" id="resEmoji">🏆</div>
+    <div class="mem-result__title">Félicitations !</div>
+    <div class="mem-result__stats">
+      <div class="mem-stat">
+        <div class="mem-result__stat-val" id="resTime">0s</div>
+        <div class="mem-result__stat-lbl">Temps</div>
+      </div>
+      <div class="mem-stat">
+        <div class="mem-result__stat-val" id="resTries">0</div>
+        <div class="mem-result__stat-lbl">Tentatives</div>
+      </div>
+      <div class="mem-stat">
+        <div class="mem-result__stat-val" id="resComparison"></div>
+        <div class="mem-result__stat-lbl" id="resCompLabel"></div>
+      </div>
+    </div>
+    <div class="mem-result__badges" id="resBadges"></div>
+    <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-top:1.5rem;">
+      <button class="btn-gold" id="replayBtn">Rejouer</button>
+      <a href="badges.html" class="btn btn--ghost" style="padding:.85rem 2rem;">Mes badges</a>
+      <a href="espace.html" class="btn btn--ghost" style="padding:.85rem 2rem;">Mon espace</a>
+    </div>
+  </div>
+
+</div>
+
+<script src="../js/data.js"></script>
+<script>
+/* ── AUTH ── */
+const sess = (() => { try { return JSON.parse(sessionStorage.getItem('shindokai_membre')); } catch(e) { return null; } })();
+if (!sess) { window.location.href = 'index.html'; throw 0; }
+const PRENOM = sess.prenom;
+const PROG_KEY = 'shindokai_progression_' + PRENOM.toLowerCase();
+
+function getProg() { try { return JSON.parse(localStorage.getItem(PROG_KEY) || '{}'); } catch(e) { return {}; } }
+function saveProg(p) { try { localStorage.setItem(PROG_KEY, JSON.stringify(p)); } catch(e) {} }
+
+const data = getData();
+const VOCAB = (data.membres && data.membres.vocabulaire) ? data.membres.vocabulaire : [];
+
+/* Nombre de paires configurables depuis l'admin (défaut 12) */
+const NB_PAIRS = (data.membres && data.membres.memoryPairs) ? data.membres.memoryPairs : 12;
+
+/* Mélanger le vocabulaire et prendre NB_PAIRS paires */
+const vocabShuffled = [...VOCAB].sort(() => Math.random() - .5);
+const PAIRS_SOURCE = vocabShuffled.slice(0, NB_PAIRS);
+
+let cards = [];
+let flipped = [];
+let matched = 0;
+let tries = 0;
+let timerSec = 0;
+let timerInterval = null;
+let gameStarted = false;
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function buildCards() {
+  const raw = [];
+  PAIRS_SOURCE.forEach((v, i) => {
+    raw.push({ pairId: i, type: 'jp', text: v.japonais });
+    raw.push({ pairId: i, type: 'fr', text: v.français });
+  });
+  return shuffle(raw);
+}
+
+function startGame() {
+  cards = buildCards();
+  flipped = [];
+  matched = 0;
+  tries = 0;
+  timerSec = 0;
+  gameStarted = false;
+  clearInterval(timerInterval);
+
+  document.getElementById('memResult').style.display = 'none';
+  document.getElementById('memGrid').style.display = '';
+  document.getElementById('memHud').style.display = '';
+
+  updateHUD();
+  renderGrid();
+  showBestScore();
+}
+
+function showBestScore() {
+  const prog = getProg();
+  const best = prog.memBestTime;
+  const bestTries = prog.memBestTries;
+  const el = document.getElementById('memBest');
+  if (best != null) {
+    el.innerHTML = `Meilleur : <strong>${best}s</strong> / <strong>${bestTries} essais</strong>`;
+  } else {
+    el.textContent = '';
+  }
+}
+
+function renderGrid() {
+  const grid = document.getElementById('memGrid');
+  grid.innerHTML = '';
+  grid.classList.remove('blocked');
+  cards.forEach((card, idx) => {
+    const div = document.createElement('div');
+    div.className = 'mem-card';
+    div.dataset.idx = idx;
+    div.innerHTML = `
+      <div class="mem-card__inner">
+        <div class="mem-card__front">
+          <img class="mem-card__front-logo" src="../shinodkai.png" alt="" onerror="this.style.display='none'">
+        </div>
+        <div class="mem-card__back ${card.type === 'jp' ? 'is-jp' : 'is-fr'}">${card.text}</div>
+      </div>`;
+    div.addEventListener('click', () => onCardClick(div, idx));
+    grid.appendChild(div);
+  });
+}
+
+function onCardClick(div, idx) {
+  if (!gameStarted) {
+    gameStarted = true;
+    timerInterval = setInterval(() => { timerSec++; updateHUD(); }, 1000);
+  }
+  if (div.classList.contains('is-flipped') || div.classList.contains('is-matched')) return;
+  if (flipped.length >= 2) return;
+
+  div.classList.add('is-flipped');
+  flipped.push({ div, idx });
+
+  if (flipped.length === 2) {
+    tries++;
+    updateHUD();
+    const grid = document.getElementById('memGrid');
+    grid.classList.add('blocked');
+
+    const [a, b] = flipped;
+    const cardA = cards[a.idx];
+    const cardB = cards[b.idx];
+
+    if (cardA.pairId === cardB.pairId && cardA.type !== cardB.type) {
+      // Match
+      setTimeout(() => {
+        a.div.classList.add('is-matched');
+        b.div.classList.add('is-matched');
+        flipped = [];
+        matched++;
+        updateHUD();
+        grid.classList.remove('blocked');
+        if (matched === PAIRS_SOURCE.length) {
+          clearInterval(timerInterval);
+          setTimeout(showResult, 600);
+        }
+      }, 300);
+    } else {
+      setTimeout(() => {
+        a.div.classList.remove('is-flipped');
+        b.div.classList.remove('is-flipped');
+        flipped = [];
+        grid.classList.remove('blocked');
+      }, 900);
+    }
+  }
+}
+
+function updateHUD() {
+  document.getElementById('hudTimer').textContent = timerSec + 's';
+  document.getElementById('hudTries').textContent = tries;
+  document.getElementById('hudPairs').textContent = matched + '/' + PAIRS_SOURCE.length;
+}
+
+function showResult() {
+  document.getElementById('memGrid').style.display = 'none';
+  document.getElementById('memHud').style.display = 'none';
+  const res = document.getElementById('memResult');
+  res.style.display = '';
+
+  document.getElementById('resTime').textContent = timerSec + 's';
+  document.getElementById('resTries').textContent = tries;
+
+  const prog = getProg();
+  if (!prog.badges) prog.badges = [];
+  if (!prog.memPlayed) prog.memPlayed = 0;
+  prog.memPlayed++;
+
+  const isNewBest = prog.memBestTime == null || timerSec < prog.memBestTime ||
+                    (timerSec === prog.memBestTime && tries < prog.memBestTries);
+  if (isNewBest) {
+    prog.memBestTime = timerSec;
+    prog.memBestTries = tries;
+  }
+
+  // Comparison
+  const cmpEl = document.getElementById('resComparison');
+  const cmpLbl = document.getElementById('resCompLabel');
+  if (prog.memBestTime != null && !isNewBest) {
+    cmpEl.textContent = prog.memBestTime + 's / ' + prog.memBestTries + ' essais';
+    cmpLbl.textContent = 'Meilleur score';
+  } else {
+    cmpEl.textContent = '🏆 Nouveau record !';
+    cmpLbl.textContent = '';
+  }
+
+  // Badges
+  const newBadges = [];
+  function tryBadge(id, name) {
+    if (!prog.badges.includes(id)) { prog.badges.push(id); newBadges.push(name); }
+  }
+
+  if (prog.memPlayed >= 1) tryBadge('mem_first', '🃏 La mémoire s\'éveille');
+  if (timerSec < 60)       tryBadge('mem_fast', '⚡ Éclair');
+  if (tries < 15)          tryBadge('mem_precise', '🧠 Esprit acéré');
+  if (timerSec < 45 && tries < 15) tryBadge('mem_master', '🏆 Maître de la mémoire');
+  // Global
+  if ((prog.quizPlayed || 0) > 0 && (prog.flashMaitrises != null)) tryBadge('all_games', '🌟 Explorateur');
+  if (prog.badges.length >= 14) tryBadge('ceinture_noire', '🖤 Ceinture noire virtuelle');
+
+  saveProg(prog);
+
+  const badgesEl = document.getElementById('resBadges');
+  if (newBadges.length > 0) {
+    badgesEl.innerHTML = '<div style="font-family:var(--eyebrow);font-size:.75rem;color:var(--ash);margin-bottom:.5rem;width:100%;text-align:center;">🏅 Badges débloqués !</div>' +
+      newBadges.map(b => `<div class="mem-badge-new">${b}</div>`).join('');
+  } else {
+    badgesEl.innerHTML = '';
+  }
+
+  // Emoji selon perf
+  if (timerSec < 45 && tries < 15) document.getElementById('resEmoji').textContent = '🏆';
+  else if (timerSec < 60 || tries < 15) document.getElementById('resEmoji').textContent = '⚡';
+  else document.getElementById('resEmoji').textContent = '🎉';
+}
+
+document.getElementById('replayBtn').addEventListener('click', startGame);
+
+startGame();
+</script>
+</body>
+</html>

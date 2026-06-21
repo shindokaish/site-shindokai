@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flashcards — Shindokai-Kan I-S-L</title>
+<link rel="icon" href="../shinodkai.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@400;500;600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+body { background: #0d0d10; min-height: 100vh; }
+
+/* HEADER */
+.m-header { background: var(--char); border-bottom: 1px solid rgba(201,162,39,.2); padding: 1rem 0; }
+.m-header .wrap { display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
+.m-header__logo { display:flex; align-items:center; gap:.6rem; }
+.m-header__logo img { width:32px; height:32px; border-radius:50%; border:1px solid rgba(201,162,39,.3); }
+.m-header__logo span { font-family:var(--display); font-size:1rem; color:var(--gold); text-transform:uppercase; }
+.btn-back { font-family:var(--mono); font-size:.7rem; color:var(--ash-2); transition:color .2s; }
+.btn-back:hover { color:var(--gold); }
+
+.flash-wrap { max-width: 680px; margin: 0 auto; padding: 2.5rem 1.5rem; }
+
+/* STATS BAR */
+.f-stats {
+  display: flex; gap: 1.5rem; margin-bottom: 2rem; flex-wrap: wrap;
+}
+.f-stat { text-align: center; }
+.f-stat__val { font-family: var(--display); font-size: 1.8rem; line-height: 1; }
+.f-stat__val.gold { color: var(--gold); }
+.f-stat__val.green { color: #7ecf7e; }
+.f-stat__val.red { color: var(--crimson-2); }
+.f-stat__lbl { font-family: var(--mono); font-size: .65rem; color: var(--ash-2); }
+
+/* CONTROLS */
+.f-controls { display:flex; gap:.8rem; margin-bottom:2rem; flex-wrap:wrap; }
+.f-btn {
+  font-family: var(--eyebrow); font-size: .75rem; letter-spacing: .08em; text-transform: uppercase;
+  padding: .5rem 1rem; cursor: pointer; border-radius: var(--radius);
+  border: 1px solid var(--line); background: none; color: var(--ash);
+  transition: all .2s;
+}
+.f-btn:hover { color: var(--bone); border-color: rgba(201,162,39,.3); }
+.f-btn.is-active { background: rgba(201,162,39,.15); border-color: var(--gold); color: var(--gold); }
+
+/* CARD 3D */
+.card-3d {
+  perspective: 1200px;
+  margin-bottom: 1.5rem;
+  cursor: pointer;
+  height: 300px;
+}
+@media (max-width:500px) { .card-3d { height: 240px; } }
+
+.card-3d__inner {
+  position: relative; width: 100%; height: 100%;
+  transform-style: preserve-3d;
+  transition: transform .5s cubic-bezier(.2,.8,.2,1);
+}
+.card-3d.is-flipped .card-3d__inner { transform: rotateY(180deg); }
+
+.card-3d__front,
+.card-3d__back {
+  position: absolute; inset: 0;
+  backface-visibility: hidden;
+  background: var(--char); border: 1px solid rgba(201,162,39,.25);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 2.5rem;
+  box-shadow: 0 0 40px -10px rgba(201,162,39,.1);
+}
+.card-3d__back { transform: rotateY(180deg); background: var(--char-2); }
+
+.card-front__word {
+  font-family: var(--display); font-size: clamp(2.5rem, 8vw, 4rem);
+  text-transform: uppercase; letter-spacing: .04em;
+  color: var(--bone); text-align: center; margin-bottom: .5rem;
+}
+.card-front__hint {
+  font-family: var(--mono); font-size: .72rem; color: var(--ash-2);
+  margin-top: 1.5rem;
+}
+.card-back__translation {
+  font-family: var(--display); font-size: clamp(1.5rem, 5vw, 2.2rem);
+  color: var(--gold); text-align: center; margin-bottom: 1rem;
+}
+.card-back__context {
+  font-size: .9rem; color: var(--ash); text-align: center; line-height: 1.5;
+  max-width: 420px;
+}
+.card-flip-hint {
+  position: absolute; bottom: 1rem;
+  font-family: var(--mono); font-size: .65rem; color: var(--ash-2);
+  opacity: .6;
+}
+
+/* ACTIONS */
+.f-actions { display: flex; gap: 1rem; justify-content: center; }
+.f-action-btn {
+  flex: 1; max-width: 200px;
+  padding: .85rem;
+  font-family: var(--eyebrow); font-size: .85rem; letter-spacing: .1em;
+  text-transform: uppercase; font-weight: 600;
+  border: none; cursor: pointer; border-radius: var(--radius);
+  transition: transform .2s, box-shadow .2s;
+}
+.f-action-btn.know {
+  background: linear-gradient(135deg, #2d8a4e, #3aac63);
+  color: #fff;
+}
+.f-action-btn.know:hover { transform: translateY(-2px); box-shadow: 0 6px 20px -6px rgba(45,138,78,.5); }
+.f-action-btn.review {
+  background: rgba(224,36,27,.15);
+  border: 1px solid rgba(224,36,27,.3);
+  color: var(--crimson-2);
+}
+.f-action-btn.review:hover { background: rgba(224,36,27,.25); }
+
+/* PROGRESS BAR */
+.f-progress { margin: 1.5rem 0; }
+.f-progress__label { display:flex; justify-content:space-between; font-family:var(--mono); font-size:.7rem; color:var(--ash-2); margin-bottom:.4rem; }
+.f-progress__bar { height: 4px; background: var(--line); border-radius: 2px; overflow: hidden; }
+.f-progress__fill { height: 100%; background: linear-gradient(90deg, var(--gold), #e8c050); border-radius:2px; transition: width .4s; }
+
+/* COMPLETE */
+.f-complete {
+  text-align: center; padding: 3rem 2rem; display: none;
+  animation: fadeInUp .4s ease;
+}
+@keyframes fadeInUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+.f-complete__emoji { font-size: 4rem; margin-bottom: 1rem; }
+.f-complete__title { font-family: var(--display); font-size: 2rem; text-transform: uppercase; color: var(--gold); margin-bottom: .5rem; }
+.f-complete__sub { color: var(--ash); font-family: var(--eyebrow); font-size: .85rem; letter-spacing: .08em; }
+
+.f-badge-new {
+  display:inline-flex; align-items:center; gap:.5rem; margin:.5rem;
+  background: rgba(201,162,39,.15); border: 1px solid rgba(201,162,39,.35);
+  padding: .5rem 1rem; font-family: var(--eyebrow); font-size: .78rem;
+  color: var(--gold); border-radius: var(--radius);
+  animation: popIn .4s cubic-bezier(.2,1,.2,1);
+}
+@keyframes popIn { from { transform:scale(.6); opacity:0; } to { transform:scale(1); opacity:1; } }
+
+.btn-gold {
+  background: linear-gradient(135deg, var(--gold), #e8c050);
+  color: #111; font-family: var(--eyebrow); font-size: .85rem;
+  letter-spacing: .1em; text-transform: uppercase; padding: .85rem 2rem;
+  border: none; cursor: pointer; border-radius: var(--radius); font-weight: 600;
+  transition: transform .2s; display: inline-block; margin-top: 1.5rem;
+}
+.btn-gold:hover { transform: translateY(-2px); }
+</style>
+</head>
+<body>
+
+<header class="m-header">
+  <div class="wrap">
+    <div class="m-header__logo">
+      <img src="../shinodkai.png" alt="" onerror="this.style.display='none'">
+      <span>Flashcards</span>
+    </div>
+    <a href="espace.html" class="btn-back">← Mon espace</a>
+  </div>
+</header>
+
+<div class="flash-wrap">
+
+  <!-- STATS -->
+  <div class="f-stats">
+    <div class="f-stat">
+      <div class="f-stat__val gold" id="statTotal">0</div>
+      <div class="f-stat__lbl">Total cartes</div>
+    </div>
+    <div class="f-stat">
+      <div class="f-stat__val green" id="statMaitrises">0</div>
+      <div class="f-stat__lbl">Maîtrisées</div>
+    </div>
+    <div class="f-stat">
+      <div class="f-stat__val red" id="statRevoir">0</div>
+      <div class="f-stat__lbl">À revoir</div>
+    </div>
+  </div>
+
+  <!-- CONTROLS -->
+  <div class="f-controls">
+    <button class="f-btn is-active" id="modeAll">Toutes les cartes</button>
+    <button class="f-btn" id="modeRevision">Mode révision (à revoir)</button>
+    <button class="f-btn" id="shuffleBtn">Mélanger</button>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="f-progress" id="fProgress">
+    <div class="f-progress__label">
+      <span id="fProgText">Carte 1 / 24</span>
+      <span id="fProgPct">0%</span>
+    </div>
+    <div class="f-progress__bar"><div class="f-progress__fill" id="fProgFill" style="width:0%"></div></div>
+  </div>
+
+  <!-- CARD -->
+  <div class="card-3d" id="flashCard">
+    <div class="card-3d__inner">
+      <div class="card-3d__front">
+        <div class="card-front__word" id="cardWord">…</div>
+        <div class="card-flip-hint">Clique pour retourner</div>
+      </div>
+      <div class="card-3d__back">
+        <div class="card-back__translation" id="cardTranslation">…</div>
+        <div class="card-back__context" id="cardContext">…</div>
+        <div class="card-flip-hint">Clique pour retourner</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACTIONS -->
+  <div class="f-actions" id="fActions">
+    <button class="f-action-btn review" id="btnReview">✗ À revoir</button>
+    <button class="f-action-btn know" id="btnKnow">✓ Je connais</button>
+  </div>
+
+  <!-- COMPLETE -->
+  <div class="f-complete" id="fComplete">
+    <div class="f-complete__emoji" id="completeEmoji">🎉</div>
+    <div class="f-complete__title" id="completeTitle">Paquet terminé !</div>
+    <div class="f-complete__sub" id="completeSub"></div>
+    <div id="completeBadges" style="margin:1rem 0;"></div>
+    <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-top:1rem;">
+      <button class="btn-gold" id="replayFlashBtn">Recommencer</button>
+      <a href="espace.html" class="btn btn--ghost" style="padding:.85rem 2rem;margin-top:0;">Mon espace</a>
+    </div>
+  </div>
+
+</div>
+
+<script src="../js/data.js"></script>
+<script>
+/* ── AUTH ── */
+const sess = (() => { try { return JSON.parse(sessionStorage.getItem('shindokai_membre')); } catch(e) { return null; } })();
+if (!sess) { window.location.href = 'index.html'; throw 0; }
+const PRENOM = sess.prenom;
+const PROG_KEY = 'shindokai_progression_' + PRENOM.toLowerCase();
+
+function getProg() { try { return JSON.parse(localStorage.getItem(PROG_KEY) || '{}'); } catch(e) { return {}; } }
+function saveProg(p) { try { localStorage.setItem(PROG_KEY, JSON.stringify(p)); } catch(e) {} }
+
+const data = getData();
+const VOCAB = (data.membres && data.membres.vocabulaire) ? data.membres.vocabulaire : [];
+
+let deck = [];
+let current = 0;
+let isRevisionMode = false;
+let flippedOnce = false;
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function getMaitrises() {
+  const prog = getProg();
+  return prog.flashMaitrises_list || [];
+}
+
+function buildDeck() {
+  const maitrises = getMaitrises();
+  if (isRevisionMode) {
+    deck = shuffle(VOCAB.filter((v, i) => !maitrises.includes(v.japonais)));
+    if (deck.length === 0) {
+      deck = shuffle([...VOCAB]);
+    }
+  } else {
+    deck = shuffle([...VOCAB]);
+  }
+  current = 0;
+  updateStats();
+}
+
+function updateStats() {
+  const maitrises = getMaitrises();
+  document.getElementById('statTotal').textContent = VOCAB.length;
+  document.getElementById('statMaitrises').textContent = maitrises.length;
+  document.getElementById('statRevoir').textContent = VOCAB.length - maitrises.length;
+}
+
+function showCard() {
+  if (current >= deck.length) { showComplete(); return; }
+  const card = deck[current];
+  document.getElementById('cardWord').textContent = card.japonais;
+  document.getElementById('cardTranslation').textContent = card.français;
+  document.getElementById('cardContext').textContent = card.contexte;
+
+  const fc = document.getElementById('flashCard');
+  fc.classList.remove('is-flipped');
+  flippedOnce = false;
+
+  // Progress
+  document.getElementById('fProgText').textContent = `Carte ${current + 1} / ${deck.length}`;
+  const pct = Math.round(current / deck.length * 100);
+  document.getElementById('fProgPct').textContent = pct + '%';
+  document.getElementById('fProgFill').style.width = pct + '%';
+
+  document.getElementById('fComplete').style.display = 'none';
+  document.getElementById('fProgress').style.display = '';
+  document.getElementById('flashCard').style.display = '';
+  document.getElementById('fActions').style.display = '';
+
+  // Marquer premier retournement
+  const prog = getProg();
+  if (!prog.flashStarted) {
+    prog.flashStarted = true;
+    if (!prog.badges) prog.badges = [];
+    if (!prog.badges.includes('flash_first')) {
+      prog.badges.push('flash_first');
+      showNewBadgeToast('📖 Badge "Première lecture" débloqué !');
+    }
+    saveProg(prog);
+  }
+}
+
+function showNewBadgeToast(msg) {
+  const t = document.createElement('div');
+  t.style.cssText = 'position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:rgba(201,162,39,.15);border:1px solid rgba(201,162,39,.4);color:var(--gold);font-family:var(--eyebrow);font-size:.8rem;letter-spacing:.06em;padding:.8rem 1.4rem;z-index:999;border-radius:2px;animation:fadeIn .3s ease;';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3000);
+}
+
+document.getElementById('flashCard').addEventListener('click', () => {
+  document.getElementById('flashCard').classList.toggle('is-flipped');
+  flippedOnce = true;
+});
+
+document.getElementById('btnKnow').addEventListener('click', () => markCard(true));
+document.getElementById('btnReview').addEventListener('click', () => markCard(false));
+
+function markCard(know) {
+  const card = deck[current];
+  const prog = getProg();
+  if (!prog.flashMaitrises_list) prog.flashMaitrises_list = [];
+  if (!prog.badges) prog.badges = [];
+
+  const newBadges = [];
+
+  if (know) {
+    if (!prog.flashMaitrises_list.includes(card.japonais)) {
+      prog.flashMaitrises_list.push(card.japonais);
+    }
+  } else {
+    prog.flashMaitrises_list = prog.flashMaitrises_list.filter(j => j !== card.japonais);
+  }
+
+  prog.flashMaitrises = prog.flashMaitrises_list.length;
+
+  // Badges
+  if (prog.flashMaitrises >= 1 && !prog.badges.includes('flash_first')) {
+    prog.badges.push('flash_first'); newBadges.push('📖 Première lecture');
+  }
+  if (prog.flashMaitrises >= 12 && !prog.badges.includes('flash_half')) {
+    prog.badges.push('flash_half'); newBadges.push('📚 À mi-chemin');
+  }
+  if (prog.flashMaitrises >= 24 && !prog.badges.includes('flash_all')) {
+    prog.badges.push('flash_all'); newBadges.push('🎌 Sensei du vocabulaire');
+  }
+  // Global
+  if ((prog.quizPlayed || 0) > 0 && (prog.memPlayed || 0) > 0 && !prog.badges.includes('all_games')) {
+    prog.badges.push('all_games'); newBadges.push('🌟 Explorateur');
+  }
+  if (prog.badges.length >= 14 && !prog.badges.includes('ceinture_noire')) {
+    prog.badges.push('ceinture_noire'); newBadges.push('🖤 Ceinture noire virtuelle');
+  }
+
+  saveProg(prog);
+  newBadges.forEach(b => showNewBadgeToast('🏅 Badge débloqué : ' + b));
+  updateStats();
+  current++;
+  showCard();
+}
+
+/* CONTROLS */
+document.getElementById('modeAll').addEventListener('click', () => {
+  isRevisionMode = false;
+  document.getElementById('modeAll').classList.add('is-active');
+  document.getElementById('modeRevision').classList.remove('is-active');
+  buildDeck(); showCard();
+});
+document.getElementById('modeRevision').addEventListener('click', () => {
+  isRevisionMode = true;
+  document.getElementById('modeRevision').classList.add('is-active');
+  document.getElementById('modeAll').classList.remove('is-active');
+  buildDeck(); showCard();
+});
+document.getElementById('shuffleBtn').addEventListener('click', () => { buildDeck(); showCard(); });
+
+function showComplete() {
+  document.getElementById('fComplete').style.display = '';
+  document.getElementById('flashCard').style.display = 'none';
+  document.getElementById('fActions').style.display = 'none';
+  document.getElementById('fProgress').style.display = 'none';
+
+  const prog = getProg();
+  const nb = prog.flashMaitrises || 0;
+  document.getElementById('completeEmoji').textContent = nb >= 24 ? '🎌' : nb >= 12 ? '📚' : '📖';
+  document.getElementById('completeTitle').textContent = nb >= 24 ? 'Parfait !' : 'Paquet terminé !';
+  document.getElementById('completeSub').textContent = `Tu maîtrises ${nb}/24 mots japonais.`;
+
+  const badgesEl = document.getElementById('completeBadges');
+  const lastBadges = (prog.badges || []).slice(-3);
+  badgesEl.innerHTML = '';
+}
+
+document.getElementById('replayFlashBtn').addEventListener('click', () => {
+  buildDeck(); showCard();
+});
+
+buildDeck();
+showCard();
+updateStats();
+</script>
+</body>
+</html>

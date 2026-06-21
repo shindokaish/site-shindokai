@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cours & planning — Shindokai-Kan I-S-L</title>
+<meta name="description" content="Cours de karaté pour enfants, ados et adultes. Planning complet des séances Shindokai-Kan I-S-L.">
+<link rel="icon" href="shinodkai.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@400;500;600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div id="nav-placeholder"></div>
+
+<main>
+
+<section class="hero-mini">
+  <div class="hero-mini__bg"></div>
+  <img class="hero-mini__logo-bg" src="shinodkai.png" alt="" aria-hidden="true">
+  <svg class="hero-mini__strike" viewBox="0 0 400 1000" preserveAspectRatio="none" fill="none">
+    <path d="M380 0 L20 1000" stroke="#e0241b" stroke-width="2" opacity="0.4"/>
+  </svg>
+  <div class="wrap">
+    <div class="hero-mini__content">
+      <span class="eyebrow-text hero-mini__eyebrow">Les cours</span>
+      <h1 class="hero-mini__title">
+        <span class="line"><span>Un programme</span></span>
+        <span class="line"><span>pour chaque âge.</span></span>
+      </h1>
+    </div>
+  </div>
+</section>
+
+<!-- ============ COURS CARDS ============ -->
+<section class="section">
+  <div class="wrap">
+    <div class="section__head reveal">
+      <span class="eyebrow-text">Niveaux</span>
+      <h2 class="section__title">Chaque pratiquant<br>trouve sa place.</h2>
+      <p class="section__lede">Du baby-karaté à la compétition — un parcours pensé pour progresser à son rythme, de l'initiation au haut niveau.</p>
+    </div>
+    <div class="cours-grid" id="coursGrid"></div>
+    <div class="planning reveal">
+      <table id="planningTable"></table>
+    </div>
+  </div>
+</section>
+
+<!-- ============ COMMENT SE DÉROULE UN COURS ============ -->
+<section class="section section--alt">
+  <div class="wrap">
+    <div class="section__head reveal">
+      <span class="eyebrow-text">Organisation</span>
+      <h2 class="section__title">Comment se déroule<br>un cours ?</h2>
+      <p class="section__lede">Chaque séance est structurée en trois phases progressives pour un travail complet et sécurisé.</p>
+    </div>
+    <div class="etapes-grid">
+      <div class="etape-card reveal">
+        <div class="etape-card__num">01</div>
+        <div class="etape-card__icon">🔥</div>
+        <div class="etape-card__title">Échauffement</div>
+        <p class="etape-card__text">15 à 20 minutes de préparation physique et articulaire. Cardio, mobilité, étirements dynamiques et exercices de coordination. L'objectif : préparer le corps à l'effort et prévenir les blessures.</p>
+      </div>
+      <div class="etape-card reveal">
+        <div class="etape-card__num">02</div>
+        <div class="etape-card__icon">🥋</div>
+        <div class="etape-card__title">Technique</div>
+        <p class="etape-card__text">Le cœur de la séance — kata, kihon, techniques de frappe, de projection ou de soumission selon le programme du jour. Travail par paires ou en groupe avec corrections individuelles du coach.</p>
+      </div>
+      <div class="etape-card reveal">
+        <div class="etape-card__num">03</div>
+        <div class="etape-card__icon">⚔️</div>
+        <div class="etape-card__title">Kumite / Randori</div>
+        <p class="etape-card__text">Combat libre ou dirigé selon le niveau — kumite contact pour les adultes et ados avancés, randori pédagogique pour les débutants et les enfants. L'application des techniques dans un cadre sécurisé.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PREMIERS COURS ============ -->
+<section class="section">
+  <div class="wrap">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;">
+      <div class="reveal">
+        <span class="eyebrow-text" style="margin-bottom:1rem;display:inline-flex;">Votre premier cours</span>
+        <h2 class="section__title" style="margin-top:.6rem;margin-bottom:1.2rem;">Commencez sans<br>hésiter.</h2>
+        <p style="color:var(--ash);margin-bottom:1rem;">Le premier cours est toujours offert, sans inscription préalable, sans engagement. Vous venez découvrir, observer, participer — à votre rythme.</p>
+        <p style="color:var(--ash);margin-bottom:1rem;">Pas besoin de kimono pour le premier cours. Une tenue de sport suffit. Pieds nus sur le tatami.</p>
+        <p style="color:var(--ash);margin-bottom:1.8rem;">Nos coachs vous accueillent quel que soit votre âge ou votre niveau. Débutant complet, pratiquant d'un autre art martial, retour après une pause — tous les profils sont les bienvenus.</p>
+        <a href="contact.html" class="btn btn--primary">Contacter le dojo</a>
+      </div>
+      <div class="reveal">
+        <div style="background:var(--char);border:1px solid var(--line);padding:2rem;">
+          <div style="font-family:var(--eyebrow);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ash-2);margin-bottom:1.4rem;">À apporter</div>
+          <div style="display:flex;flex-direction:column;gap:.8rem;">
+            <div style="display:flex;gap:.8rem;align-items:flex-start;"><span style="color:var(--crimson-2);">✓</span><span style="color:var(--ash);font-size:.9rem;">Une tenue de sport confortable (short ou jogging)</span></div>
+            <div style="display:flex;gap:.8rem;align-items:flex-start;border-top:1px solid var(--line);padding-top:.8rem;"><span style="color:var(--crimson-2);">✓</span><span style="color:var(--ash);font-size:.9rem;">Une bouteille d'eau</span></div>
+            <div style="display:flex;gap:.8rem;align-items:flex-start;border-top:1px solid var(--line);padding-top:.8rem;"><span style="color:var(--crimson-2);">✓</span><span style="color:var(--ash);font-size:.9rem;">Votre motivation !</span></div>
+            <div style="display:flex;gap:.8rem;align-items:flex-start;border-top:1px solid var(--line);padding-top:.8rem;"><span style="color:var(--ash-2);">—</span><span style="color:var(--ash-2);font-size:.9rem;">Kimono (non obligatoire pour le 1er cours)</span></div>
+          </div>
+          <div style="margin-top:1.8rem;padding-top:1.4rem;border-top:1px solid var(--line);">
+            <div style="font-family:var(--mono);font-size:.72rem;color:var(--crimson-2);margin-bottom:.5rem;">Note importante</div>
+            <p style="font-size:.85rem;color:var(--ash-2);">Pour les mineurs, la présence d'un parent ou tuteur légal est requise pour le premier cours et l'inscription.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CTA ============ -->
+<section class="cta-band">
+  <div class="wrap">
+    <h2 class="cta-band__title reveal">Votre premier cours est offert.</h2>
+    <p class="cta-band__sub reveal">Aucun engagement, aucun équipement requis. Venez simplement essayer.</p>
+    <div class="cta-band__btns reveal">
+      <a href="tarifs.html" class="btn btn--primary">Voir les tarifs</a>
+      <a href="dojos.html" class="btn btn--ghost">Trouver un dojo</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<div id="footer-placeholder"></div>
+
+<script src="js/data.js"></script>
+<script src="js/render.js"></script>
+<script>
+pageInit('cours');
+const courses = getSection('courses');
+
+// Cards cours
+const coursGrid = document.getElementById('coursGrid');
+courses.forEach(c => {
+  const div = document.createElement('div');
+  div.className = 'cours-card reveal';
+  div.innerHTML = `
+    <div class="cours-card__belt" style="background:${esc(c.belt)}"></div>
+    <div class="cours-card__age">${esc(c.age)}</div>
+    <div class="cours-card__name">${esc(c.name)}</div>
+    <div class="cours-card__level">${esc(c.level)}</div>
+    <div class="cours-card__time"><span>${esc(c.days)}</span><span>${esc(c.time)}</span></div>`;
+  coursGrid.appendChild(div);
+});
+
+// Planning table
+const table = document.getElementById('planningTable');
+const thead = document.createElement('thead');
+thead.innerHTML = '<tr><th>Cours</th><th>Âge</th><th>Jours</th><th>Horaire</th><th>Niveau</th></tr>';
+table.appendChild(thead);
+const tbody = document.createElement('tbody');
+courses.forEach(c => {
+  const tr = document.createElement('tr');
+  tr.innerHTML = `<td>${esc(c.name)}</td><td>${esc(c.age)}</td><td>${esc(c.days)}</td><td>${esc(c.time)}</td><td>${esc(c.level)}</td>`;
+  tbody.appendChild(tr);
+});
+table.appendChild(tbody);
+
+initScrollReveal();
+</script>
+</body>
+</html>

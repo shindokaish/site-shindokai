@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact — Shindokai-Kan I-S-L</title>
+<meta name="description" content="Contactez le Shindokai-Kan I-S-L. Adresses, horaires et formulaire de contact pour vos questions sur l'inscription, les cours et les dojos.">
+<link rel="icon" href="shinodkai.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@400;500;600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div id="nav-placeholder"></div>
+
+<main>
+
+<section class="hero-mini">
+  <div class="hero-mini__bg"></div>
+  <img class="hero-mini__logo-bg" src="shinodkai.png" alt="" aria-hidden="true">
+  <svg class="hero-mini__strike" viewBox="0 0 400 1000" preserveAspectRatio="none" fill="none">
+    <path d="M380 0 L20 1000" stroke="#e0241b" stroke-width="2" opacity="0.4"/>
+  </svg>
+  <div class="wrap">
+    <div class="hero-mini__content">
+      <span class="eyebrow-text hero-mini__eyebrow">Contact</span>
+      <h1 class="hero-mini__title">
+        <span class="line"><span>Venez nous</span></span>
+        <span class="line"><span>rencontrer.</span></span>
+      </h1>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="contact-grid">
+      <!-- Infos -->
+      <div class="reveal">
+        <span class="eyebrow-text" style="margin-bottom:1.4rem;display:inline-flex;">Informations</span>
+        <div id="contactInfo"></div>
+        <div class="socials" id="socials"></div>
+
+        <div style="margin-top:2.4rem;padding-top:2rem;border-top:1px solid var(--line);">
+          <div style="font-family:var(--eyebrow);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ash-2);margin-bottom:1rem;">Nos dojos</div>
+          <div id="contactDojos"></div>
+        </div>
+      </div>
+
+      <!-- Formulaire -->
+      <div class="reveal">
+        <span class="eyebrow-text" style="margin-bottom:1.4rem;display:inline-flex;">Envoyez-nous un message</span>
+        <form class="form" id="contactForm" novalidate>
+          <div class="form__row">
+            <div>
+              <label for="f-name">Nom *</label>
+              <input id="f-name" name="name" type="text" placeholder="Votre nom" required>
+            </div>
+            <div>
+              <label for="f-email">Email *</label>
+              <input id="f-email" name="email" type="email" placeholder="vous@email.fr" required>
+            </div>
+          </div>
+          <div>
+            <label for="f-sujet">Sujet</label>
+            <select id="f-sujet" name="sujet">
+              <option value="">Choisissez un sujet</option>
+              <option value="inscription">Inscription / Premier cours</option>
+              <option value="cours">Questions sur les cours</option>
+              <option value="tarifs">Tarifs & licences</option>
+              <option value="competition">Compétition</option>
+              <option value="autre">Autre</option>
+            </select>
+          </div>
+          <div>
+            <label for="f-dojo">Dojo concerné</label>
+            <select id="f-dojo" name="dojo"></select>
+          </div>
+          <div>
+            <label for="f-msg">Message *</label>
+            <textarea id="f-msg" name="message" rows="5" placeholder="Votre message…" required></textarea>
+          </div>
+          <button type="submit" class="btn btn--primary" style="align-self:flex-start;">Envoyer le message</button>
+          <div class="form__status" id="formStatus"></div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MENTIONS LÉGALES ============ -->
+<section class="section section--alt" id="mentions">
+  <div class="wrap">
+    <div class="section__head reveal">
+      <span class="eyebrow-text">Légal</span>
+      <h2 class="section__title">Mentions<br>légales.</h2>
+    </div>
+    <div class="reveal" style="max-width:680px;">
+      <div style="display:flex;flex-direction:column;gap:1.4rem;">
+        <div>
+          <div style="font-family:var(--eyebrow);font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ash-2);margin-bottom:.5rem;">Éditeur du site</div>
+          <p style="color:var(--ash);font-size:.9rem;" id="mentionsClub"></p>
+        </div>
+        <div>
+          <div style="font-family:var(--eyebrow);font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ash-2);margin-bottom:.5rem;">Données personnelles</div>
+          <p style="color:var(--ash);font-size:.9rem;">Les données collectées via le formulaire de contact (nom, email) sont utilisées uniquement pour répondre à vos demandes. Elles ne sont pas transmises à des tiers. Conformément au RGPD, vous disposez d'un droit d'accès, de rectification et de suppression.</p>
+        </div>
+        <div>
+          <div style="font-family:var(--eyebrow);font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ash-2);margin-bottom:.5rem;">Cookies</div>
+          <p style="color:var(--ash);font-size:.9rem;">Ce site n'utilise pas de cookies de traçage. Les données de navigation ne sont pas collectées à des fins publicitaires ou analytiques.</p>
+        </div>
+        <div>
+          <div style="font-family:var(--eyebrow);font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ash-2);margin-bottom:.5rem;">Hébergement</div>
+          <p style="color:var(--ash);font-size:.9rem;">Ce site est hébergé sur des serveurs en France / Europe conforme RGPD. Pour toute question relative à l'hébergement, contactez-nous par email.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<div id="footer-placeholder"></div>
+
+<script src="js/data.js"></script>
+<script src="js/render.js"></script>
+<script>
+pageInit('contact');
+const club = getSection('club');
+const dojos = getSection('dojos');
+
+// Infos contact
+document.getElementById('contactInfo').innerHTML = `
+  <div class="contact-item"><span class="contact-item__label">Email</span><span class="contact-item__value"><a href="mailto:${esc(club.email)}" style="color:var(--crimson-2)">${esc(club.email)}</a></span></div>
+  <div class="contact-item"><span class="contact-item__label">Téléphone</span><span class="contact-item__value">${esc(club.phone)}</span></div>
+  <div class="contact-item"><span class="contact-item__label">Fondé en</span><span class="contact-item__value">${esc(String(club.founded))}</span></div>
+  <div class="contact-item"><span class="contact-item__label">Fédération</span><span class="contact-item__value">FFKDA — Karaté-Jutsu</span></div>`;
+
+document.getElementById('socials').innerHTML = `
+  <a href="${esc(club.facebook)}" aria-label="Facebook" target="_blank" rel="noopener">FB</a>
+  <a href="${esc(club.instagram)}" aria-label="Instagram" target="_blank" rel="noopener">IG</a>`;
+
+// Dojos dans les infos
+const contactDojos = document.getElementById('contactDojos');
+dojos.forEach(d => {
+  const div = document.createElement('div');
+  div.style.cssText = 'padding:.7rem 0;border-bottom:1px solid var(--line);';
+  div.innerHTML = `
+    <div style="font-family:var(--eyebrow);font-size:.82rem;color:var(--bone);margin-bottom:.2rem;">${esc(d.name)}</div>
+    <div style="font-size:.85rem;color:var(--ash-2);">${esc(d.address)}</div>
+    ${d.mapLink && d.mapLink !== '#' ? `<a href="${esc(d.mapLink)}" target="_blank" rel="noopener" style="font-family:var(--mono);font-size:.7rem;color:var(--crimson-2);margin-top:.3rem;display:inline-block;">Itinéraire →</a>` : ''}`;
+  contactDojos.appendChild(div);
+});
+
+// Mentions légales
+document.getElementById('mentionsClub').textContent = `${club.name} — Association loi 1901. Siège social : ${dojos[0] ? dojos[0].address : 'Nord (59)'}. Email : ${club.email}`;
+
+// Select dojo
+const dojoSelect = document.getElementById('f-dojo');
+dojoSelect.appendChild(new Option('Tous les dojos', ''));
+dojos.forEach(d => dojoSelect.appendChild(new Option(d.name, d.name)));
+
+// Formulaire
+document.getElementById('contactForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const status = document.getElementById('formStatus');
+  const btn = this.querySelector('[type=submit]');
+  const name = this['name'].value.trim();
+  const email = this['email'].value.trim();
+  const msg = this['message'].value.trim();
+  const dojo = this['dojo'].value;
+  const sujet = this['sujet'].value;
+
+  if (!name || !email || !msg) {
+    status.textContent = 'Merci de renseigner votre nom, email et message.';
+    status.className = 'form__status form__status--err is-visible';
+    return;
+  }
+
+  const data = getData();
+  if (data.club.formspreeId) {
+    btn.disabled = true;
+    btn.textContent = 'Envoi en cours…';
+    try {
+      const res = await fetch(`https://formspree.io/f/${data.club.formspreeId}`, {
+        method: 'POST',
+        headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, dojo, sujet, message: msg })
+      });
+      if (res.ok) {
+        status.textContent = 'Message envoyé ! Nous vous répondrons sous 48h.';
+        status.className = 'form__status form__status--ok is-visible';
+        this.reset();
+      } else throw new Error();
+    } catch {
+      status.textContent = 'Erreur lors de l\'envoi. Contactez-nous directement par email.';
+      status.className = 'form__status form__status--err is-visible';
+    }
+    btn.disabled = false;
+    btn.textContent = 'Envoyer le message';
+  } else {
+    const subject = encodeURIComponent(`Contact site — ${name}${dojo ? ' (' + dojo + ')' : ''}${sujet ? ' [' + sujet + ']' : ''}`);
+    const body = encodeURIComponent(`${msg}\n\nDojo : ${dojo || 'non précisé'}\nEmail : ${email}`);
+    window.location.href = `mailto:${club.email}?subject=${subject}&body=${body}`;
+  }
+});
+
+initScrollReveal();
+</script>
+</body>
+</html>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Galerie — Shindokai-Kan I-S-L</title>
+<meta name="description" content="Galerie photos et vidéos du club Shindokai-Kan I-S-L — compétitions, stages, passages de grades.">
+<link rel="icon" href="shinodkai.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@400;500;600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div id="nav-placeholder"></div>
+
+<main>
+
+<section class="hero-mini">
+  <div class="hero-mini__bg"></div>
+  <img class="hero-mini__logo-bg" src="shinodkai.png" alt="" aria-hidden="true">
+  <svg class="hero-mini__strike" viewBox="0 0 400 1000" preserveAspectRatio="none" fill="none">
+    <path d="M380 0 L20 1000" stroke="#e0241b" stroke-width="2" opacity="0.4"/>
+  </svg>
+  <div class="wrap">
+    <div class="hero-mini__content">
+      <span class="eyebrow-text hero-mini__eyebrow">Galerie</span>
+      <h1 class="hero-mini__title">
+        <span class="line"><span>Photos</span></span>
+        <span class="line"><span>& vidéos.</span></span>
+      </h1>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="section__head reveal">
+      <span class="eyebrow-text">Galerie</span>
+      <h2 class="section__title">Le Shindokai<br>en images.</h2>
+      <p class="section__lede">Compétitions, stages, entraînements, passages de grades — les moments forts du club en images.</p>
+    </div>
+    <div id="galerieContainer"></div>
+  </div>
+</section>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox">
+  <button class="lightbox__close" id="lightboxClose" aria-label="Fermer">✕</button>
+  <img src="" alt="" id="lightboxImg">
+  <div class="lightbox__caption" id="lightboxCaption"></div>
+</div>
+
+<!-- CTA -->
+<section class="cta-band">
+  <div class="wrap">
+    <h2 class="cta-band__title reveal">Venez vivre l'expérience.</h2>
+    <p class="cta-band__sub reveal">Les photos ne font que refléter l'intensité des entraînements. Rejoignez-nous pour le vivre.</p>
+    <div class="cta-band__btns reveal">
+      <a href="tarifs.html" class="btn btn--primary">Essai gratuit</a>
+      <a href="actus.html" class="btn btn--ghost">Nos actualités</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<div id="footer-placeholder"></div>
+
+<script src="js/data.js"></script>
+<script src="js/render.js"></script>
+<script>
+pageInit('galerie');
+const galerie = getSection('galerie');
+const container = document.getElementById('galerieContainer');
+
+if (!galerie || !galerie.length) {
+  container.innerHTML = `
+    <div class="galerie-empty">
+      <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+        <rect x="2" y="2" width="20" height="20" rx="4"/>
+        <circle cx="8.5" cy="8.5" r="2.5"/>
+        <path d="M21 15l-5-5L5 21"/>
+      </svg>
+      <p>Photos à venir</p>
+      <p style="margin-top:.5rem;font-size:.75rem;">Les photos seront ajoutées prochainement depuis le panneau d'administration.</p>
+    </div>`;
+} else {
+  const grid = document.createElement('div');
+  grid.className = 'galerie-grid';
+  galerie.forEach((img, i) => {
+    const item = document.createElement('div');
+    item.className = 'galerie-item reveal';
+    item.dataset.i = i;
+    item.innerHTML = `
+      <img src="${esc(img.url)}" alt="${esc(img.caption || 'Shindokai-Kan I-S-L')}" loading="lazy">
+      <div class="galerie-item__overlay"><span class="galerie-item__caption">${esc(img.caption || '')}</span></div>`;
+    item.addEventListener('click', () => openLightbox(img, i));
+    grid.appendChild(item);
+  });
+  container.appendChild(grid);
+}
+
+// Lightbox
+const lightbox = document.getElementById('lightbox');
+const lightboxImg = document.getElementById('lightboxImg');
+const lightboxCaption = document.getElementById('lightboxCaption');
+const lightboxClose = document.getElementById('lightboxClose');
+let currentIndex = 0;
+
+function openLightbox(img, i) {
+  currentIndex = i;
+  lightboxImg.src = img.url;
+  lightboxImg.alt = img.caption || '';
+  lightboxCaption.textContent = img.caption || '';
+  lightbox.classList.add('is-open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox() {
+  lightbox.classList.remove('is-open');
+  document.body.style.overflow = '';
+}
+
+lightboxClose.addEventListener('click', closeLightbox);
+lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeLightbox();
+  if (e.key === 'ArrowRight' && galerie.length > 1) {
+    currentIndex = (currentIndex + 1) % galerie.length;
+    const img = galerie[currentIndex];
+    lightboxImg.src = img.url;
+    lightboxCaption.textContent = img.caption || '';
+  }
+  if (e.key === 'ArrowLeft' && galerie.length > 1) {
+    currentIndex = (currentIndex - 1 + galerie.length) % galerie.length;
+    const img = galerie[currentIndex];
+    lightboxImg.src = img.url;
+    lightboxCaption.textContent = img.caption || '';
+  }
+});
+
+initScrollReveal();
+</script>
+</body>
+</html>

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nos dojos — Shindokai-Kan I-S-L</title>
+<meta name="description" content="Trouvez le dojo Shindokai-Kan I-S-L le plus proche. 3 sites dans le Nord (59) avec les mêmes coachs diplômés FFKDA.">
+<link rel="icon" href="shinodkai.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@400;500;600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div id="nav-placeholder"></div>
+
+<main>
+
+<section class="hero-mini">
+  <div class="hero-mini__bg"></div>
+  <img class="hero-mini__logo-bg" src="shinodkai.png" alt="" aria-hidden="true">
+  <svg class="hero-mini__strike" viewBox="0 0 400 1000" preserveAspectRatio="none" fill="none">
+    <path d="M380 0 L20 1000" stroke="#e0241b" stroke-width="2" opacity="0.4"/>
+  </svg>
+  <div class="wrap">
+    <div class="hero-mini__content">
+      <span class="eyebrow-text hero-mini__eyebrow">Nos dojos</span>
+      <h1 class="hero-mini__title">
+        <span class="line"><span>Trois sites,</span></span>
+        <span class="line"><span>une discipline.</span></span>
+      </h1>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DOJOS ============ -->
+<section class="section">
+  <div class="wrap">
+    <div class="section__head reveal">
+      <span class="eyebrow-text">Localisation</span>
+      <h2 class="section__title">Choisissez votre<br>dojo.</h2>
+      <p class="section__lede">Mêmes coachs diplômés, même enseignement, même exigence sur les trois sites. Choisissez celui qui vous convient géographiquement.</p>
+    </div>
+    <div class="dojos-tabs reveal" id="dojosTabs"></div>
+    <div id="dojosPanels"></div>
+  </div>
+</section>
+
+<!-- ============ INFOS PRATIQUES ============ -->
+<section class="section section--alt">
+  <div class="wrap">
+    <div class="section__head reveal">
+      <span class="eyebrow-text">Informations</span>
+      <h2 class="section__title">Infos pratiques.</h2>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:var(--gap);">
+      <div class="reveal" style="background:var(--char);border:1px solid var(--line);padding:2rem;">
+        <div style="font-family:var(--display);font-size:1.4rem;text-transform:uppercase;margin-bottom:1rem;">Parking</div>
+        <p style="color:var(--ash);font-size:.9rem;">Des parkings gratuits sont disponibles à proximité de chaque dojo. Renseignez-vous auprès de votre site pour les détails.</p>
+      </div>
+      <div class="reveal" style="background:var(--char);border:1px solid var(--line);padding:2rem;">
+        <div style="font-family:var(--display);font-size:1.4rem;text-transform:uppercase;margin-bottom:1rem;">Accueil</div>
+        <p style="color:var(--ash);font-size:.9rem;">Arrivez 10 minutes avant le cours pour vous installer. Pour votre premier cours, signalez-vous au coach à l'entrée — il vous accueillera personnellement.</p>
+      </div>
+      <div class="reveal" style="background:var(--char);border:1px solid var(--line);padding:2rem;">
+        <div style="font-family:var(--display);font-size:1.4rem;text-transform:uppercase;margin-bottom:1rem;">Vestiaires</div>
+        <p style="color:var(--ash);font-size:.9rem;">Des vestiaires sont disponibles sur chaque site. Apportez vos affaires de rechange et de la monnaie pour les casiers si disponibles.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CTA ============ -->
+<section class="cta-band">
+  <div class="wrap">
+    <h2 class="cta-band__title reveal">Prêt à nous rejoindre ?</h2>
+    <p class="cta-band__sub reveal">Venez essayer gratuitement dans le dojo de votre choix. Aucun équipement requis.</p>
+    <div class="cta-band__btns reveal">
+      <a href="tarifs.html" class="btn btn--primary">Essai gratuit</a>
+      <a href="contact.html" class="btn btn--ghost">Nous contacter</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<div id="footer-placeholder"></div>
+
+<script src="js/data.js"></script>
+<script src="js/render.js"></script>
+<script>
+pageInit('dojos');
+const dojos = getSection('dojos');
+
+const dojosTabs = document.getElementById('dojosTabs');
+const dojosPanels = document.getElementById('dojosPanels');
+
+dojos.forEach((d, i) => {
+  // Tab
+  const btn = document.createElement('button');
+  btn.className = 'dojo-tab' + (i === 0 ? ' is-active' : '');
+  btn.textContent = d.name;
+  btn.dataset.index = i;
+  dojosTabs.appendChild(btn);
+
+  // Map
+  const mapContent = d.mapEmbed
+    ? `<iframe src="${esc(d.mapEmbed)}" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Plan ${esc(d.name)}"></iframe>`
+    : `<div class="dojo-map__placeholder">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+        <p>Carte à configurer dans l'administration</p>
+        ${d.mapLink && d.mapLink !== '#' ? `<a href="${esc(d.mapLink)}" target="_blank" rel="noopener" class="btn btn--ghost" style="font-size:.72rem;padding:.6rem 1.2rem;">Ouvrir dans Maps</a>` : ''}
+       </div>`;
+
+  const dojoLogoHTML = d.logo
+    ? `<div style="display:flex;align-items:center;gap:1rem;padding-bottom:1rem;border-bottom:1px solid var(--line);margin-bottom:.2rem;">
+         <img src="${esc(d.logo)}" alt="Logo ${esc(d.name)}" style="width:56px;height:56px;object-fit:contain;">
+         <span style="font-family:var(--display);font-size:1.1rem;text-transform:uppercase;">${esc(d.name)}</span>
+       </div>`
+    : '';
+
+  const panel = document.createElement('div');
+  panel.className = 'dojo-panel reveal' + (i === 0 ? ' is-active' : '');
+  panel.dataset.index = i;
+  panel.innerHTML = `
+    <div class="dojo-info">
+      ${dojoLogoHTML}
+      <div class="dojo-item"><span class="dojo-item__label">Adresse</span><span class="dojo-item__value">${esc(d.address)}</span></div>
+      ${d.phone ? `<div class="dojo-item"><span class="dojo-item__label">Téléphone</span><span class="dojo-item__value">${esc(d.phone)}</span></div>` : ''}
+      <div class="dojo-item"><span class="dojo-item__label">Horaires</span><span class="dojo-item__value" style="white-space:pre-line;">${esc(d.horaires)}</span></div>
+      ${d.acces ? `<div class="dojo-item"><span class="dojo-item__label">Accès</span><span class="dojo-item__value">${esc(d.acces)}</span></div>` : ''}
+      ${d.mapLink && d.mapLink !== '#' ? `<div class="dojo-item"><a href="${esc(d.mapLink)}" target="_blank" rel="noopener" class="btn btn--ghost" style="font-size:.72rem;padding:.6rem 1.2rem;margin-top:.5rem;">Itinéraire →</a></div>` : ''}
+    </div>
+    <div class="dojo-map">${mapContent}</div>`;
+  dojosPanels.appendChild(panel);
+});
+
+dojosTabs.addEventListener('click', e => {
+  const btn = e.target.closest('.dojo-tab');
+  if (!btn) return;
+  const idx = btn.dataset.index;
+  dojosTabs.querySelectorAll('.dojo-tab').forEach(b => b.classList.remove('is-active'));
+  dojosPanels.querySelectorAll('.dojo-panel').forEach(p => p.classList.remove('is-active'));
+  btn.classList.add('is-active');
+  dojosPanels.querySelector(`[data-index="${idx}"]`).classList.add('is-active');
+});
+
+initScrollReveal();
+</script>
+</body>
+</html>
