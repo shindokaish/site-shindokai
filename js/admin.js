@@ -50,6 +50,9 @@ function migrateData() {
   const data = getData();
   let changed = false;
 
+  /* S'assure que discipline existe */
+  if (!data.discipline) { data.discipline = DEFAULT_DATA.discipline; changed = true; }
+
   /* S'assure que membres a toutes ses sous-clés */
   if (!data.membres) { data.membres = DEFAULT_DATA.membres; changed = true; }
   else {
@@ -108,6 +111,7 @@ function loadSection(key) {
     actus: 'Actualités',
     galerie: 'Galerie',
     tarifs: 'Tarifs',
+    discipline: 'Page Discipline',
     inscription: 'Formulaire d\'inscription',
     contact: 'Contact & formulaire',
     settings: 'Paramètres',
@@ -126,6 +130,7 @@ function loadSection(key) {
     actus: renderActusSection,
     galerie: renderGalerieSection,
     tarifs: renderTarifsSection,
+    discipline: renderDisciplineSection,
     inscription: renderInscriptionSection,
     contact: renderContactSection,
     settings: renderSettingsSection,
@@ -762,6 +767,102 @@ function openTarifModal(index) {
     renderTarifsList();
     closeModal();
     showToast('Formule enregistrée ✓');
+  });
+}
+
+/* ============ SECTION DISCIPLINE ============ */
+function renderDisciplineSection(container) {
+  const disc = getSection('discipline') || {};
+  const piliers = disc.piliers || [{title:'',text:''},{title:'',text:''},{title:'',text:''}];
+  const valeurs = disc.valeurs || [{icon:'',title:'',text:''},{icon:'',title:'',text:''},{icon:'',title:'',text:''}];
+
+  container.innerHTML = `
+<div class="admin-section-form">
+
+  <div class="admin-card">
+    <div class="admin-card__title">🦸 Héro de la page</div>
+    <div class="admin-form-grid" style="margin-top:1rem;">
+      <div class="admin-field"><label>Texte eyebrow</label><input id="disc-eyebrow" value="${esc(disc.heroEyebrow||'La discipline')}"></div>
+    </div>
+    <div style="margin-top:1rem;">
+      <div class="admin-label" style="margin-bottom:.5rem;">Titre (2 lignes)</div>
+      <div class="admin-form-grid">
+        <div class="admin-field"><label>Ligne 1</label><input id="disc-h1" value="${esc((disc.heroTitle||[])[0]||'Voie de')}"></div>
+        <div class="admin-field"><label>Ligne 2</label><input id="disc-h2" value="${esc((disc.heroTitle||[])[1]||'la vérité.')}"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="admin-card">
+    <div class="admin-card__title">📜 Section Histoire</div>
+    <div class="admin-field" style="margin-top:1rem;">
+      <label>Titre (utilise \\n pour un saut de ligne)</label>
+      <input id="disc-histoireTitre" value="${esc(disc.histoireTitre||'Le Shindokai,\nné en 2006.')}">
+    </div>
+    <p style="font-family:var(--mono);font-size:.72rem;color:var(--ash-2);margin-top:.5rem;">Les textes de présentation (aboutP1/P2/P3) sont éditables dans la section <strong>Club</strong>.</p>
+  </div>
+
+  <div class="admin-card">
+    <div class="admin-card__title">🥊 Les 3 piliers</div>
+    ${[0,1,2].map(i => `
+    <div style="margin-top:1.2rem;padding-top:1.2rem;${i>0?'border-top:1px solid var(--line)':''}">
+      <div class="admin-label" style="margin-bottom:.6rem;">Pilier ${i+1}</div>
+      <div class="admin-form-grid">
+        <div class="admin-field"><label>Titre</label><input id="disc-p${i}-title" value="${esc(piliers[i]?.title||'')}"></div>
+      </div>
+      <div class="admin-field" style="margin-top:.6rem;"><label>Texte</label><textarea id="disc-p${i}-text" rows="3">${esc(piliers[i]?.text||'')}</textarea></div>
+    </div>`).join('')}
+  </div>
+
+  <div class="admin-card">
+    <div class="admin-card__title">🙏 Les 3 valeurs</div>
+    ${[0,1,2].map(i => `
+    <div style="margin-top:1.2rem;padding-top:1.2rem;${i>0?'border-top:1px solid var(--line)':''}">
+      <div class="admin-label" style="margin-bottom:.6rem;">Valeur ${i+1}</div>
+      <div class="admin-form-grid">
+        <div class="admin-field"><label>Emoji</label><input id="disc-v${i}-icon" value="${esc(valeurs[i]?.icon||'')}" style="max-width:80px;"></div>
+        <div class="admin-field"><label>Titre</label><input id="disc-v${i}-title" value="${esc(valeurs[i]?.title||'')}"></div>
+      </div>
+      <div class="admin-field" style="margin-top:.6rem;"><label>Texte</label><textarea id="disc-v${i}-text" rows="3">${esc(valeurs[i]?.text||'')}</textarea></div>
+    </div>`).join('')}
+  </div>
+
+  <div class="admin-card">
+    <div class="admin-card__title">📣 Bandeau CTA</div>
+    <div class="admin-form-grid" style="margin-top:1rem;">
+      <div class="admin-field"><label>Titre</label><input id="disc-ctaTitre" value="${esc(disc.ctaTitre||'Rejoignez la discipline.')}"></div>
+      <div class="admin-field"><label>Sous-titre</label><input id="disc-ctaSub" value="${esc(disc.ctaSub||'')}"></div>
+    </div>
+  </div>
+
+  <button class="btn btn--primary" id="saveDisciplineBtn" style="align-self:flex-start;">💾 Enregistrer</button>
+  <div id="discSaveStatus" style="font-family:var(--mono);font-size:.78rem;color:var(--crimson-2);display:none;">Sauvegardé ✓</div>
+</div>`;
+
+  document.getElementById('saveDisciplineBtn').addEventListener('click', () => {
+    const newDisc = {
+      heroEyebrow: document.getElementById('disc-eyebrow').value.trim(),
+      heroTitle: [
+        document.getElementById('disc-h1').value.trim(),
+        document.getElementById('disc-h2').value.trim()
+      ],
+      histoireTitre: document.getElementById('disc-histoireTitre').value,
+      piliers: [0,1,2].map(i => ({
+        title: document.getElementById(`disc-p${i}-title`).value.trim(),
+        text: document.getElementById(`disc-p${i}-text`).value.trim()
+      })),
+      valeurs: [0,1,2].map(i => ({
+        icon: document.getElementById(`disc-v${i}-icon`).value.trim(),
+        title: document.getElementById(`disc-v${i}-title`).value.trim(),
+        text: document.getElementById(`disc-v${i}-text`).value.trim()
+      })),
+      ctaTitre: document.getElementById('disc-ctaTitre').value.trim(),
+      ctaSub: document.getElementById('disc-ctaSub').value.trim()
+    };
+    saveSection('discipline', newDisc);
+    const st = document.getElementById('discSaveStatus');
+    st.style.display = 'block';
+    setTimeout(() => st.style.display = 'none', 2000);
   });
 }
 

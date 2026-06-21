@@ -119,6 +119,23 @@ const DEFAULT_DATA = {
       { question: "Que sont autorisées dans le Shindokai contrairement au Shotokan ?", reponses: ["Les armes", "Les coups au visage", "Les saisies, projections et lutte au sol", "Les protections"], correct: 2, categorie: "Règles", difficulte: 1 }
     ]
   },
+  discipline: {
+    heroEyebrow: 'La discipline',
+    heroTitle: ['Voie de', 'la vérité.'],
+    histoireTitre: 'Le Shindokai,\nné en 2006.',
+    piliers: [
+      { title: 'Karaté contact', text: "Héritage direct du Kyokushinkai — frappes au corps portées, kata techniques, travail des distances et du placement. Les coups sont réels (sauf au visage), forgeant un karaté authentiquement combatif." },
+      { title: 'Boxe', text: "Techniques de poing issues de la boxe anglaise et française : jab, direct, crochet, uppercut. Travail de la mobilité, des esquives et du jeu de jambes pour une complémentarité optimale avec le karaté." },
+      { title: 'Soumission au sol', text: "Saisies, projections, clés articulaires, étranglements et lutte au sol. Inspiré du judo et du jiu-jitsu brésilien, ce troisième pilier forme des combattants complets et adaptables à toutes les situations." }
+    ],
+    valeurs: [
+      { icon: '🙏', title: 'Respect', text: "Respect de soi, de l'adversaire, des coachs et du dojo. Cette valeur fondamentale s'apprend sur le tatami et s'applique dans toutes les sphères de la vie. Bow in, bow out — chaque séance commence et se termine par un salut." },
+      { icon: '⚔️', title: 'Honneur', text: "Combattre avec honnêteté et intégrité, reconnaître les qualités de l'adversaire, accepter la défaite avec dignité et la victoire avec humilité. L'honneur est la boussole du combattant Shindokai." },
+      { icon: '🥋', title: 'Discipline', text: "Assiduité aux entraînements, rigueur dans la technique, persévérance face à la difficulté. La discipline forge le caractère bien au-delà des cours, créant des individus solides et résilients." }
+    ],
+    ctaTitre: 'Rejoignez la discipline.',
+    ctaSub: "Premier cours offert, sans engagement. Venez vivre l'expérience Shindokai dans l'un de nos trois dojos."
+  },
   inscription: {
     titre: "Demande d'inscription",
     intro: "Remplissez ce formulaire pour vous inscrire ou inscrire votre enfant au Shindokai-Kan I-S-L. Un responsable vous contactera sous 48h pour confirmer votre inscription.",
@@ -196,7 +213,7 @@ async function initData() {
 /* Pousse toutes les sections par défaut vers Supabase (premier démarrage) */
 async function _pushAllDefaults(sb) {
   const keys = ['club','adminPassword','stats','coaches','courses','dojos',
-                 'actus','galerie','tarifs','disciplineBadges','membres','inscription'];
+                 'actus','galerie','tarifs','disciplineBadges','discipline','membres','inscription'];
   const rows = keys.map(k => ({ key: k, value: DEFAULT_DATA[k] }));
   await sb.from('data_store').upsert(rows, { onConflict: 'key' });
 }

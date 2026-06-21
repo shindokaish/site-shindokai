@@ -34,8 +34,8 @@
   </svg>
   <div class="wrap">
     <div class="hero-mini__content">
-      <span class="eyebrow-text hero-mini__eyebrow">La discipline</span>
-      <h1 class="hero-mini__title">
+      <span class="eyebrow-text hero-mini__eyebrow" id="discHeroEyebrow">La discipline</span>
+      <h1 class="hero-mini__title" id="discHeroTitle">
         <span class="line"><span>Voie de</span></span>
         <span class="line"><span>la vérité.</span></span>
       </h1>
@@ -49,7 +49,7 @@
     <div class="club__grid">
       <div class="club__text reveal">
         <span class="eyebrow-text" style="margin-bottom:1.2rem;display:inline-flex;">Histoire & origines</span>
-        <h2 class="section__title" style="margin-bottom:1.6rem;">Le Shindokai,<br>né en 2006.</h2>
+        <h2 class="section__title" style="margin-bottom:1.6rem;" id="discHistoireTitre">Le Shindokai,<br>né en 2006.</h2>
         <p id="aboutP1"></p>
         <p id="aboutP2"></p>
         <p id="aboutP3"></p>
@@ -94,39 +94,7 @@
       <h2 class="section__title">Les trois piliers<br>du Shindokai.</h2>
       <p class="section__lede">Une approche holistique qui réunit le meilleur de trois disciplines complémentaires.</p>
     </div>
-    <div class="piliers-grid">
-      <div class="pilier-card reveal">
-        <div class="pilier-card__icon">
-          <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
-            <circle cx="24" cy="24" r="22" stroke="#e0241b" stroke-width="2"/>
-            <path d="M16 32 L24 14 L32 32" stroke="#f3efe7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M18.5 26 H29.5" stroke="#f3efe7" stroke-width="1.5" stroke-linecap="round"/>
-          </svg>
-        </div>
-        <div class="pilier-card__title">Karaté contact</div>
-        <p class="pilier-card__text">Héritage direct du Kyokushinkai — frappes au corps portées, kata techniques, travail des distances et du placement. Les coups sont réels (sauf au visage), forgeant un karaté authentiquement combatif.</p>
-      </div>
-      <div class="pilier-card reveal">
-        <div class="pilier-card__icon">
-          <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
-            <rect x="2" y="2" width="44" height="44" rx="4" stroke="#c9a227" stroke-width="2"/>
-            <path d="M16 24 Q20 16 24 24 Q28 32 32 24" stroke="#f3efe7" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-        </div>
-        <div class="pilier-card__title">Boxe</div>
-        <p class="pilier-card__text">Techniques de poing issues de la boxe anglaise et française : jab, direct, crochet, uppercut. Travail de la mobilité, des esquives et du jeu de jambes pour une complémentarité optimale avec le karaté.</p>
-      </div>
-      <div class="pilier-card reveal">
-        <div class="pilier-card__icon">
-          <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
-            <path d="M8 8 L40 40 M8 40 L40 8" stroke="#9a98a0" stroke-width="2" stroke-linecap="round"/>
-            <circle cx="24" cy="24" r="10" stroke="#f3efe7" stroke-width="2"/>
-          </svg>
-        </div>
-        <div class="pilier-card__title">Soumission au sol</div>
-        <p class="pilier-card__text">Saisies, projections, clés articulaires, étranglements et lutte au sol. Inspiré du judo et du jiu-jitsu brésilien, ce troisième pilier forme des combattants complets et adaptables à toutes les situations.</p>
-      </div>
-    </div>
+    <div class="piliers-grid" id="piliersGrid"></div>
   </div>
 </section>
 
@@ -166,31 +134,15 @@
       <h2 class="section__title">Les trois valeurs<br>du Shindokai.</h2>
       <p class="section__lede">Dans un monde où le combat libre gagne en popularité, le Shindokai se distingue par son attachement à ces principes fondamentaux.</p>
     </div>
-    <div class="valeurs-grid">
-      <div class="valeur-card reveal">
-        <div class="valeur-card__icon">🙏</div>
-        <div class="valeur-card__title">Respect</div>
-        <p class="valeur-card__text">Respect de soi, de l'adversaire, des coachs et du dojo. Cette valeur fondamentale s'apprend sur le tatami et s'applique dans toutes les sphères de la vie. Bow in, bow out — chaque séance commence et se termine par un salut.</p>
-      </div>
-      <div class="valeur-card reveal">
-        <div class="valeur-card__icon">⚔️</div>
-        <div class="valeur-card__title">Honneur</div>
-        <p class="valeur-card__text">Combattre avec honnêteté et intégrité, reconnaître les qualités de l'adversaire, accepter la défaite avec dignité et la victoire avec humilité. L'honneur est la boussole du combattant Shindokai.</p>
-      </div>
-      <div class="valeur-card reveal">
-        <div class="valeur-card__icon">🥋</div>
-        <div class="valeur-card__title">Discipline</div>
-        <p class="valeur-card__text">Assiduité aux entraînements, rigueur dans la technique, persévérance face à la difficulté. La discipline forge le caractère bien au-delà des cours, créant des individus solides et résilients.</p>
-      </div>
-    </div>
+    <div class="valeurs-grid" id="valeursGrid"></div>
   </div>
 </section>
 
 <!-- ============ CTA ============ -->
 <section class="cta-band">
   <div class="wrap">
-    <h2 class="cta-band__title reveal">Rejoignez la discipline.</h2>
-    <p class="cta-band__sub reveal">Premier cours offert, sans engagement. Venez vivre l'expérience Shindokai dans l'un de nos trois dojos.</p>
+    <h2 class="cta-band__title reveal" id="discCtaTitre">Rejoignez la discipline.</h2>
+    <p class="cta-band__sub reveal" id="discCtaSub">Premier cours offert, sans engagement. Venez vivre l'expérience Shindokai dans l'un de nos trois dojos.</p>
     <div class="cta-band__btns reveal">
       <a href="tarifs.html" class="btn btn--primary">Essai gratuit</a>
       <a href="coachs.html" class="btn btn--ghost">Rencontrer les coachs</a>
@@ -210,9 +162,26 @@ initData().then(() => {
 pageInit('discipline');
 const club = getSection('club');
 const badges = getSection('disciplineBadges');
+const disc = getSection('discipline') || {};
+
+// Hero
+if (disc.heroEyebrow) document.getElementById('discHeroEyebrow').textContent = disc.heroEyebrow;
+if (disc.heroTitle) {
+  const lines = document.getElementById('discHeroTitle').querySelectorAll('.line span');
+  disc.heroTitle.forEach((t, i) => { if (lines[i]) lines[i].textContent = t; });
+}
+
+// Titre histoire
+if (disc.histoireTitre) {
+  document.getElementById('discHistoireTitre').innerHTML = esc(disc.histoireTitre).replace(/\n/g, '<br>');
+}
+
+// Textes about
 document.getElementById('aboutP1').textContent = club.aboutP1;
 document.getElementById('aboutP2').textContent = club.aboutP2;
 document.getElementById('aboutP3').textContent = club.aboutP3;
+
+// Badges
 const badgesEl = document.getElementById('disciplineBadges');
 badges.forEach(b => {
   const span = document.createElement('span');
@@ -220,6 +189,36 @@ badges.forEach(b => {
   span.textContent = b;
   badgesEl.appendChild(span);
 });
+
+// Piliers (SVG icons statiques, texte dynamique)
+const SVG_ICONS = [
+  `<svg width="48" height="48" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="22" stroke="#e0241b" stroke-width="2"/><path d="M16 32 L24 14 L32 32" stroke="#f3efe7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.5 26 H29.5" stroke="#f3efe7" stroke-width="1.5" stroke-linecap="round"/></svg>`,
+  `<svg width="48" height="48" viewBox="0 0 48 48" fill="none"><rect x="2" y="2" width="44" height="44" rx="4" stroke="#c9a227" stroke-width="2"/><path d="M16 24 Q20 16 24 24 Q28 32 32 24" stroke="#f3efe7" stroke-width="2" stroke-linecap="round"/></svg>`,
+  `<svg width="48" height="48" viewBox="0 0 48 48" fill="none"><path d="M8 8 L40 40 M8 40 L40 8" stroke="#9a98a0" stroke-width="2" stroke-linecap="round"/><circle cx="24" cy="24" r="10" stroke="#f3efe7" stroke-width="2"/></svg>`
+];
+const piliersGrid = document.getElementById('piliersGrid');
+const piliers = disc.piliers || [];
+piliers.forEach((p, i) => {
+  const div = document.createElement('div');
+  div.className = 'pilier-card reveal';
+  div.innerHTML = `<div class="pilier-card__icon">${SVG_ICONS[i] || ''}</div><div class="pilier-card__title">${esc(p.title)}</div><p class="pilier-card__text">${esc(p.text)}</p>`;
+  piliersGrid.appendChild(div);
+});
+
+// Valeurs
+const valeursGrid = document.getElementById('valeursGrid');
+const valeurs = disc.valeurs || [];
+valeurs.forEach(v => {
+  const div = document.createElement('div');
+  div.className = 'valeur-card reveal';
+  div.innerHTML = `<div class="valeur-card__icon">${esc(v.icon)}</div><div class="valeur-card__title">${esc(v.title)}</div><p class="valeur-card__text">${esc(v.text)}</p>`;
+  valeursGrid.appendChild(div);
+});
+
+// CTA
+if (disc.ctaTitre) document.getElementById('discCtaTitre').textContent = disc.ctaTitre;
+if (disc.ctaSub) document.getElementById('discCtaSub').textContent = disc.ctaSub;
+
 initScrollReveal();
 }); // fin initData
 </script>
