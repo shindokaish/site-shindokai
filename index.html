@@ -167,9 +167,11 @@
 
 <div id="footer-placeholder"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="js/data.js"></script>
 <script src="js/render.js"></script>
 <script>
+initData().then(() => {
 pageInit('index');
 
 const club = getSection('club');
@@ -249,6 +251,8 @@ initHeroGlow('heroGlow', 'home');
 
 // Re-observe nouveaux reveals
 document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+
+}); // fin initData
 </script>
 </body>
 </html>

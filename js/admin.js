@@ -1853,6 +1853,7 @@ function openCeintureModal(index) {
 
 /* ============ INIT ============ */
 document.addEventListener('DOMContentLoaded', () => {
+  initData().then(() => {
   migrateData();
   initLogin();
 
@@ -1866,4 +1867,5 @@ document.addEventListener('DOMContentLoaded', () => {
   // Lien retour site
   const backLink = document.getElementById('backToSite');
   if (backLink) backLink.addEventListener('click', () => { window.location.href = 'index.html'; });
+  }); // fin initData
 });
