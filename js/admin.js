@@ -50,8 +50,9 @@ function migrateData() {
   const data = getData();
   let changed = false;
 
-  /* S'assure que discipline existe */
+  /* S'assure que discipline et settings existent */
   if (!data.discipline) { data.discipline = DEFAULT_DATA.discipline; changed = true; }
+  if (!data.settings) { data.settings = DEFAULT_DATA.settings; changed = true; }
 
   /* S'assure que membres a toutes ses sous-clés */
   if (!data.membres) { data.membres = DEFAULT_DATA.membres; changed = true; }
@@ -916,8 +917,19 @@ function renderContactSection(container) {
 
 /* ============ SECTION PARAMÈTRES ============ */
 function renderSettingsSection(container) {
+  const settings = getSection('settings') || DEFAULT_DATA.settings || {};
   container.innerHTML = `
 <div style="display:flex;flex-direction:column;gap:2rem;">
+  <!-- Web3Forms -->
+  <div class="admin-card">
+    <div class="admin-card__title">📧 Web3Forms — clé API</div>
+    <p style="color:var(--ash);font-size:.85rem;margin:.4rem 0 1rem;">Utilisée pour les formulaires d'inscription et de contact. Créez un compte sur <a href="https://web3forms.com" target="_blank" rel="noopener" style="color:var(--crimson-2);">web3forms.com</a> pour obtenir votre clé.</p>
+    <div style="display:flex;gap:1rem;align-items:flex-end;flex-wrap:wrap;">
+      <div style="flex:1;min-width:200px;"><label class="admin-label">Clé Web3Forms</label><input id="w3f-key" class="admin-input" value="${esc(settings.web3formsKey||'')}"></div>
+      <button class="btn btn--primary" id="saveW3fBtn">Enregistrer</button>
+    </div>
+    <div id="w3fStatus" style="font-family:var(--mono);font-size:.75rem;color:var(--crimson-2);margin-top:.5rem;display:none;">Clé sauvegardée ✓</div>
+  </div>
   <!-- Mot de passe -->
   <div class="admin-card">
     <div class="admin-card__title">Changer le mot de passe admin</div>
@@ -943,6 +955,16 @@ function renderSettingsSection(container) {
     <button class="btn" style="background:rgba(224,36,27,.15);border:1px solid rgba(224,36,27,.4);color:var(--crimson-2);" id="resetBtn">⚠ Réinitialiser aux données par défaut</button>
   </div>
 </div>`;
+
+  document.getElementById('saveW3fBtn').addEventListener('click', () => {
+    const key = document.getElementById('w3f-key').value.trim();
+    const s = getSection('settings') || {};
+    s.web3formsKey = key;
+    saveSection('settings', s);
+    const st = document.getElementById('w3fStatus');
+    st.style.display = 'block';
+    setTimeout(() => st.style.display = 'none', 2500);
+  });
 
   document.getElementById('savePwBtn').addEventListener('click', () => {
     const pw = fv('pw-new').trim();

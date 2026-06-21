@@ -136,6 +136,9 @@ const DEFAULT_DATA = {
     ctaTitre: 'Rejoignez la discipline.',
     ctaSub: "Premier cours offert, sans engagement. Venez vivre l'expérience Shindokai dans l'un de nos trois dojos."
   },
+  settings: {
+    web3formsKey: '109f2859-b8c5-49fa-b6e9-4fd2fee3c5ab'
+  },
   inscription: {
     titre: "Demande d'inscription",
     intro: "Remplissez ce formulaire pour vous inscrire ou inscrire votre enfant au Shindokai-Kan I-S-L. Un responsable vous contactera sous 48h pour confirmer votre inscription.",
@@ -195,15 +198,29 @@ async function initData() {
     if (error) throw error;
 
     if (rows && rows.length > 0) {
+      /* Fusionner les données Supabase dans le cache */
+      const supabaseKeys = new Set();
       rows.forEach(row => {
         _cache[row.key] = row.value;
+        supabaseKeys.add(row.key);
       });
+      /* Pousser vers Supabase les clés DEFAULT_DATA manquantes (nouvelles clés) */
+      const allDefaultKeys = Object.keys(DEFAULT_DATA);
+      const missingKeys = allDefaultKeys.filter(k => !supabaseKeys.has(k));
+      if (missingKeys.length > 0) {
+        const missing = missingKeys.map(k => ({ key: k, value: DEFAULT_DATA[k] }));
+        sb.from('data_store').upsert(missing, { onConflict: 'key' }).then(({ error: e }) => {
+          if (e) console.warn('Erreur push clés manquantes:', e.message);
+          else console.info('Nouvelles clés poussées vers Supabase:', missingKeys.join(', '));
+        });
+      }
     } else {
-      /* Première fois : on pousse les données par défaut vers Supabase */
+      /* Première fois : on pousse toutes les données par défaut vers Supabase */
       await _pushAllDefaults(sb);
     }
   } catch (e) {
-    console.warn('Erreur Supabase, données locales utilisées :', e.message);
+    console.error('Erreur Supabase initData :', e.message || e);
+    /* Fallback : on reste sur DEFAULT_DATA déjà dans _cache */
   }
 
   _initialized = true;
@@ -213,7 +230,7 @@ async function initData() {
 /* Pousse toutes les sections par défaut vers Supabase (premier démarrage) */
 async function _pushAllDefaults(sb) {
   const keys = ['club','adminPassword','stats','coaches','courses','dojos',
-                 'actus','galerie','tarifs','disciplineBadges','discipline','membres','inscription'];
+                 'actus','galerie','tarifs','disciplineBadges','discipline','membres','inscription','settings'];
   const rows = keys.map(k => ({ key: k, value: DEFAULT_DATA[k] }));
   await sb.from('data_store').upsert(rows, { onConflict: 'key' });
 }
