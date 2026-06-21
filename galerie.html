@@ -71,6 +71,7 @@
 <script src="js/data.js"></script>
 <script src="js/render.js"></script>
 <script>
+initData().then(() => {
 pageInit('galerie');
 const galerie = getSection('galerie');
 const container = document.getElementById('galerieContainer');

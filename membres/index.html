@@ -155,6 +155,7 @@ body { overflow: hidden; background: #0d0d10; }
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="../js/data.js"></script>
 <script>
+initData().then(() => {
 (function() {
   // Si déjà connecté, rediriger
   try {
