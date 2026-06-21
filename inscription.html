@@ -432,33 +432,31 @@ form.addEventListener('submit', async function(e) {
   d.inscription.submissions.unshift(submission);
   saveData(d);
 
-  /* Envoi Formspree ou mailto */
-  if (insc.formspreeId) {
-    try {
-      const body = {};
-      activeFields.forEach(f => {
-        const el = document.getElementById(`f-${f.id}`);
-        if (el) body[f.label] = f.type === 'checkbox' ? (el.checked ? 'Oui' : 'Non') : el.value;
-      });
-      const res = await fetch(`https://formspree.io/f/${insc.formspreeId}`, {
-        method:'POST',
-        headers:{'Accept':'application/json','Content-Type':'application/json'},
-        body: JSON.stringify(body)
-      });
-      if (!res.ok) throw new Error();
-    } catch {
-      /* silencieux — données déjà sauvées localement */
-    }
-  } else {
-    /* mailto de secours */
-    const lines = activeFields.map(f => {
-      const el = document.getElementById(`f-${f.id}`);
-      if (!el) return '';
-      const val = f.type === 'checkbox' ? (el.checked ? 'Oui' : 'Non') : el.value;
-      return `${f.label}: ${val}`;
-    }).filter(Boolean).join('\n');
-    const nom = document.getElementById('f-nom')?.value || '';
-    const prenom = document.getElementById('f-prenom')?.value || '';
+  /* Collecte des champs pour l'email */
+  const emailBody = {};
+  activeFields.forEach(f => {
+    const el = document.getElementById(`f-${f.id}`);
+    if (el) emailBody[f.label] = f.type === 'checkbox' ? (el.checked ? 'Oui' : 'Non') : el.value;
+  });
+  const nom    = document.getElementById('f-nom')?.value || '';
+  const prenom = document.getElementById('f-prenom')?.value || '';
+
+  /* Envoi Web3Forms */
+  try {
+    const res = await fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({
+        access_key: '109f2859-b8c5-49fa-b6e9-4fd2fee3c5ab',
+        subject: `Nouvelle inscription — ${prenom} ${nom}`,
+        from_name: 'Site Shindokai-Kan I-S-L',
+        ...emailBody
+      })
+    });
+    if (!res.ok) throw new Error('Web3Forms error');
+  } catch (err) {
+    /* Fallback mailto si Web3Forms échoue */
+    const lines = Object.entries(emailBody).map(([k,v]) => `${k}: ${v}`).join('\n');
     window.location.href = `mailto:${club.email}?subject=${encodeURIComponent('Inscription — ' + prenom + ' ' + nom)}&body=${encodeURIComponent(lines)}`;
   }
 
