@@ -183,6 +183,15 @@ const dojos = getSection('dojos');
 const badges = getSection('disciplineBadges');
 
 // Hero
+const heroEyebrow = document.getElementById('heroEyebrow');
+if (heroEyebrow && club.heroEyebrow) heroEyebrow.textContent = club.heroEyebrow;
+
+const heroTitle = document.getElementById('heroTitle');
+if (heroTitle && club.heroTitle) {
+  const lines = heroTitle.querySelectorAll('.line span');
+  club.heroTitle.forEach((txt, i) => { if (lines[i]) lines[i].textContent = txt; });
+}
+
 document.getElementById('heroSub').textContent = club.heroSub;
 document.getElementById('aboutP1').textContent = club.aboutP1;
 document.getElementById('aboutP2').textContent = club.aboutP2;

@@ -137,42 +137,65 @@ function loadSection(key) {
 /* ============ SECTION CLUB ============ */
 function renderClubSection(container) {
   const club = getSection('club');
+  const heroTitle = club.heroTitle || ['Respect.', 'Honneur.', 'Discipline.'];
   container.innerHTML = `
 <div class="admin-section-form">
-  <div class="admin-form-grid">
-    <div class="admin-field"><label>Nom complet du club</label><input id="c-name" value="${esc(club.name)}"></div>
-    <div class="admin-field"><label>Nom court (nav/footer)</label><input id="c-shortName" value="${esc(club.shortName)}"></div>
-    <div class="admin-field"><label>Email de contact</label><input id="c-email" type="email" value="${esc(club.email)}"></div>
-    <div class="admin-field"><label>Téléphone</label><input id="c-phone" value="${esc(club.phone)}"></div>
-    <div class="admin-field"><label>Lien Facebook</label><input id="c-facebook" value="${esc(club.facebook)}"></div>
-    <div class="admin-field"><label>Lien Instagram</label><input id="c-instagram" value="${esc(club.instagram)}"></div>
-    <div class="admin-field"><label>Année de fondation</label><input id="c-founded" type="number" value="${esc(String(club.founded))}"></div>
-    <div class="admin-field"><label>Formspree ID (formulaire contact)</label><input id="c-formspreeId" value="${esc(club.formspreeId || '')}"></div>
+
+  <div class="admin-card">
+    <div class="admin-card__title">🏯 Identité du club</div>
+    <div class="admin-form-grid" style="margin-top:1rem;">
+      <div class="admin-field"><label>Nom complet du club</label><input id="c-name" value="${esc(club.name)}"></div>
+      <div class="admin-field"><label>Nom court (nav/footer)</label><input id="c-shortName" value="${esc(club.shortName)}"></div>
+      <div class="admin-field"><label>Email de contact</label><input id="c-email" type="email" value="${esc(club.email)}"></div>
+      <div class="admin-field"><label>Téléphone</label><input id="c-phone" value="${esc(club.phone)}"></div>
+      <div class="admin-field"><label>Lien Facebook</label><input id="c-facebook" value="${esc(club.facebook)}"></div>
+      <div class="admin-field"><label>Lien Instagram</label><input id="c-instagram" value="${esc(club.instagram)}"></div>
+      <div class="admin-field"><label>Année de fondation</label><input id="c-founded" type="number" value="${esc(String(club.founded))}"></div>
+    </div>
   </div>
-  <div class="admin-field"><label>Sous-titre hero</label><textarea id="c-heroSub" rows="2">${esc(club.heroSub)}</textarea></div>
-  <div class="admin-field"><label>À propos — paragraphe 1</label><textarea id="c-p1" rows="3">${esc(club.aboutP1)}</textarea></div>
-  <div class="admin-field"><label>À propos — paragraphe 2</label><textarea id="c-p2" rows="3">${esc(club.aboutP2)}</textarea></div>
-  <div class="admin-field"><label>À propos — paragraphe 3</label><textarea id="c-p3" rows="3">${esc(club.aboutP3)}</textarea></div>
-  <div class="admin-field"><label>Badges discipline (un par ligne)</label><textarea id="c-badges" rows="4">${esc(getSection('disciplineBadges').join('\n'))}</textarea></div>
-  <button class="btn btn--primary" id="saveClubBtn">Enregistrer</button>
+
+  <div class="admin-card">
+    <div class="admin-card__title">🦸 Page d'accueil — Hero</div>
+    <p style="color:var(--ash);font-size:.82rem;margin:.5rem 0 1rem;">Texte affiché en grand sur la page d'accueil.</p>
+    <div class="admin-form-grid" style="margin-bottom:1rem;">
+      <div class="admin-field"><label>Texte au-dessus du titre (eyebrow)</label><input id="c-eyebrow" value="${esc(club.heroEyebrow || 'Karaté-Jutsu FFKDA · Nord (59)')}"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin-bottom:1rem;">
+      <div class="admin-field"><label>Mot 1</label><input id="c-hero1" value="${esc(heroTitle[0] || 'Respect.')}"></div>
+      <div class="admin-field"><label>Mot 2 <span style="color:var(--crimson-2);">(en rouge)</span></label><input id="c-hero2" value="${esc(heroTitle[1] || 'Honneur.')}"></div>
+      <div class="admin-field"><label>Mot 3</label><input id="c-hero3" value="${esc(heroTitle[2] || 'Discipline.')}"></div>
+    </div>
+    <div class="admin-field"><label>Sous-titre hero</label><textarea id="c-heroSub" rows="2">${esc(club.heroSub)}</textarea></div>
+  </div>
+
+  <div class="admin-card">
+    <div class="admin-card__title">📖 La discipline — Textes</div>
+    <div class="admin-field" style="margin-top:1rem;"><label>Paragraphe 1</label><textarea id="c-p1" rows="3">${esc(club.aboutP1)}</textarea></div>
+    <div class="admin-field"><label>Paragraphe 2</label><textarea id="c-p2" rows="3">${esc(club.aboutP2)}</textarea></div>
+    <div class="admin-field"><label>Paragraphe 3</label><textarea id="c-p3" rows="3">${esc(club.aboutP3)}</textarea></div>
+    <div class="admin-field"><label>Badges discipline (un par ligne)</label><textarea id="c-badges" rows="4">${esc(getSection('disciplineBadges').join('\n'))}</textarea></div>
+  </div>
+
+  <button class="btn btn--primary" id="saveClubBtn" style="align-self:flex-start;">Enregistrer toutes les modifications</button>
 </div>`;
 
   document.getElementById('saveClubBtn').addEventListener('click', () => {
     const data = getData();
     data.club = {
       ...data.club,
-      name: fv('c-name'),
-      shortName: fv('c-shortName'),
-      email: fv('c-email'),
-      phone: fv('c-phone'),
-      facebook: fv('c-facebook'),
-      instagram: fv('c-instagram'),
-      founded: +fv('c-founded') || 2006,
-      formspreeId: fv('c-formspreeId'),
-      heroSub: fv('c-heroSub'),
-      aboutP1: fv('c-p1'),
-      aboutP2: fv('c-p2'),
-      aboutP3: fv('c-p3')
+      name:        fv('c-name'),
+      shortName:   fv('c-shortName'),
+      email:       fv('c-email'),
+      phone:       fv('c-phone'),
+      facebook:    fv('c-facebook'),
+      instagram:   fv('c-instagram'),
+      founded:     +fv('c-founded') || 2006,
+      heroEyebrow: fv('c-eyebrow'),
+      heroTitle:   [fv('c-hero1'), fv('c-hero2'), fv('c-hero3')],
+      heroSub:     fv('c-heroSub'),
+      aboutP1:     fv('c-p1'),
+      aboutP2:     fv('c-p2'),
+      aboutP3:     fv('c-p3')
     };
     data.disciplineBadges = fv('c-badges').split('\n').map(s => s.trim()).filter(Boolean);
     saveData(data);
@@ -745,26 +768,48 @@ function openTarifModal(index) {
 /* ============ SECTION CONTACT ============ */
 function renderContactSection(container) {
   const club = getSection('club');
+  const settings = getSection('settings') || {};
   container.innerHTML = `
-<p style="color:var(--ash);font-size:.88rem;margin-bottom:1.5rem;">Les informations de contact sont modifiables dans la section <strong style="color:var(--bone);">Informations du club</strong>.</p>
-<div style="background:var(--char);border:1px solid var(--line);padding:1.4rem;margin-bottom:1.4rem;">
-  <div style="font-family:var(--eyebrow);font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ash-2);margin-bottom:1rem;">Récapitulatif</div>
-  <div class="admin-item__date">Email : ${esc(club.email)}</div>
-  <div class="admin-item__date">Téléphone : ${esc(club.phone)}</div>
-  <div class="admin-item__date">Formspree ID : ${esc(club.formspreeId || 'Non configuré')}</div>
-</div>
-<div class="admin-field">
-  <label>Formspree ID (pour activer l'envoi d'emails)</label>
-  <input id="fs-id" class="admin-input" value="${esc(club.formspreeId || '')}" placeholder="ex: xpzgkwrd">
-  <p style="font-size:.78rem;color:var(--ash-2);margin-top:.4rem;">Créez un compte sur <a href="https://formspree.io" target="_blank" style="color:var(--crimson-2);">formspree.io</a> pour obtenir votre ID gratuit.</p>
-</div>
-<button class="btn btn--primary" id="saveContactBtn" style="margin-top:1rem;">Enregistrer</button>`;
+<div style="display:flex;flex-direction:column;gap:1.6rem;max-width:700px;">
+
+  <div class="admin-card">
+    <div class="admin-card__title">📞 Informations de contact</div>
+    <p style="color:var(--ash);font-size:.82rem;margin:.4rem 0 1rem;">Ces infos s'affichent sur la page Contact et dans le footer.</p>
+    <div class="admin-form-grid" style="margin-top:.5rem;">
+      <div class="admin-field"><label>Email</label><input id="ct-email" class="admin-input" value="${esc(club.email)}"></div>
+      <div class="admin-field"><label>Téléphone</label><input id="ct-phone" class="admin-input" value="${esc(club.phone)}"></div>
+      <div class="admin-field"><label>Facebook</label><input id="ct-fb" class="admin-input" value="${esc(club.facebook)}"></div>
+      <div class="admin-field"><label>Instagram</label><input id="ct-ig" class="admin-input" value="${esc(club.instagram)}"></div>
+    </div>
+    <button class="btn btn--primary" id="saveContactBtn" style="margin-top:1rem;">Enregistrer</button>
+  </div>
+
+  <div class="admin-card">
+    <div class="admin-card__title">📧 Formulaire d'inscription — Web3Forms</div>
+    <p style="color:var(--ash);font-size:.82rem;margin:.4rem 0 1rem;">Clé API Web3Forms pour recevoir les inscriptions par email.</p>
+    <div class="admin-field">
+      <label>Access Key Web3Forms</label>
+      <input id="ct-w3f" class="admin-input" value="${esc(settings.web3formsKey || '109f2859-b8c5-49fa-b6e9-4fd2fee3c5ab')}" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx">
+      <p style="font-size:.75rem;color:var(--ash-2);margin-top:.4rem;">Compte sur <a href="https://web3forms.com" target="_blank" style="color:var(--crimson-2);">web3forms.com</a> — 250 emails/mois gratuits.</p>
+    </div>
+    <button class="btn btn--primary" id="saveW3fBtn" style="margin-top:1rem;">Enregistrer la clé</button>
+  </div>
+
+</div>`;
 
   document.getElementById('saveContactBtn').addEventListener('click', () => {
     const data = getData();
-    data.club.formspreeId = fv('fs-id').trim();
+    data.club = { ...data.club, email: fv('ct-email'), phone: fv('ct-phone'), facebook: fv('ct-fb'), instagram: fv('ct-ig') };
     saveData(data);
-    showToast('Enregistré ✓');
+    showToast('Contact enregistré ✓');
+  });
+
+  document.getElementById('saveW3fBtn').addEventListener('click', () => {
+    const data = getData();
+    if (!data.settings) data.settings = {};
+    data.settings.web3formsKey = fv('ct-w3f').trim();
+    saveData(data);
+    showToast('Clé Web3Forms enregistrée ✓');
   });
 }
 

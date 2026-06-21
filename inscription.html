@@ -447,7 +447,7 @@ form.addEventListener('submit', async function(e) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
       body: JSON.stringify({
-        access_key: '109f2859-b8c5-49fa-b6e9-4fd2fee3c5ab',
+        access_key: (getSection('settings') || {}).web3formsKey || '109f2859-b8c5-49fa-b6e9-4fd2fee3c5ab',
         subject: `Nouvelle inscription — ${prenom} ${nom}`,
         from_name: 'Site Shindokai-Kan I-S-L',
         ...emailBody
