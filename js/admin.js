@@ -50,6 +50,15 @@ function migrateData() {
   const data = getData();
   let changed = false;
 
+  /* Met à jour les photos des coachs si elles sont vides */
+  if (Array.isArray(data.coaches)) {
+    const photoMap = { 'David':'img/coach-david.png', 'Morgan':'img/coach-morgan.png', 'Julien':'img/coach-julien.png' };
+    data.coaches.forEach((c, i) => {
+      const newPhoto = photoMap[c.name];
+      if (newPhoto && !c.photo) { data.coaches[i].photo = newPhoto; changed = true; }
+    });
+  }
+
   /* S'assure que discipline, settings et textes existent */
   if (!data.discipline) { data.discipline = DEFAULT_DATA.discipline; changed = true; }
   if (!data.settings)   { data.settings   = DEFAULT_DATA.settings;   changed = true; }
