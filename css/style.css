@@ -194,6 +194,22 @@ h1, h2, h3 { font-family: var(--display); font-weight: 400; text-transform: uppe
   filter: drop-shadow(0 0 40px rgba(224, 36, 27, .15));
   animation: bgLogoIn 1.6s var(--ease) .2s forwards;
 }
+.hero__kanji {
+  position: absolute;
+  right: clamp(4%, 8vw, 12%);
+  top: 50%;
+  transform: translateY(-50%);
+  height: clamp(260px, 52vh, 520px);
+  width: auto;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+  /* Filtre crimson : noir → #e0241b */
+  filter: invert(21%) sepia(99%) saturate(2476%) hue-rotate(353deg) brightness(94%) contrast(119%)
+          drop-shadow(0 0 18px rgba(224, 36, 27, .55));
+  animation: bgLogoIn 1.6s var(--ease) .5s forwards;
+}
+@media (max-width: 860px) { .hero__kanji { display: none; } }
 .hero__content { position: relative; z-index: 1; max-width: 760px; }
 .hero__eyebrow { margin-bottom: 1.4rem; display: block; }
 .hero__title { font-size: clamp(2.8rem, 8vw, 6.2rem); margin-bottom: 1.2rem; }
