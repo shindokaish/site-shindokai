@@ -64,8 +64,7 @@ const DEFAULT_DATA = {
         { name: "Mini Karaté",  age: "4 – 6 ans",      days: "À renseigner", time: "À renseigner", belt: "#f3efe7" },
         { name: "Enfants",      age: "7 – 11 ans",      days: "À renseigner", time: "À renseigner", belt: "#e0241b" },
         { name: "Ados",         age: "12 – 15 ans",     days: "À renseigner", time: "À renseigner", belt: "#c9a227" },
-        { name: "Adultes",      age: "16 ans et +",     days: "À renseigner", time: "À renseigner", belt: "#16161a" },
-        { name: "Compétition",  age: "Sur sélection",   days: "À renseigner", time: "À renseigner", belt: "#9a98a0" }
+        { name: "Adultes",      age: "16 ans et +",     days: "À renseigner", time: "À renseigner", belt: "#16161a" }
       ]
     },
     {
