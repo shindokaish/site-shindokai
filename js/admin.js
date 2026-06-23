@@ -127,6 +127,7 @@ function loadSection(key) {
     stats: 'Statistiques',
     coaches: 'Coachs',
     courses: 'Cours & planning',
+    plannings: 'Plannings par dojo',
     dojos: 'Nos dojos',
     actus: 'Actualités',
     galerie: 'Galerie',
@@ -155,6 +156,7 @@ function loadSection(key) {
     textes: renderTextesSection,
     discipline: renderDisciplineSection,
     ceintures_noires: renderCeinturesNoiresSection,
+    plannings: renderPlanningsSection,
     inscription: renderInscriptionSection,
     contact: renderContactSection,
     settings: renderSettingsSection,
@@ -1606,6 +1608,128 @@ function renderInscParametres() {
     saveSection('inscription', insc);
     showToast('Paramètres sauvegardés ✓');
   });
+}
+
+/* ============ SECTION PLANNINGS ============ */
+function renderPlanningsSection(container) {
+  const plannings = getSection('plannings') || [];
+  let activeDojo = 0;
+
+  function render() {
+    container.innerHTML = '';
+
+    // Onglets dojos
+    const tabs = document.createElement('div');
+    tabs.className = 'dojos-tabs';
+    tabs.style.marginBottom = '1.5rem';
+    plannings.forEach((p, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'dojo-tab' + (i === activeDojo ? ' is-active' : '');
+      btn.textContent = p.dojo.replace('Dojo de ', '');
+      btn.addEventListener('click', () => { activeDojo = i; render(); });
+      tabs.appendChild(btn);
+    });
+    container.appendChild(tabs);
+
+    const p = plannings[activeDojo];
+    if (!p) return;
+
+    // Nom du dojo
+    const dojoTitle = document.createElement('div');
+    dojoTitle.style.cssText = 'font-family:var(--eyebrow);font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ash-2);margin-bottom:1.2rem;';
+    dojoTitle.textContent = p.dojo;
+    container.appendChild(dojoTitle);
+
+    // Cartes cours éditables
+    const grid = document.createElement('div');
+    grid.style.cssText = 'display:flex;flex-direction:column;gap:.8rem;max-width:700px;';
+
+    (p.cours || []).forEach((c, ci) => {
+      const card = document.createElement('div');
+      card.className = 'admin-card';
+      card.style.cssText = 'position:relative;border-left:3px solid ' + c.belt + ';';
+      card.innerHTML = `
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.8rem;">
+          <div style="display:flex;align-items:center;gap:.8rem;">
+            <div class="admin-card__title" style="margin:0;">${esc(c.name)}</div>
+            <span style="font-family:var(--mono);font-size:.7rem;color:var(--ash-2);">${esc(c.age)}</span>
+          </div>
+          <button class="admin-btn admin-btn--del" data-del="${ci}">✕ Supprimer</button>
+        </div>
+        <div class="admin-form-grid">
+          <div class="admin-field">
+            <label>Jours</label>
+            <input class="admin-input" data-ci="${ci}" data-field="days" value="${esc(c.days)}" placeholder="ex: Lundi / Mercredi">
+          </div>
+          <div class="admin-field">
+            <label>Horaire</label>
+            <input class="admin-input" data-ci="${ci}" data-field="time" value="${esc(c.time)}" placeholder="ex: 18h00 – 19h30">
+          </div>
+        </div>`;
+      grid.appendChild(card);
+    });
+    container.appendChild(grid);
+
+    // Bouton ajouter un cours
+    const addRow = document.createElement('div');
+    addRow.style.marginTop = '1rem';
+    addRow.innerHTML = `<button class="btn btn--ghost" id="addPlanCours">+ Ajouter un cours</button>`;
+    container.appendChild(addRow);
+
+    // Bouton sauvegarder
+    const saveRow = document.createElement('div');
+    saveRow.style.marginTop = '1.4rem';
+    saveRow.innerHTML = `<button class="btn btn--primary" id="savePlannings">Enregistrer les horaires</button>
+      <span id="planSaveStatus" style="font-family:var(--mono);font-size:.75rem;color:var(--ash-2);margin-left:1rem;"></span>`;
+    container.appendChild(saveRow);
+
+    // Événements : modifier champs
+    container.querySelectorAll('.admin-input[data-field]').forEach(input => {
+      input.addEventListener('input', () => {
+        const ci = +input.dataset.ci;
+        plannings[activeDojo].cours[ci][input.dataset.field] = input.value;
+      });
+    });
+
+    // Supprimer un cours
+    container.querySelectorAll('[data-del]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (!confirmDel('Supprimer ce cours du planning ?')) return;
+        plannings[activeDojo].cours.splice(+btn.dataset.del, 1);
+        render();
+      });
+    });
+
+    // Ajouter un cours
+    document.getElementById('addPlanCours').addEventListener('click', () => {
+      openModal('Nouveau cours', [
+        { id: 'pc-name',  label: 'Nom du cours', value: '' },
+        { id: 'pc-age',   label: 'Tranche d\'âge', value: '' },
+        { id: 'pc-days',  label: 'Jours', value: '' },
+        { id: 'pc-time',  label: 'Horaire', value: '' },
+        { id: 'pc-belt',  label: 'Couleur ceinture (hex)', value: '#f3efe7' }
+      ], () => {
+        plannings[activeDojo].cours.push({
+          name: fv('pc-name'), age: fv('pc-age'),
+          days: fv('pc-days'), time: fv('pc-time'), belt: fv('pc-belt')
+        });
+        saveSection('plannings', plannings);
+        closeModal();
+        render();
+        showToast('Cours ajouté ✓');
+      });
+    });
+
+    // Sauvegarder
+    document.getElementById('savePlannings').addEventListener('click', () => {
+      saveSection('plannings', plannings);
+      const st = document.getElementById('planSaveStatus');
+      st.textContent = 'Sauvegardé ✓';
+      setTimeout(() => { st.textContent = ''; }, 2500);
+    });
+  }
+
+  render();
 }
 
 /* ============ SECTION CEINTURES NOIRES ============ */
