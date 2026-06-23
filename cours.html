@@ -76,21 +76,6 @@
 <script>
 initData().then(() => {
 pageInit('cours');
-const courses = getSection('courses');
-
-// Cards cours
-const coursGrid = document.getElementById('coursGrid');
-courses.forEach(c => {
-  const div = document.createElement('div');
-  div.className = 'cours-card reveal';
-  div.innerHTML = `
-    <div class="cours-card__belt" style="background:${esc(c.belt)}"></div>
-    <div class="cours-card__age">${esc(c.age)}</div>
-    <div class="cours-card__name">${esc(c.name)}</div>
-    <div class="cours-card__level">${esc(c.level)}</div>
-    <div class="cours-card__time"><span>${esc(c.days)}</span><span>${esc(c.time)}</span></div>`;
-  coursGrid.appendChild(div);
-});
 
 // Plannings par dojo
 const plannings = getSection('plannings') || [];
