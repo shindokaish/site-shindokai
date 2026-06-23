@@ -228,6 +228,40 @@ h1, h2, h3 { font-family: var(--display); font-weight: 400; text-transform: uppe
 .hero__cta { display: flex; gap: 1rem; flex-wrap: wrap; opacity: 0; animation: fadeIn .8s var(--ease) 1.1s forwards; }
 
 
+/* ============ PLANNING GRILLE ============ */
+.planning-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1rem;
+  padding: 1.6rem 0;
+}
+.planning-card {
+  background: var(--char);
+  border: 1px solid var(--line);
+  padding: 1.2rem 1rem 1rem;
+  display: flex; flex-direction: column; gap: .4rem;
+  position: relative;
+  transition: border-color .2s, transform .2s;
+}
+.planning-card:hover { border-color: var(--crimson-2); transform: translateY(-2px); }
+.planning-card__belt {
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+}
+.planning-card__age {
+  font-family: var(--mono); font-size: .68rem; color: var(--ash-2);
+  text-transform: uppercase; letter-spacing: .06em; margin-top: .3rem;
+}
+.planning-card__name {
+  font-family: var(--eyebrow); font-size: .9rem; letter-spacing: .04em;
+  text-transform: uppercase; color: var(--bone);
+}
+.planning-card__days {
+  font-size: .82rem; color: var(--ash); margin-top: .3rem;
+}
+.planning-card__time {
+  font-family: var(--mono); font-size: .8rem; color: var(--gold);
+}
+
 /* ============ CEINTURES NOIRES ============ */
 .cb-grid {
   display: grid;

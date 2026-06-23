@@ -51,9 +51,18 @@
       <p class="section__lede" id="co-s1-lede">Du baby-karaté à la compétition — un parcours pensé pour progresser à son rythme, de l'initiation au haut niveau.</p>
     </div>
     <div class="cours-grid" id="coursGrid"></div>
-    <div class="planning reveal">
-      <table id="planningTable"></table>
+  </div>
+</section>
+
+<!-- ============ PLANNINGS PAR DOJO ============ -->
+<section class="section section--alt">
+  <div class="wrap">
+    <div class="section__head reveal">
+      <span class="eyebrow-text">Plannings</span>
+      <h2 class="section__title">Horaires par<br>dojo.</h2>
     </div>
+    <div class="dojos-tabs reveal" id="planningTabs"></div>
+    <div id="planningPanels"></div>
   </div>
 </section>
 
@@ -157,18 +166,51 @@ courses.forEach(c => {
   coursGrid.appendChild(div);
 });
 
-// Planning table
-const table = document.getElementById('planningTable');
-const thead = document.createElement('thead');
-thead.innerHTML = '<tr><th>Cours</th><th>Âge</th><th>Jours</th><th>Horaire</th><th>Niveau</th></tr>';
-table.appendChild(thead);
-const tbody = document.createElement('tbody');
-courses.forEach(c => {
-  const tr = document.createElement('tr');
-  tr.innerHTML = `<td>${esc(c.name)}</td><td>${esc(c.age)}</td><td>${esc(c.days)}</td><td>${esc(c.time)}</td><td>${esc(c.level)}</td>`;
-  tbody.appendChild(tr);
+// Plannings par dojo
+const plannings = getSection('plannings') || [];
+const planningTabs = document.getElementById('planningTabs');
+const planningPanels = document.getElementById('planningPanels');
+
+plannings.forEach((p, i) => {
+  // Onglet
+  const btn = document.createElement('button');
+  btn.className = 'dojo-tab' + (i === 0 ? ' is-active' : '');
+  btn.textContent = p.dojo.replace('Dojo de ', '');
+  btn.dataset.index = i;
+  planningTabs.appendChild(btn);
+
+  // Panel : grille de cartes
+  const panel = document.createElement('div');
+  panel.className = 'dojo-panel' + (i === 0 ? ' is-active' : '');
+  panel.dataset.index = i;
+
+  const grid = document.createElement('div');
+  grid.className = 'planning-grid';
+
+  (p.cours || []).forEach(c => {
+    const card = document.createElement('div');
+    card.className = 'planning-card';
+    card.innerHTML = `
+      <div class="planning-card__belt" style="background:${esc(c.belt)}"></div>
+      <div class="planning-card__age">${esc(c.age)}</div>
+      <div class="planning-card__name">${esc(c.name)}</div>
+      <div class="planning-card__days">${esc(c.days)}</div>
+      <div class="planning-card__time">${esc(c.time)}</div>`;
+    grid.appendChild(card);
+  });
+
+  panel.appendChild(grid);
+  planningPanels.appendChild(panel);
 });
-table.appendChild(tbody);
+
+planningTabs.addEventListener('click', e => {
+  const btn = e.target.closest('.dojo-tab');
+  if (!btn) return;
+  planningTabs.querySelectorAll('.dojo-tab').forEach(b => b.classList.remove('is-active'));
+  planningPanels.querySelectorAll('.dojo-panel').forEach(p => p.classList.remove('is-active'));
+  btn.classList.add('is-active');
+  planningPanels.querySelector(`[data-index="${btn.dataset.index}"]`).classList.add('is-active');
+});
 
 
 // Textes dynamiques

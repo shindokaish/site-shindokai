@@ -64,6 +64,7 @@ function migrateData() {
   if (!data.settings)         { data.settings         = DEFAULT_DATA.settings;         changed = true; }
   if (!data.textes)           { data.textes           = DEFAULT_DATA.textes;           changed = true; }
   if (!data.ceintures_noires) { data.ceintures_noires = DEFAULT_DATA.ceintures_noires; changed = true; }
+  if (!data.plannings)       { data.plannings       = DEFAULT_DATA.plannings;       changed = true; }
 
   /* S'assure que membres a toutes ses sous-clés */
   if (!data.membres) { data.membres = DEFAULT_DATA.membres; changed = true; }

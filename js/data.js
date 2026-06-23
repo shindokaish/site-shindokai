@@ -57,6 +57,36 @@ const DEFAULT_DATA = {
     { name: "Ados / Adultes", price: "220€", period: "/an", featured: true,  features: ["Licence FFKDA incluse", "Cours illimités", "Accès stages self-défense", "Suivi compétition possible"] },
     { name: "Famille",        price: "380€", period: "/an", featured: false, features: ["2 licences incluses", "Cours illimités", "Tarif préférentiel 3e licence", "Événements famille"] }
   ],
+  plannings: [
+    {
+      dojo: "Dojo de Santes",
+      cours: [
+        { name: "Mini Karaté",  age: "4 – 6 ans",      days: "À renseigner", time: "À renseigner", belt: "#f3efe7" },
+        { name: "Enfants",      age: "7 – 11 ans",      days: "À renseigner", time: "À renseigner", belt: "#e0241b" },
+        { name: "Ados",         age: "12 – 15 ans",     days: "À renseigner", time: "À renseigner", belt: "#c9a227" },
+        { name: "Adultes",      age: "16 ans et +",     days: "À renseigner", time: "À renseigner", belt: "#16161a" },
+        { name: "Compétition",  age: "Sur sélection",   days: "À renseigner", time: "À renseigner", belt: "#9a98a0" }
+      ]
+    },
+    {
+      dojo: "Dojo de Hallennes-lez-Haubourdin",
+      cours: [
+        { name: "Mini Karaté",  age: "4 – 6 ans",      days: "À renseigner", time: "À renseigner", belt: "#f3efe7" },
+        { name: "Enfants",      age: "7 – 11 ans",      days: "À renseigner", time: "À renseigner", belt: "#e0241b" },
+        { name: "Ados",         age: "12 – 15 ans",     days: "À renseigner", time: "À renseigner", belt: "#c9a227" },
+        { name: "Adultes",      age: "16 ans et +",     days: "À renseigner", time: "À renseigner", belt: "#16161a" }
+      ]
+    },
+    {
+      dojo: "Dojo de Vieux-Berquin",
+      cours: [
+        { name: "Mini Karaté",  age: "4 – 6 ans",      days: "À renseigner", time: "À renseigner", belt: "#f3efe7" },
+        { name: "Enfants",      age: "7 – 11 ans",      days: "À renseigner", time: "À renseigner", belt: "#e0241b" },
+        { name: "Ados",         age: "12 – 15 ans",     days: "À renseigner", time: "À renseigner", belt: "#c9a227" },
+        { name: "Adultes",      age: "16 ans et +",     days: "À renseigner", time: "À renseigner", belt: "#16161a" }
+      ]
+    }
+  ],
   disciplineBadges: ["Karaté contact", "Boxe", "Soumission au sol", "Projections & clés", "Karaté-Jutsu FFKDA", "Dès 6 ans"],
   ceintures_noires: [
     { name: "Gilles Richard", dan: "7e Dan Shindokai", dojo: "", photo: "" }
@@ -338,7 +368,7 @@ async function initData() {
 /* Pousse toutes les sections par défaut vers Supabase (premier démarrage) */
 async function _pushAllDefaults(sb) {
   const keys = ['club','adminPassword','stats','coaches','courses','dojos',
-                 'actus','galerie','tarifs','disciplineBadges','ceintures_noires','discipline','membres','inscription','settings','textes'];
+                 'actus','galerie','tarifs','disciplineBadges','ceintures_noires','plannings','discipline','membres','inscription','settings','textes'];
   const rows = keys.map(k => ({ key: k, value: DEFAULT_DATA[k] }));
   await sb.from('data_store').upsert(rows, { onConflict: 'key' });
 }
