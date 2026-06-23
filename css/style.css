@@ -234,11 +234,14 @@ h1, h2, h3 { font-family: var(--display); font-weight: 400; text-transform: uppe
   flex-wrap: nowrap;
   gap: 1rem;
   padding: 1.6rem 0;
-  overflow-x: auto;
 }
 .planning-grid .planning-card {
-  flex: 1 0 160px;
-  min-width: 140px;
+  flex: 1;
+  min-width: 0;
+}
+@media (max-width: 600px) {
+  .planning-grid { flex-wrap: wrap; }
+  .planning-grid .planning-card { flex: 1 0 calc(50% - .5rem); }
 }
 .planning-card {
   background: var(--char);
