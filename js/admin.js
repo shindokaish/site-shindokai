@@ -60,9 +60,10 @@ function migrateData() {
   }
 
   /* S'assure que discipline, settings et textes existent */
-  if (!data.discipline) { data.discipline = DEFAULT_DATA.discipline; changed = true; }
-  if (!data.settings)   { data.settings   = DEFAULT_DATA.settings;   changed = true; }
-  if (!data.textes)     { data.textes     = DEFAULT_DATA.textes;     changed = true; }
+  if (!data.discipline)       { data.discipline       = DEFAULT_DATA.discipline;       changed = true; }
+  if (!data.settings)         { data.settings         = DEFAULT_DATA.settings;         changed = true; }
+  if (!data.textes)           { data.textes           = DEFAULT_DATA.textes;           changed = true; }
+  if (!data.ceintures_noires) { data.ceintures_noires = DEFAULT_DATA.ceintures_noires; changed = true; }
 
   /* S'assure que membres a toutes ses sous-clés */
   if (!data.membres) { data.membres = DEFAULT_DATA.membres; changed = true; }
@@ -124,6 +125,7 @@ function loadSection(key) {
     tarifs: 'Tarifs',
     textes: 'Textes du site',
     discipline: 'Page Discipline',
+    ceintures_noires: 'Ceintures noires',
     inscription: 'Formulaire d\'inscription',
     contact: 'Contact & formulaire',
     settings: 'Paramètres',
@@ -144,6 +146,7 @@ function loadSection(key) {
     tarifs: renderTarifsSection,
     textes: renderTextesSection,
     discipline: renderDisciplineSection,
+    ceintures_noires: renderCeinturesNoiresSection,
     inscription: renderInscriptionSection,
     contact: renderContactSection,
     settings: renderSettingsSection,
@@ -475,27 +478,35 @@ function renderDojosList() {
 function openDojoModal(index) {
   editingIndex = index;
   const dojos = getSection('dojos');
-  const d = index !== null ? dojos[index] : { name: '', logo: '', address: '', phone: '', horaires: '', acces: '', mapEmbed: '', mapLink: '' };
+  const d = index !== null ? dojos[index] : { name: '', logo: '', address: '', phone: '', horaires: '', acces: '', mapEmbed: '', mapLink: '', president: '', presidentPhone: '', presidentEmail: '', instructeur: '' };
   openModal('Dojo', [
-    { id: 'dm-name', label: 'Nom du dojo', value: d.name },
-    { id: 'dm-logo', label: 'Logo (URL ou nom de fichier)', value: d.logo || '' },
-    { id: 'dm-address', label: 'Adresse complète', value: d.address },
-    { id: 'dm-phone', label: 'Téléphone', value: d.phone || '' },
-    { id: 'dm-horaires', label: 'Horaires', value: d.horaires, textarea: true },
-    { id: 'dm-acces', label: 'Accès / transports', value: d.acces || '' },
-    { id: 'dm-mapEmbed', label: 'Src iframe Google Maps', value: d.mapEmbed || '' },
-    { id: 'dm-mapLink', label: 'Lien Google Maps', value: d.mapLink || '' }
+    { id: 'dm-name',           label: 'Nom du dojo',                  value: d.name },
+    { id: 'dm-logo',           label: 'Logo (URL ou nom de fichier)',  value: d.logo || '' },
+    { id: 'dm-address',        label: 'Adresse complète',             value: d.address },
+    { id: 'dm-phone',          label: 'Téléphone du dojo',            value: d.phone || '' },
+    { id: 'dm-horaires',       label: 'Horaires',                     value: d.horaires, textarea: true },
+    { id: 'dm-acces',          label: 'Accès / transports',           value: d.acces || '' },
+    { id: 'dm-president',      label: 'Président — Nom',              value: d.president || '' },
+    { id: 'dm-presidentPhone', label: 'Président — Téléphone',        value: d.presidentPhone || '' },
+    { id: 'dm-presidentEmail', label: 'Président — Email',            value: d.presidentEmail || '' },
+    { id: 'dm-instructeur',    label: 'Instructeur référent',         value: d.instructeur || '' },
+    { id: 'dm-mapEmbed',       label: 'Src iframe Google Maps',       value: d.mapEmbed || '' },
+    { id: 'dm-mapLink',        label: 'Lien Google Maps',             value: d.mapLink || '' }
   ], () => {
     const dojos = getSection('dojos');
     const entry = {
-      name: fv('dm-name'),
-      logo: fv('dm-logo'),
-      address: fv('dm-address'),
-      phone: fv('dm-phone'),
-      horaires: fv('dm-horaires'),
-      acces: fv('dm-acces'),
-      mapEmbed: fv('dm-mapEmbed'),
-      mapLink: fv('dm-mapLink')
+      name:           fv('dm-name'),
+      logo:           fv('dm-logo'),
+      address:        fv('dm-address'),
+      phone:          fv('dm-phone'),
+      horaires:       fv('dm-horaires'),
+      acces:          fv('dm-acces'),
+      president:      fv('dm-president'),
+      presidentPhone: fv('dm-presidentPhone'),
+      presidentEmail: fv('dm-presidentEmail'),
+      instructeur:    fv('dm-instructeur'),
+      mapEmbed:       fv('dm-mapEmbed'),
+      mapLink:        fv('dm-mapLink')
     };
     if (editingIndex !== null) dojos[editingIndex] = entry;
     else dojos.push(entry);
@@ -620,7 +631,7 @@ function openActuModal(index) {
         <div class="actu-card__meta"><span class="actu-card__tag">${esc(tag)}</span><span class="actu-card__date">${esc(date)}</span></div>
         <div class="actu-card__title">${esc(title)}</div>
         <p class="actu-card__text">${esc(text.substring(0, 120))}</p>
-        <div class="actu-card__footer"><span class="actu-card__link">${lien ? 'Lire la suite →' : 'Shindokai-Kan I-S-L'}</span></div>
+        <div class="actu-card__footer"><span class="actu-card__link">${lien ? 'Lire la suite →' : 'EKSN'}</span></div>
       </div></div>`;
   }
 
@@ -1586,6 +1597,77 @@ function renderInscParametres() {
     insc.formspreeId = document.getElementById('insc-formspree-input').value.trim();
     saveSection('inscription', insc);
     showToast('Paramètres sauvegardés ✓');
+  });
+}
+
+/* ============ SECTION CEINTURES NOIRES ============ */
+function renderCeinturesNoiresSection(container) {
+  container.innerHTML = `<div id="cnAdmin"></div><button class="btn btn--ghost" id="addCnBtn" style="margin-top:1rem;">+ Ajouter une ceinture noire</button>`;
+  renderCeinturesNoiresList();
+  document.getElementById('addCnBtn').addEventListener('click', () => {
+    editingIndex = null;
+    openCeintureNoireModal(null);
+  });
+}
+
+function renderCeinturesNoiresList() {
+  const list = getSection('ceintures_noires') || [];
+  const el = document.getElementById('cnAdmin');
+  if (!el) return;
+  el.innerHTML = '';
+  if (!list.length) { el.innerHTML = '<p class="admin-empty">Aucune ceinture noire enregistrée.</p>'; return; }
+  list.forEach((c, i) => {
+    const row = document.createElement('div');
+    row.className = 'admin-item';
+    row.innerHTML = `
+      <div class="admin-item__info">
+        <div class="admin-item__tag">${esc(c.dan)}</div>
+        <div class="admin-item__title">${esc(c.name)}</div>
+        ${c.dojo ? `<div class="admin-item__date">Dojo : ${esc(c.dojo)}</div>` : ''}
+      </div>
+      <div class="admin-item__actions">
+        <button class="admin-btn admin-btn--edit" data-i="${i}">✏ Modifier</button>
+        <button class="admin-btn admin-btn--del" data-i="${i}">✕</button>
+      </div>`;
+    el.appendChild(row);
+  });
+  el.querySelectorAll('.admin-btn--edit').forEach(btn =>
+    btn.addEventListener('click', () => openCeintureNoireModal(+btn.dataset.i))
+  );
+  el.querySelectorAll('.admin-btn--del').forEach(btn =>
+    btn.addEventListener('click', () => {
+      if (!confirmDel('Supprimer cette ceinture noire ?')) return;
+      const list = getSection('ceintures_noires');
+      list.splice(+btn.dataset.i, 1);
+      saveSection('ceintures_noires', list);
+      renderCeinturesNoiresList();
+    })
+  );
+}
+
+function openCeintureNoireModal(index) {
+  editingIndex = index;
+  const list = getSection('ceintures_noires') || [];
+  const c = index !== null ? list[index] : { name: '', dan: '', dojo: '', photo: '' };
+  openModal('Ceinture noire', [
+    { id: 'cn-name',  label: 'Nom complet',   value: c.name },
+    { id: 'cn-dan',   label: 'Grade (ex: 3e Dan Shindokai)', value: c.dan },
+    { id: 'cn-dojo',  label: 'Dojo (facultatif)', value: c.dojo || '' },
+    { id: 'cn-photo', label: 'URL Photo (facultatif)', value: c.photo || '' }
+  ], () => {
+    const list = getSection('ceintures_noires') || [];
+    const entry = {
+      name: fv('cn-name'),
+      dan:  fv('cn-dan'),
+      dojo: fv('cn-dojo'),
+      photo: fv('cn-photo')
+    };
+    if (editingIndex !== null) list[editingIndex] = entry;
+    else list.push(entry);
+    saveSection('ceintures_noires', list);
+    renderCeinturesNoiresList();
+    closeModal();
+    showToast('Ceinture noire enregistrée ✓');
   });
 }
 

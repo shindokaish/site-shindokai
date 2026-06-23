@@ -3,16 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Shindokai-Nord — Respect. Honneur. Discipline.</title>
-<meta name="description" content="Shindokai-Nord — Karaté-Jutsu FFKDA. Le triathlon des arts martiaux : karaté contact, boxe, soumission au sol. Cours enfants, ados, adultes. Essai gratuit.">
+<title>EKSN — Respect. Honneur. Discipline.</title>
+<meta name="description" content="EKSN — Karaté-Jutsu FFKDA. Le triathlon des arts martiaux : karaté contact, boxe, soumission au sol. Cours enfants, ados, adultes. Essai gratuit.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://site-shindokai.vercel.app/">
-<meta property="og:title" content="Shindokai-Nord — Karaté-Jutsu FFKDA">
-<meta property="og:description" content="Shindokai-Nord — Karaté-Jutsu FFKDA. Le triathlon des arts martiaux : karaté contact, boxe, soumission au sol. Cours enfants, ados, adultes. Essai gratuit.">
+<meta property="og:title" content="EKSN — Karaté-Jutsu FFKDA">
+<meta property="og:description" content="EKSN — Karaté-Jutsu FFKDA. Le triathlon des arts martiaux : karaté contact, boxe, soumission au sol. Cours enfants, ados, adultes. Essai gratuit.">
 <meta property="og:image" content="https://site-shindokai.vercel.app/shinodkai.png">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Shindokai-Nord — Karaté-Jutsu FFKDA">
-<meta name="twitter:description" content="Shindokai-Nord — Karaté-Jutsu FFKDA. Le triathlon des arts martiaux : karaté contact, boxe, soumission au sol. Cours enfants, ados, adultes. Essai gratuit.">
+<meta name="twitter:title" content="EKSN — Karaté-Jutsu FFKDA">
+<meta name="twitter:description" content="EKSN — Karaté-Jutsu FFKDA. Le triathlon des arts martiaux : karaté contact, boxe, soumission au sol. Cours enfants, ados, adultes. Essai gratuit.">
 <meta name="twitter:image" content="https://site-shindokai.vercel.app/shinodkai.png">
 <link rel="icon" href="shinodkai.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -64,7 +64,7 @@
       </div>
       <div class="discipline-right reveal">
         <div class="discipline-logos">
-          <img src="shinodkai.png" alt="Logo Shindokai-Nord" loading="lazy">
+          <img src="shinodkai.png" alt="Logo EKSN" loading="lazy">
           <img src="logo_edit_597009898409420.jpg" alt="Logo Dojo Santes" loading="lazy">
         </div>
         <div class="stats" id="statsGrid"></div>
@@ -112,13 +112,25 @@
   </div>
 </section>
 
+<!-- ============ CEINTURES NOIRES ============ -->
+<section class="section section--alt">
+  <div class="wrap">
+    <div class="section__head reveal">
+      <span class="eyebrow-text">Grades</span>
+      <h2 class="section__title">Les ceintures<br>noires.</h2>
+      <p class="section__lede">Les pratiquants qui ont atteint la ceinture noire au sein du Shindokai-Kan.</p>
+    </div>
+    <div class="cb-grid" id="cbGrid"></div>
+  </div>
+</section>
+
 <!-- ============ ACTUALITÉS ============ -->
 <section class="section section--actu">
   <div class="wrap">
     <div class="section__head reveal">
       <span class="eyebrow-text" id="idx-actus-eyebrow">Actualités</span>
       <h2 class="section__title" id="idx-actus-titre">La vie<br>du club.</h2>
-      <p class="section__lede" id="idx-actus-lede">Compétitions, stages, passages de grades, événements — toute l'actualité du Shindokai-Nord.</p>
+      <p class="section__lede" id="idx-actus-lede">Compétitions, stages, passages de grades, événements — toute l'actualité du EKSN.</p>
     </div>
     <div class="actu-grid" id="actuGrid"></div>
     <div style="text-align:center;margin-top:2.4rem;">
@@ -281,6 +293,29 @@ tarifs.forEach(t => {
     <a href="contact.html" class="btn ${t.featured ? 'btn--primary' : 'btn--ghost'}">Je m'inscris</a>`;
   tarifsGrid.appendChild(div);
 });
+
+// Ceintures noires
+const cbGrid = document.getElementById('cbGrid');
+const ceinturesNoires = getSection('ceintures_noires') || [];
+if (ceinturesNoires.length) {
+  ceinturesNoires.forEach(c => {
+    const card = document.createElement('div');
+    card.className = 'cb-card reveal';
+    const photoHTML = c.photo
+      ? `<img src="${esc(c.photo)}" alt="${esc(c.name)}" loading="lazy">`
+      : `<div class="cb-card__initials">${esc(c.name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase())}</div>`;
+    card.innerHTML = `
+      <div class="cb-card__belt"></div>
+      <div class="cb-card__photo">${photoHTML}</div>
+      <div class="cb-card__name">${esc(c.name)}</div>
+      <div class="cb-card__dan">${esc(c.dan)}</div>
+      ${c.dojo ? `<div class="cb-card__dojo">${esc(c.dojo)}</div>` : ''}`;
+    cbGrid.appendChild(card);
+    revealObs.observe(card);
+  });
+} else {
+  cbGrid.innerHTML = '<p style="color:var(--ash-2);font-family:var(--mono);font-size:.85rem;">À venir.</p>';
+}
 
 // Hero glow
 initHeroGlow('heroGlow', 'home');

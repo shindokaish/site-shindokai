@@ -8,8 +8,8 @@ const SUPABASE_KEY = 'sb_publishable_15BDd64WYwMfW8VV9ZXDqg_Oa2ySvKc';
 /* ============ DONNÉES PAR DÉFAUT ============ */
 const DEFAULT_DATA = {
   club: {
-    name: "Shindokai-Kan I-S-L",
-    shortName: "SHINDOKAI NORD",
+    name: "EKSN — École de Karaté Shindokai Nord",
+    shortName: "EKSN",
     email: "contact@shindokai-kan-isl.fr",
     phone: "XX XX XX XX XX",
     facebook: "#",
@@ -42,9 +42,9 @@ const DEFAULT_DATA = {
     { age: "Sur sélection", name: "Compétition",   level: "Entraînement spécifique",        days: "Samedi",             time: "10h00 – 12h00", belt: "#9a98a0" }
   ],
   dojos: [
-    { name: "Dojo Santes", logo: "logo_edit_597009898409420.jpg", address: "Salle Laurent PREVOST, Rue du Général Koenig, 59211 Santes", phone: "XX XX XX XX XX", horaires: "À renseigner", acces: "À renseigner", mapEmbed: "", mapLink: "https://maps.google.com/?q=Salle+Laurent+PREVOST+59211+Santes" },
-    { name: "Dojo 2", logo: "", address: "À renseigner", phone: "", horaires: "À renseigner", acces: "", mapEmbed: "", mapLink: "" },
-    { name: "Dojo 3", logo: "", address: "À renseigner", phone: "", horaires: "À renseigner", acces: "", mapEmbed: "", mapLink: "" }
+    { name: "Dojo de Santes", logo: "logo_edit_597009898409420.jpg", address: "Salle Laurent PREVOST, Rue du Général Koenig, 59211 Santes", phone: "", horaires: "À renseigner", acces: "", mapEmbed: "", mapLink: "https://maps.google.com/?q=Salle+Laurent+PREVOST+59211+Santes", president: "", presidentPhone: "", presidentEmail: "", instructeur: "" },
+    { name: "Dojo de Hallennes-lez-Haubourdin", logo: "", address: "À renseigner — 59320 Hallennes-lez-Haubourdin", phone: "", horaires: "À renseigner", acces: "", mapEmbed: "", mapLink: "https://maps.google.com/?q=Hallennes-lez-Haubourdin+59320", president: "", presidentPhone: "", presidentEmail: "", instructeur: "" },
+    { name: "Dojo de Vieux-Berquin", logo: "", address: "À renseigner — 59232 Vieux-Berquin", phone: "", horaires: "À renseigner", acces: "", mapEmbed: "", mapLink: "https://maps.google.com/?q=Vieux-Berquin+59232", president: "", presidentPhone: "", presidentEmail: "", instructeur: "" }
   ],
   actus: [
     { id: 1, type: "gold", tag: "Compétition", date: "Juin 2025", title: "Résultats du championnat régional", text: "Nos pratiquants ont brillé lors du championnat régional. Félicitations à tous les participants pour leur engagement et leur fair-play.", image: "", lien: "" },
@@ -58,6 +58,9 @@ const DEFAULT_DATA = {
     { name: "Famille",        price: "380€", period: "/an", featured: false, features: ["2 licences incluses", "Cours illimités", "Tarif préférentiel 3e licence", "Événements famille"] }
   ],
   disciplineBadges: ["Karaté contact", "Boxe", "Soumission au sol", "Projections & clés", "Karaté-Jutsu FFKDA", "Dès 6 ans"],
+  ceintures_noires: [
+    { name: "Gilles Richard", dan: "7e Dan Shindokai", dojo: "", photo: "" }
+  ],
   membres: {
     password: "dojo2025",
     jeux: { quiz: true, flashcards: true, memory: true },
@@ -159,7 +162,7 @@ const DEFAULT_DATA = {
       coachsLede: 'Une pédagogie exigeante et bienveillante, adaptée à chaque âge et chaque objectif.',
       actusEyebrow: 'Actualités',
       actusTitre: 'La vie\ndu club.',
-      actusLede: 'Compétitions, stages, passages de grades, événements — toute l\'actualité du Shindokai-Kan I-S-L.',
+      actusLede: 'Compétitions, stages, passages de grades, événements — toute l\'actualité du EKSN.',
       tarifsEyebrow: 'Inscription',
       tarifsTitre: 'Rejoignez\nle dojo.',
       tarifsLede: 'Premier cours toujours offert, sans engagement. Venez essayer avant de vous inscrire.',
@@ -196,7 +199,7 @@ const DEFAULT_DATA = {
       heroTitre: ['Actualités.'],
       s1Eyebrow: 'Toutes les actus',
       s1Titre: 'Compétitions,\nstages, grades.',
-      s1Lede: 'Suivez toute l\'actualité du Shindokai-Kan I-S-L — résultats, événements, passages de grades et informations pratiques.',
+      s1Lede: 'Suivez toute l\'actualité du EKSN — résultats, événements, passages de grades et informations pratiques.',
       ctaTitre: 'Rejoignez le club.',
       ctaSub: 'Vivez ces moments de l\'intérieur — inscrivez-vous et faites partie de l\'aventure Shindokai.'
     },
@@ -246,7 +249,7 @@ const DEFAULT_DATA = {
   },
   inscription: {
     titre: "Demande d'inscription",
-    intro: "Remplissez ce formulaire pour vous inscrire ou inscrire votre enfant au Shindokai-Kan I-S-L. Un responsable vous contactera sous 48h pour confirmer votre inscription.",
+    intro: "Remplissez ce formulaire pour vous inscrire ou inscrire votre enfant au EKSN. Un responsable vous contactera sous 48h pour confirmer votre inscription.",
     formspreeId: "",
     fields: [
       { id:"nom",        label:"Nom",               type:"text",     required:true,  enabled:true,  group:"Identité",      placeholder:"Nom de famille" },
@@ -335,7 +338,7 @@ async function initData() {
 /* Pousse toutes les sections par défaut vers Supabase (premier démarrage) */
 async function _pushAllDefaults(sb) {
   const keys = ['club','adminPassword','stats','coaches','courses','dojos',
-                 'actus','galerie','tarifs','disciplineBadges','discipline','membres','inscription','settings','textes'];
+                 'actus','galerie','tarifs','disciplineBadges','ceintures_noires','discipline','membres','inscription','settings','textes'];
   const rows = keys.map(k => ({ key: k, value: DEFAULT_DATA[k] }));
   await sb.from('data_store').upsert(rows, { onConflict: 'key' });
 }

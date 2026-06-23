@@ -3,16 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Galerie — Shindokai-Nord</title>
-<meta name="description" content="Galerie photos et vidéos du club Shindokai-Nord — compétitions, stages, passages de grades.">
+<title>Galerie — EKSN</title>
+<meta name="description" content="Galerie photos et vidéos du club EKSN — compétitions, stages, passages de grades.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://site-shindokai.vercel.app/galerie.html">
-<meta property="og:title" content="Galerie — Shindokai-Nord">
-<meta property="og:description" content="Galerie photos et vidéos du club Shindokai-Nord — compétitions, stages, passages de grades.">
+<meta property="og:title" content="Galerie — EKSN">
+<meta property="og:description" content="Galerie photos et vidéos du club EKSN — compétitions, stages, passages de grades.">
 <meta property="og:image" content="https://site-shindokai.vercel.app/shinodkai.png">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Galerie — Shindokai-Nord">
-<meta name="twitter:description" content="Galerie photos et vidéos du club Shindokai-Nord — compétitions, stages, passages de grades.">
+<meta name="twitter:title" content="Galerie — EKSN">
+<meta name="twitter:description" content="Galerie photos et vidéos du club EKSN — compétitions, stages, passages de grades.">
 <meta name="twitter:image" content="https://site-shindokai.vercel.app/shinodkai.png">
 <link rel="icon" href="shinodkai.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -104,7 +104,7 @@ if (!galerie || !galerie.length) {
     item.className = 'galerie-item reveal';
     item.dataset.i = i;
     item.innerHTML = `
-      <img src="${esc(img.url)}" alt="${esc(img.caption || 'Shindokai-Nord')}" loading="lazy">
+      <img src="${esc(img.url)}" alt="${esc(img.caption || 'EKSN')}" loading="lazy">
       <div class="galerie-item__overlay"><span class="galerie-item__caption">${esc(img.caption || '')}</span></div>`;
     item.addEventListener('click', () => openLightbox(img, i));
     grid.appendChild(item);

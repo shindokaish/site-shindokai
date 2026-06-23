@@ -219,7 +219,7 @@ function buildActuCard(a) {
     : `<div class="actu-card__img-placeholder"><svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg></div>`;
   const lienHTML = a.lien
     ? `<a href="${esc(a.lien)}" class="actu-card__link" target="_blank" rel="noopener">Lire la suite →</a>`
-    : `<span class="actu-card__link" style="opacity:.4;cursor:default;">Shindokai-Kan I-S-L</span>`;
+    : `<span class="actu-card__link" style="opacity:.4;cursor:default;">EKSN</span>`;
   const div = document.createElement('div');
   div.className = `actu-card reveal actu-card--${esc(a.type || 'actu')}`;
   div.dataset.tag = (a.tag || '').toLowerCase();

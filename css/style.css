@@ -228,6 +228,51 @@ h1, h2, h3 { font-family: var(--display); font-weight: 400; text-transform: uppe
 .hero__cta { display: flex; gap: 1rem; flex-wrap: wrap; opacity: 0; animation: fadeIn .8s var(--ease) 1.1s forwards; }
 
 
+/* ============ CEINTURES NOIRES ============ */
+.cb-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 1.2rem;
+  margin-top: 2rem;
+}
+.cb-card {
+  background: var(--char);
+  border: 1px solid var(--line);
+  display: flex; flex-direction: column; align-items: center;
+  padding: 1.4rem 1rem 1.2rem;
+  text-align: center;
+  position: relative;
+  transition: border-color .2s, transform .2s;
+}
+.cb-card:hover { border-color: var(--gold); transform: translateY(-3px); }
+.cb-card__belt {
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: #1a1a1a;
+  border-top: 1px solid var(--gold);
+}
+.cb-card__photo {
+  width: 64px; height: 64px; border-radius: 50%;
+  overflow: hidden; margin-bottom: .9rem;
+  border: 2px solid var(--line);
+  display: flex; align-items: center; justify-content: center;
+  background: var(--char-2);
+}
+.cb-card__photo img { width: 100%; height: 100%; object-fit: cover; }
+.cb-card__initials {
+  font-family: var(--display); font-size: 1.2rem; color: var(--gold);
+}
+.cb-card__name {
+  font-family: var(--eyebrow); font-size: .82rem; letter-spacing: .04em;
+  text-transform: uppercase; color: var(--bone); margin-bottom: .3rem;
+}
+.cb-card__dan {
+  font-family: var(--mono); font-size: .72rem; color: var(--gold);
+  margin-bottom: .2rem;
+}
+.cb-card__dojo {
+  font-size: .72rem; color: var(--ash-2); margin-top: .2rem;
+}
+
 /* ============ SECTIONS ============ */
 .section { padding: 7rem 0; }
 .section--alt { background: var(--char); }

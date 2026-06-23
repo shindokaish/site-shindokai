@@ -3,16 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nos dojos — Shindokai-Nord</title>
-<meta name="description" content="Trouvez le dojo Shindokai-Nord le plus proche. 3 sites dans le Nord (59) avec les mêmes coachs diplômés FFKDA.">
+<title>Nos dojos — EKSN</title>
+<meta name="description" content="Trouvez le dojo EKSN le plus proche. 3 sites dans le Nord (59) avec les mêmes coachs diplômés FFKDA.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://site-shindokai.vercel.app/dojos.html">
-<meta property="og:title" content="Nos dojos — Shindokai-Nord">
-<meta property="og:description" content="Trouvez le dojo Shindokai-Nord le plus proche. 3 sites dans le Nord (59) avec les mêmes coachs diplômés FFKDA.">
+<meta property="og:title" content="Nos dojos — EKSN">
+<meta property="og:description" content="Trouvez le dojo EKSN le plus proche. 3 sites dans le Nord (59) avec les mêmes coachs diplômés FFKDA.">
 <meta property="og:image" content="https://site-shindokai.vercel.app/shinodkai.png">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Nos dojos — Shindokai-Nord">
-<meta name="twitter:description" content="Trouvez le dojo Shindokai-Nord le plus proche. 3 sites dans le Nord (59) avec les mêmes coachs diplômés FFKDA.">
+<meta name="twitter:title" content="Nos dojos — EKSN">
+<meta name="twitter:description" content="Trouvez le dojo EKSN le plus proche. 3 sites dans le Nord (59) avec les mêmes coachs diplômés FFKDA.">
 <meta name="twitter:image" content="https://site-shindokai.vercel.app/shinodkai.png">
 <link rel="icon" href="shinodkai.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -140,6 +140,10 @@ dojos.forEach((d, i) => {
       ${d.phone ? `<div class="dojo-item"><span class="dojo-item__label">Téléphone</span><span class="dojo-item__value">${esc(d.phone)}</span></div>` : ''}
       <div class="dojo-item"><span class="dojo-item__label">Horaires</span><span class="dojo-item__value" style="white-space:pre-line;">${esc(d.horaires)}</span></div>
       ${d.acces ? `<div class="dojo-item"><span class="dojo-item__label">Accès</span><span class="dojo-item__value">${esc(d.acces)}</span></div>` : ''}
+      ${d.instructeur ? `<div class="dojo-item" style="margin-top:.6rem;padding-top:.6rem;border-top:1px solid var(--line)"><span class="dojo-item__label">Instructeur référent</span><span class="dojo-item__value">${esc(d.instructeur)}</span></div>` : ''}
+      ${d.president ? `<div class="dojo-item"><span class="dojo-item__label">Président</span><span class="dojo-item__value">${esc(d.president)}</span></div>` : ''}
+      ${d.presidentPhone ? `<div class="dojo-item"><span class="dojo-item__label">Tél. président</span><span class="dojo-item__value"><a href="tel:${esc(d.presidentPhone)}" style="color:var(--gold)">${esc(d.presidentPhone)}</a></span></div>` : ''}
+      ${d.presidentEmail ? `<div class="dojo-item"><span class="dojo-item__label">Email président</span><span class="dojo-item__value"><a href="mailto:${esc(d.presidentEmail)}" style="color:var(--gold)">${esc(d.presidentEmail)}</a></span></div>` : ''}
       ${d.mapLink && d.mapLink !== '#' ? `<div class="dojo-item"><a href="${esc(d.mapLink)}" target="_blank" rel="noopener" class="btn btn--ghost" style="font-size:.72rem;padding:.6rem 1.2rem;margin-top:.5rem;">Itinéraire →</a></div>` : ''}
     </div>
     <div class="dojo-map">${mapContent}</div>`;
