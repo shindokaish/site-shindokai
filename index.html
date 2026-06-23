@@ -22,6 +22,14 @@
   html, body { height: 100%; overflow: hidden; }
   #nav-placeholder { position: fixed; top: 0; left: 0; right: 0; z-index: 100; }
   .hero { height: 100vh; min-height: unset; }
+  /* Centrage du texte entre le logo gauche et le kanji droit */
+  .hero__content {
+    margin-left: clamp(160px, 26vw, 380px);
+    max-width: clamp(320px, 38vw, 560px);
+  }
+  @media (max-width: 860px) {
+    .hero__content { margin-left: 0; max-width: 100%; }
+  }
 </style>
 </head>
 <body>
@@ -45,7 +53,7 @@
       </h1>
       <p class="hero__sub" id="heroSub"></p>
       <div class="hero__cta">
-        <a href="tarifs.html" class="btn btn--primary">Essai gratuit</a>
+        <a href="dojos.html" class="btn btn--primary">Voir les dojos</a>
         <a href="cours.html" class="btn btn--ghost">Voir les cours</a>
       </div>
     </div>
