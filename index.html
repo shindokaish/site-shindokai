@@ -3,21 +3,26 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EKSN — Respect. Honneur. Discipline.</title>
-<meta name="description" content="EKSN — Karaté-Jutsu FFKDA. Le triathlon des arts martiaux : karaté contact, boxe, soumission au sol. Cours enfants, ados, adultes. Essai gratuit.">
+<title>EKSN — École de Karaté Shindokai Nord</title>
+<meta name="description" content="EKSN — École de Karaté Shindokai Nord. Karaté-Jutsu FFKDA. Le triathlon des arts martiaux : karaté contact, boxe, soumission au sol. Cours enfants, ados, adultes. Essai gratuit.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://site-shindokai.vercel.app/">
-<meta property="og:title" content="EKSN — Karaté-Jutsu FFKDA">
-<meta property="og:description" content="EKSN — Karaté-Jutsu FFKDA. Le triathlon des arts martiaux : karaté contact, boxe, soumission au sol. Cours enfants, ados, adultes. Essai gratuit.">
+<meta property="og:title" content="EKSN — École de Karaté Shindokai Nord">
+<meta property="og:description" content="EKSN — École de Karaté Shindokai Nord. Karaté-Jutsu FFKDA. Karaté contact, boxe, soumission au sol.">
 <meta property="og:image" content="https://site-shindokai.vercel.app/shinodkai.png">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="EKSN — Karaté-Jutsu FFKDA">
-<meta name="twitter:description" content="EKSN — Karaté-Jutsu FFKDA. Le triathlon des arts martiaux : karaté contact, boxe, soumission au sol. Cours enfants, ados, adultes. Essai gratuit.">
+<meta name="twitter:title" content="EKSN — École de Karaté Shindokai Nord">
+<meta name="twitter:description" content="EKSN — École de Karaté Shindokai Nord. Karaté-Jutsu FFKDA.">
 <meta name="twitter:image" content="https://site-shindokai.vercel.app/shinodkai.png">
 <link rel="icon" href="shinodkai.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@400;500;600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
+<style>
+  html, body { height: 100%; overflow: hidden; }
+  #nav-placeholder { position: fixed; top: 0; left: 0; right: 0; z-index: 100; }
+  .hero { height: 100vh; min-height: unset; }
+</style>
 </head>
 <body>
 
@@ -45,281 +50,33 @@
       </div>
     </div>
   </div>
-
-</section>
-
-<!-- ============ LA DISCIPLINE ============ -->
-<section class="section" id="discipline-section">
-  <div class="wrap">
-    <div class="section__head reveal">
-      <span class="eyebrow-text" id="idx-disc-eyebrow">La discipline</span>
-      <h2 class="section__title" id="idx-disc-titre">Voie de<br>la vérité.</h2>
-    </div>
-    <div class="club__grid">
-      <div class="club__text reveal">
-        <p id="aboutP1"></p>
-        <p id="aboutP2"></p>
-        <p id="aboutP3"></p>
-        <div class="discipline-badges" id="disciplineBadges"></div>
-      </div>
-      <div class="discipline-right reveal">
-        <div class="stats" id="statsGrid"></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ============ POUR QUI ============ -->
-<section class="section section--alt">
-  <div class="wrap">
-    <div class="section__head reveal">
-      <span class="eyebrow-text" id="idx-cours-eyebrow">Nos cours</span>
-      <h2 class="section__title" id="idx-cours-titre">Pour chaque<br>âge, un programme.</h2>
-      <p class="section__lede" id="idx-cours-lede">Du baby-karaté à la compétition, chacun trouve sa place au Shindokai-Kan.</p>
-    </div>
-    <div class="pourqui-grid" id="pourquiGrid"></div>
-  </div>
-</section>
-
-<!-- ============ NOS DOJOS ============ -->
-<section class="section">
-  <div class="wrap">
-    <div class="section__head reveal">
-      <span class="eyebrow-text" id="idx-dojos-eyebrow">Nos dojos</span>
-      <h2 class="section__title" id="idx-dojos-titre">Trois sites,<br>une discipline.</h2>
-      <p class="section__lede" id="idx-dojos-lede">Choisissez le dojo le plus proche de chez vous. Même enseignement, mêmes coachs diplômés.</p>
-    </div>
-    <div class="dojos-preview" id="dojosPreview"></div>
-  </div>
-</section>
-
-<!-- ============ COACHS ============ -->
-<section class="section section--alt">
-  <div class="wrap">
-    <div class="section__head reveal">
-      <span class="eyebrow-text" id="idx-coachs-eyebrow">L'encadrement</span>
-      <h2 class="section__title" id="idx-coachs-titre">Des coachs diplômés,<br>passionnés.</h2>
-      <p class="section__lede" id="idx-coachs-lede">Une pédagogie exigeante et bienveillante, adaptée à chaque âge et chaque objectif.</p>
-    </div>
-    <div class="coach-grid" id="coachGrid"></div>
-    <div style="text-align:center;margin-top:2.4rem;">
-      <a href="coachs.html" class="btn btn--ghost">En savoir plus sur nos coachs</a>
-    </div>
-  </div>
-</section>
-
-<!-- ============ CEINTURES NOIRES ============ -->
-<section class="section section--alt">
-  <div class="wrap">
-    <div class="section__head reveal">
-      <span class="eyebrow-text">Grades</span>
-      <h2 class="section__title">Les ceintures<br>noires.</h2>
-      <p class="section__lede">Les pratiquants qui ont atteint la ceinture noire au sein du Shindokai-Kan.</p>
-    </div>
-    <div class="cb-grid" id="cbGrid"></div>
-  </div>
-</section>
-
-<!-- ============ ACTUALITÉS ============ -->
-<section class="section section--actu">
-  <div class="wrap">
-    <div class="section__head reveal">
-      <span class="eyebrow-text" id="idx-actus-eyebrow">Actualités</span>
-      <h2 class="section__title" id="idx-actus-titre">La vie<br>du club.</h2>
-      <p class="section__lede" id="idx-actus-lede">Compétitions, stages, passages de grades, événements — toute l'actualité du EKSN.</p>
-    </div>
-    <div class="actu-grid" id="actuGrid"></div>
-    <div style="text-align:center;margin-top:2.4rem;">
-      <a href="actus.html" class="btn btn--ghost">Toutes les actualités</a>
-    </div>
-  </div>
-</section>
-
-<!-- ============ TARIFS ============ -->
-<section class="section">
-  <div class="wrap">
-    <div class="section__head reveal">
-      <span class="eyebrow-text" id="idx-tarifs-eyebrow">Inscription</span>
-      <h2 class="section__title" id="idx-tarifs-titre">Rejoignez<br>le dojo.</h2>
-      <p class="section__lede" id="idx-tarifs-lede">Premier cours toujours offert, sans engagement. Venez essayer avant de vous inscrire.</p>
-    </div>
-    <div class="tarifs-grid" id="tarifsGrid"></div>
-  </div>
-</section>
-
-<!-- ============ CTA FINAL ============ -->
-<section class="cta-band">
-  <div class="wrap">
-    <h2 class="cta-band__title reveal" id="idx-cta-titre">Prêt à franchir le pas ?</h2>
-    <p class="cta-band__sub reveal" id="idx-cta-sub">Premier cours offert, sans engagement. Venez découvrir le Shindokai dans l'un de nos trois dojos.</p>
-    <div class="cta-band__btns reveal">
-      <a href="tarifs.html" class="btn btn--primary">Essai gratuit</a>
-      <a href="contact.html" class="btn btn--ghost">Nous contacter</a>
-    </div>
-  </div>
 </section>
 
 </main>
-
-<div id="footer-placeholder"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="js/data.js"></script>
 <script src="js/render.js"></script>
 <script>
 initData().then(() => {
-pageInit('index');
+  pageInit('index');
 
-const club = getSection('club');
-const stats = getSection('stats');
-const coaches = getSection('coaches');
-const actus = getSection('actus');
-const tarifs = getSection('tarifs');
-const dojos = getSection('dojos');
-const badges = getSection('disciplineBadges');
+  const club = getSection('club');
 
-// Hero
-const heroEyebrow = document.getElementById('heroEyebrow');
-if (heroEyebrow && club.heroEyebrow) heroEyebrow.textContent = club.heroEyebrow;
+  // Hero textes
+  const heroEyebrow = document.getElementById('heroEyebrow');
+  if (heroEyebrow && club.heroEyebrow) heroEyebrow.textContent = club.heroEyebrow;
 
-const heroTitle = document.getElementById('heroTitle');
-if (heroTitle && club.heroTitle) {
-  const lines = heroTitle.querySelectorAll('.line span');
-  club.heroTitle.forEach((txt, i) => { if (lines[i]) lines[i].textContent = txt; });
-}
+  const heroTitle = document.getElementById('heroTitle');
+  if (heroTitle && club.heroTitle) {
+    const lines = heroTitle.querySelectorAll('.line span');
+    club.heroTitle.forEach((txt, i) => { if (lines[i]) lines[i].textContent = txt; });
+  }
 
-document.getElementById('heroSub').textContent = club.heroSub;
+  document.getElementById('heroSub').textContent = club.heroSub;
 
-// Textes dynamiques
-const tx = getSection('textes') || {};
-const ta = tx.accueil || {};
-function setT(id, v) { const e = document.getElementById(id); if (e && v != null) e.textContent = v; }
-function setH(id, v) { const e = document.getElementById(id); if (e && v != null) e.innerHTML = esc(v).replace(/\n/g, '<br>'); }
-setT('idx-disc-eyebrow', ta.disciplineEyebrow);
-setH('idx-disc-titre', ta.disciplineTitre);
-setT('idx-cours-eyebrow', ta.coursEyebrow);
-setH('idx-cours-titre', ta.coursTitre);
-setT('idx-cours-lede', ta.coursLede);
-setT('idx-dojos-eyebrow', ta.dojosEyebrow);
-setH('idx-dojos-titre', ta.dojosTitre);
-setT('idx-dojos-lede', ta.dojosLede);
-setT('idx-coachs-eyebrow', ta.coachsEyebrow);
-setH('idx-coachs-titre', ta.coachsTitre);
-setT('idx-coachs-lede', ta.coachsLede);
-setT('idx-actus-eyebrow', ta.actusEyebrow);
-setH('idx-actus-titre', ta.actusTitre);
-setT('idx-actus-lede', ta.actusLede);
-setT('idx-tarifs-eyebrow', ta.tarifsEyebrow);
-setH('idx-tarifs-titre', ta.tarifsTitre);
-setT('idx-tarifs-lede', ta.tarifsLede);
-setT('idx-cta-titre', ta.ctaTitre);
-setT('idx-cta-sub', ta.ctaSub);
-
-// Cards "Pour qui" dynamiques
-const pourquiGrid = document.getElementById('pourquiGrid');
-const cards = (ta.cards && ta.cards.length) ? ta.cards : [
-  { age:'4 – 11 ans', titre:'Enfants', desc:'', couleur:'#e0241b' },
-  { age:'12 – 15 ans', titre:'Adolescents', desc:'', couleur:'#c9a227' },
-  { age:'16 ans et +', titre:'Adultes', desc:'', couleur:'#9a98a0' }
-];
-cards.forEach(c => {
-  const div = document.createElement('div');
-  div.className = 'pourqui-card reveal';
-  div.innerHTML = `<div class="pourqui-card__belt" style="background:${esc(c.couleur)};"></div><div class="pourqui-card__age">${esc(c.age)}</div><div class="pourqui-card__title">${esc(c.titre)}</div><p class="pourqui-card__desc">${esc(c.desc)}</p><a href="cours.html" class="pourqui-card__link">Voir les cours →</a>`;
-  pourquiGrid.appendChild(div);
+  initHeroGlow('heroGlow', 'home');
 });
-document.getElementById('aboutP1').textContent = club.aboutP1;
-document.getElementById('aboutP2').textContent = club.aboutP2;
-document.getElementById('aboutP3').textContent = club.aboutP3;
-
-// Badges
-const badgesEl = document.getElementById('disciplineBadges');
-badges.forEach(b => {
-  const span = document.createElement('span');
-  span.className = 'badge';
-  span.textContent = b;
-  badgesEl.appendChild(span);
-});
-
-// Stats grille (dans section discipline)
-const statsGrid = document.getElementById('statsGrid');
-stats.forEach(s => {
-  const div = document.createElement('div');
-  div.className = 'stat';
-  div.dataset.value = s.value;
-  div.innerHTML = `<div class="stat__value"><span class="count">0</span><span class="suffix">${esc(s.suffix)}</span></div><div class="stat__label">${esc(s.label)}</div>`;
-  statsGrid.appendChild(div);
-});
-initCounters();
-
-// Dojos preview
-const dojosPreview = document.getElementById('dojosPreview');
-dojos.forEach(d => {
-  const card = document.createElement('div');
-  card.className = 'dojo-preview-card reveal';
-  card.innerHTML = `
-    <div class="dojo-preview-card__name">${esc(d.name)}</div>
-    <div class="dojo-preview-card__address">${esc(d.address)}</div>
-    ${d.mapLink ? `<a href="${esc(d.mapLink)}" target="_blank" rel="noopener" class="dojo-preview-card__link">Itinéraire →</a>` : `<a href="dojos.html" class="dojo-preview-card__link">Voir le dojo →</a>`}`;
-  dojosPreview.appendChild(card);
-});
-
-// Coaches
-const coachGrid = document.getElementById('coachGrid');
-coaches.forEach(c => coachGrid.appendChild(buildCoachCard(c, false)));
-
-// Actus (3 dernières)
-const actuGrid = document.getElementById('actuGrid');
-const revealObs = initScrollReveal();
-actus.slice(0, 3).forEach(a => {
-  const card = buildActuCard(a);
-  actuGrid.appendChild(card);
-  revealObs.observe(card);
-});
-
-// Tarifs
-const tarifsGrid = document.getElementById('tarifsGrid');
-tarifs.forEach(t => {
-  const div = document.createElement('div');
-  div.className = `tarif-card reveal${t.featured ? ' tarif-card--featured' : ''}`;
-  div.innerHTML = `
-    <div class="tarif-card__name">${esc(t.name)}</div>
-    <div class="tarif-card__price">${esc(t.price)}<span class="period"> ${esc(t.period)}</span></div>
-    <ul class="tarif-card__features">${t.features.map(f => `<li>${esc(f)}</li>`).join('')}</ul>
-    <a href="contact.html" class="btn ${t.featured ? 'btn--primary' : 'btn--ghost'}">Je m'inscris</a>`;
-  tarifsGrid.appendChild(div);
-});
-
-// Ceintures noires
-const cbGrid = document.getElementById('cbGrid');
-const ceinturesNoires = getSection('ceintures_noires') || [];
-if (ceinturesNoires.length) {
-  ceinturesNoires.forEach(c => {
-    const card = document.createElement('div');
-    card.className = 'cb-card reveal';
-    const photoHTML = c.photo
-      ? `<img src="${esc(c.photo)}" alt="${esc(c.name)}" loading="lazy">`
-      : `<div class="cb-card__initials">${esc(c.name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase())}</div>`;
-    card.innerHTML = `
-      <div class="cb-card__belt"></div>
-      <div class="cb-card__photo">${photoHTML}</div>
-      <div class="cb-card__name">${esc(c.name)}</div>
-      <div class="cb-card__dan">${esc(c.dan)}</div>
-      ${c.dojo ? `<div class="cb-card__dojo">${esc(c.dojo)}</div>` : ''}`;
-    cbGrid.appendChild(card);
-    revealObs.observe(card);
-  });
-} else {
-  cbGrid.innerHTML = '<p style="color:var(--ash-2);font-family:var(--mono);font-size:.85rem;">À venir.</p>';
-}
-
-// Hero glow
-initHeroGlow('heroGlow', 'home');
-
-// Re-observe nouveaux reveals
-document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
-
-}); // fin initData
 </script>
 </body>
 </html>
