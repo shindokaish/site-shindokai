@@ -98,7 +98,7 @@ plannings.forEach((p, i) => {
   const grid = document.createElement('div');
   grid.className = 'planning-grid';
 
-  (p.cours || []).forEach(c => {
+  (p.cours || []).filter(c => c.name !== 'Compétition').forEach(c => {
     const card = document.createElement('div');
     card.className = 'planning-card';
     card.innerHTML = `
