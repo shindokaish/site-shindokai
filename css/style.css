@@ -773,6 +773,8 @@ footer { border-top: 1px solid var(--line); background: var(--char); }
 @media (max-width: 600px) {
   .section { padding: 4.5rem 0; }
   .hero-mini { height: 280px; }
+  .hero-mini__content { margin-left: 0; }
+  .hero-mini__logo-bg { display: none; }
   .stats-band .wrap { grid-template-columns: 1fr 1fr; }
 }
 
