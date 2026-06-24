@@ -129,12 +129,12 @@ const tarifs = getSection('tarifs');
 const tarifsGrid = document.getElementById('tarifsGrid');
 tarifs.forEach(t => {
   const div = document.createElement('div');
-  div.className = `tarif-card reveal${t.featured ? ' tarif-card--featured' : ''}`;
+  div.className = 'tarif-card reveal';
   div.innerHTML = `
     <div class="tarif-card__name">${esc(t.name)}</div>
     <div class="tarif-card__price">${esc(t.price)}<span class="period"> ${esc(t.period)}</span></div>
     <ul class="tarif-card__features">${t.features.map(f => `<li>${esc(f)}</li>`).join('')}</ul>
-    <a href="inscription.html" class="btn ${t.featured ? 'btn--primary' : 'btn--ghost'}">Je m'inscris</a>`;
+    <a href="inscription.html" class="btn btn--ghost">Je m'inscris</a>`;
   tarifsGrid.appendChild(div);
 });
 
