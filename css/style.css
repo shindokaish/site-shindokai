@@ -144,9 +144,9 @@ h1, h2, h3 { font-family: var(--display); font-weight: 400; text-transform: uppe
   background: radial-gradient(900px circle at 30% 60%, rgba(224, 36, 27, .14), transparent 55%);
 }
 .hero-mini__logo-bg {
-  position: absolute; left: 2%; top: 50%; transform: translateY(-50%);
-  width: clamp(180px, 22vw, 320px); height: auto; z-index: 0;
-  pointer-events: none; opacity: .07;
+  position: absolute; left: 3%; top: 50%; transform: translateY(-50%) scale(.85);
+  width: clamp(220px, 32vw, 420px); height: auto; z-index: 0;
+  pointer-events: none; opacity: .08;
 }
 .hero-mini__strike {
   position: absolute; top: 0; right: -10%; height: 120%; z-index: 0; opacity: .4; pointer-events: none;
