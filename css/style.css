@@ -222,16 +222,13 @@ h1, h2, h3 { font-family: var(--display); font-weight: 400; text-transform: uppe
 .hero__title .line:nth-child(2) span { animation-delay: .3s; color: var(--crimson-2); }
 .hero__title .line:nth-child(3) span { animation-delay: .45s; }
 .hero__ffk {
-  position: absolute;
-  bottom: 2rem;
-  left: 2rem;
-  height: clamp(40px, 5vh, 64px);
+  display: block;
+  height: clamp(36px, 4.5vh, 56px);
   width: auto;
-  z-index: 1;
+  margin-bottom: 1.8rem;
   opacity: 0;
-  animation: fadeIn .8s var(--ease) 1.2s forwards;
+  animation: fadeIn .8s var(--ease) .9s forwards;
 }
-@media (max-width: 600px) { .hero__ffk { height: 36px; bottom: 1.2rem; left: 1rem; } }
 
 .hero__title--single {
   font-size: clamp(1.6rem, 3.5vw, 2.8rem);
