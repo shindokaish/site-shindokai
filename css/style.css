@@ -153,6 +153,7 @@ h1, h2, h3 { font-family: var(--display); font-weight: 400; text-transform: uppe
 }
 .hero-mini__content {
   position: relative; z-index: 1; padding-bottom: 3rem;
+  margin-left: clamp(160px, 24vw, 360px);
 }
 .hero-mini__eyebrow { display: block; margin-bottom: .8rem; }
 .hero-mini__title {
