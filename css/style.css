@@ -349,9 +349,9 @@ h1, h2, h3 { font-family: var(--display); font-weight: 400; text-transform: uppe
 
 /* ============ SECTIONS ============ */
 .section { padding: 7rem 0; }
-.section--alt { background: var(--char); }
-.section--dark { background: var(--char-2); }
-.section--actu { background: var(--char-2); }
+.section--alt { background: var(--void); }
+.section--dark { background: var(--void); }
+.section--actu { background: var(--void); }
 .section--crimson { background: var(--crimson); }
 .section__head { max-width: 640px; margin-bottom: 3.2rem; }
 .section__title { font-size: clamp(2rem, 4.2vw, 3.2rem); margin-top: .8rem; }
