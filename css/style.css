@@ -241,21 +241,8 @@ h1, h2, h3 { font-family: var(--display); font-weight: 400; text-transform: uppe
   font-size: clamp(2rem, 4.5vw, 3.6rem);
   text-transform: uppercase;
   letter-spacing: .06em;
+  color: #8b0000;
   margin-bottom: 1rem;
-  background: linear-gradient(
-    180deg,
-    #d0d0d0 0%,
-    #8a8a8a 25%,
-    #c8c8c8 45%,
-    #3a3a3a 65%,
-    #909090 80%,
-    #4a4a4a 100%
-  );
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  text-shadow: none;
-  filter: drop-shadow(0 2px 8px rgba(0,0,0,.8)) drop-shadow(0 0 2px rgba(255,255,255,.08));
   opacity: 0; animation: fadeIn .8s var(--ease) .35s forwards;
 }
 .hero__disciplines {
