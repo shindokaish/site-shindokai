@@ -45,13 +45,10 @@
   <img class="hero__kanji" src="img/kanji-shindokai.png" alt="" aria-hidden="true">
   <div class="wrap">
     <div class="hero__content">
-      <span class="eyebrow-text hero__eyebrow" id="heroEyebrow">Karaté-Jutsu FFKDA · Nord (59)</span>
-      <h1 class="hero__title" id="heroTitle">
-        <span class="line"><span>Respect.</span></span>
-        <span class="line"><span>Honneur.</span></span>
-        <span class="line"><span>Discipline.</span></span>
-      </h1>
-      <p class="hero__sub" id="heroSub"></p>
+      <h1 class="hero__title hero__title--single">Respect&nbsp;•&nbsp;Honneur&nbsp;•&nbsp;Discipline</h1>
+      <p class="hero__tagline">Le triathlon des arts martiaux.</p>
+      <p class="hero__disciplines">Karaté contact&nbsp;•&nbsp;Boxe&nbsp;•&nbsp;Soumissions au sol</p>
+      <p class="hero__sub">Une discipline complète, reconnue comme Karaté-Jutsu par la Fédération Française de Karaté. Dépassez vos limites. Développez votre confiance. Révélez votre potentiel.</p>
       <div class="hero__cta">
         <a href="dojos.html" class="btn btn--primary">Voir les dojos</a>
         <a href="cours.html" class="btn btn--ghost">Voir les cours</a>
@@ -68,20 +65,6 @@
 <script>
 initData().then(() => {
   pageInit('index');
-
-  const club = getSection('club');
-
-  // Hero textes
-  const heroEyebrow = document.getElementById('heroEyebrow');
-  if (heroEyebrow && club.heroEyebrow) heroEyebrow.textContent = club.heroEyebrow;
-
-  const heroTitle = document.getElementById('heroTitle');
-  if (heroTitle && club.heroTitle) {
-    const lines = heroTitle.querySelectorAll('.line span');
-    club.heroTitle.forEach((txt, i) => { if (lines[i]) lines[i].textContent = txt; });
-  }
-
-  document.getElementById('heroSub').textContent = club.heroSub;
 
   initHeroGlow('heroGlow', 'home');
 });
