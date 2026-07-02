@@ -758,6 +758,8 @@ footer { border-top: 1px solid var(--line); background: var(--char); }
 @media (max-width: 1080px) {
   .nav__links { display: none; }
   .nav__burger { display: flex; }
+  /* Cacher le texte du logo, garder uniquement l'image ronde */
+  .nav__logo span:not(.kanji) { display: none; }
   .club__grid { grid-template-columns: 1fr; }
   .contact-grid { grid-template-columns: 1fr; }
   .form__row { grid-template-columns: 1fr; }
@@ -768,6 +770,9 @@ footer { border-top: 1px solid var(--line); background: var(--char); }
   .galerie-grid { columns: 1; }
   .footer-inner { grid-template-columns: 1fr; gap: 2rem; }
   .diplomes-grid { grid-template-columns: 1fr; }
+  /* Tabs scrollables horizontalement */
+  .dojos-tabs, .dojo-tabs { display: flex; overflow-x: auto; -webkit-overflow-scrolling: touch; white-space: nowrap; gap: 0; }
+  .dojo-tab { flex-shrink: 0; }
 }
 
 @media (max-width: 860px) {
@@ -782,7 +787,7 @@ footer { border-top: 1px solid var(--line); background: var(--char); }
   /* Hero mini pages intérieures */
   .hero-mini__content { margin-left: 0; }
   .hero-mini__logo-bg { display: none; }
-  .hero-mini { height: auto; padding: 6rem 0 2.5rem; }
+  .hero-mini { height: auto; padding: 7rem 0 2.5rem; }
 
   /* Sections */
   .section { padding: 4rem 0; }
