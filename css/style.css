@@ -770,12 +770,71 @@ footer { border-top: 1px solid var(--line); background: var(--char); }
   .diplomes-grid { grid-template-columns: 1fr; }
 }
 
-@media (max-width: 600px) {
-  .section { padding: 4.5rem 0; }
-  .hero-mini { height: 280px; }
+@media (max-width: 860px) {
+  /* Hero accueil */
+  .hero__bg-logo { display: none; }
+  .hero__content { margin-left: 0 !important; max-width: 100% !important; padding: 0 1rem; }
+  .hero__title--single { white-space: normal; font-size: clamp(1.1rem, 4vw, 1.6rem); }
+  .hero__tagline { font-size: clamp(1.6rem, 7vw, 2.6rem); }
+  .hero__cta { flex-direction: column; }
+  .hero__cta .btn { width: 100%; justify-content: center; text-align: center; }
+
+  /* Hero mini pages intérieures */
   .hero-mini__content { margin-left: 0; }
   .hero-mini__logo-bg { display: none; }
-  .stats-band .wrap { grid-template-columns: 1fr 1fr; }
+  .hero-mini { height: auto; padding: 6rem 0 2.5rem; }
+
+  /* Sections */
+  .section { padding: 4rem 0; }
+  .section__head { margin-bottom: 2rem; }
+
+  /* Grilles */
+  .pourqui-grid,
+  .etapes-grid,
+  .valeurs-grid,
+  .piliers-grid,
+  .diplomes-grid,
+  .dojos-preview { grid-template-columns: 1fr; }
+
+  .stats { grid-template-columns: 1fr 1fr; }
+
+  /* Tarifs : tableau comparatif scrollable */
+  .tarif-compare-wrap { overflow-x: auto; }
+
+  /* Dojos */
+  .dojo-panel.is-active { grid-template-columns: 1fr; }
+  .dojo-map { height: 220px; }
+
+  /* Planning */
+  .planning-grid { flex-wrap: wrap; }
+  .planning-card { flex: 1 0 calc(50% - .5rem); }
+
+  /* CB ceintures noires */
+  .cb-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+
+  /* Contact / club */
+  .club__grid,
+  .contact-grid { grid-template-columns: 1fr; }
+  .form__row { grid-template-columns: 1fr; }
+
+  /* Inscription */
+  .insc-layout { grid-template-columns: 1fr; }
+
+  /* CTA band */
+  .cta-band { padding: 3rem 0; }
+  .cta-band__btns { flex-direction: column; align-items: center; }
+  .cta-band__btns .btn { width: 100%; max-width: 320px; justify-content: center; }
+
+  /* Footer */
+  .footer-inner { grid-template-columns: 1fr; gap: 2rem; }
+}
+
+@media (max-width: 600px) {
+  .section { padding: 3rem 0; }
+  .planning-card { flex: 1 0 100%; }
+  .stats { grid-template-columns: 1fr 1fr; }
+  .cb-grid { grid-template-columns: 1fr 1fr; }
+  .section__title { font-size: clamp(1.8rem, 8vw, 2.6rem); }
 }
 
 @media (prefers-reduced-motion: reduce) {
