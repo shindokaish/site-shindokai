@@ -723,6 +723,19 @@ td:first-child { color: var(--bone); font-family: var(--eyebrow); }
 .admin-trigger svg { width: 16px; height: 16px; stroke: var(--ash); }
 .admin-trigger:hover svg { stroke: var(--crimson-2); }
 
+/* ============ PUSH BANNER ============ */
+#pushBanner {
+  position: fixed; bottom: 5rem; left: 1rem; right: 1rem; z-index: 400;
+  background: var(--char); border: 1px solid var(--crimson-2);
+  padding: 1rem 1.2rem; display: flex; align-items: center; justify-content: space-between;
+  gap: 1rem; border-radius: 4px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.5);
+  transform: translateY(20px); opacity: 0; pointer-events: none;
+  transition: opacity .3s, transform .3s;
+  font-size: .88rem; color: var(--bone);
+}
+#pushBanner.is-visible { opacity: 1; transform: translateY(0); pointer-events: all; }
+
 /* ============ FOOTER ============ */
 footer { border-top: 1px solid var(--line); background: var(--char); }
 .footer-inner { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 3rem; padding: 4rem 0 3rem; }

@@ -160,7 +160,8 @@ function loadSection(key) {
     inscription: renderInscriptionSection,
     contact: renderContactSection,
     settings: renderSettingsSection,
-    membres: renderMembresSection
+    membres: renderMembresSection,
+    notifications: renderNotificationsSection
   };
   if (renders[key]) renders[key](content);
 }
@@ -2422,6 +2423,69 @@ function openCeintureModal(index) {
     showToast(index!==null ? 'Ceinture modifiée ✓' : 'Ceinture ajoutée ✓');
   });
   document.getElementById('cb-couleur').focus();
+}
+
+/* ============ SECTION NOTIFICATIONS ============ */
+function renderNotificationsSection(container) {
+  const d = getData();
+  const subs = (d.push_subscriptions || []).length;
+  container.innerHTML = `
+<div style="display:flex;flex-direction:column;gap:2rem;max-width:600px;">
+  <div class="admin-card">
+    <div class="admin-card__title">Abonnés aux notifications</div>
+    <p style="font-family:var(--mono);font-size:2rem;color:var(--gold);margin:.5rem 0;">${subs}</p>
+    <p style="font-size:.85rem;color:var(--ash);">Membres ayant accepté les notifications push.</p>
+  </div>
+  <div class="admin-card">
+    <div class="admin-card__title">Envoyer une notification</div>
+    <div style="display:flex;flex-direction:column;gap:1rem;margin-top:1rem;">
+      <div class="admin-field">
+        <label class="admin-label">Titre</label>
+        <input class="admin-input" id="notif-title" placeholder="ex: Nouveau cours disponible">
+      </div>
+      <div class="admin-field">
+        <label class="admin-label">Message</label>
+        <textarea class="admin-input" id="notif-body" rows="3" placeholder="ex: Un cours adulte s'ouvre le mardi soir à Santes."></textarea>
+      </div>
+      <div style="display:flex;align-items:center;gap:1rem;">
+        <button class="btn btn--primary" id="notif-send">Envoyer à tous</button>
+        <span id="notif-status" style="font-family:var(--mono);font-size:.78rem;color:var(--ash-2);"></span>
+      </div>
+    </div>
+  </div>
+  <div class="admin-card" style="border-color:rgba(201,162,39,.2);">
+    <div class="admin-card__title" style="color:var(--gold);">Configuration requise</div>
+    <p style="font-size:.82rem;color:var(--ash);line-height:1.7;">
+      Dans <strong>Vercel → Settings → Environment Variables</strong>, ajouter :<br>
+      <code style="font-family:var(--mono);font-size:.75rem;color:var(--gold);">VAPID_PUBLIC_KEY</code> = <code style="font-family:var(--mono);font-size:.7rem;color:var(--ash);">BM6ft791ClQVDu0ld7y449Hvm19wswJuJ9W56p7CR2S4DFp1gBb-PLN4VIevUedvDu4d3QCVecnTXdUTkt8uh2o</code><br>
+      <code style="font-family:var(--mono);font-size:.75rem;color:var(--gold);">VAPID_PRIVATE_KEY</code> = <code style="font-family:var(--mono);font-size:.7rem;color:var(--ash);">UwPerDm9nXMbIzZm_xE93xMnTZJuQSKD1Mj1JlDA5bw</code><br>
+      <code style="font-family:var(--mono);font-size:.75rem;color:var(--gold);">ADMIN_PASSWORD</code> = <code style="font-family:var(--mono);font-size:.7rem;color:var(--ash);">shindo2025</code>
+    </p>
+  </div>
+</div>`;
+
+  document.getElementById('notif-send').addEventListener('click', async () => {
+    const title = document.getElementById('notif-title').value.trim();
+    const body  = document.getElementById('notif-body').value.trim();
+    const status = document.getElementById('notif-status');
+    if (!title || !body) { status.textContent = 'Titre et message requis.'; return; }
+    status.textContent = 'Envoi en cours…';
+    try {
+      const pwd = localStorage.getItem('shindokai_admin_pwd') || 'shindo2025';
+      const res = await fetch('/api/notify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, body, password: pwd })
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || 'Erreur');
+      status.textContent = `✓ Envoyé à ${json.sent} abonné(s).`;
+      document.getElementById('notif-title').value = '';
+      document.getElementById('notif-body').value = '';
+    } catch(e) {
+      status.textContent = '✗ Erreur : ' + e.message;
+    }
+  });
 }
 
 /* ============ INIT ============ */

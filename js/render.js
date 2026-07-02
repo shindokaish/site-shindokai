@@ -275,12 +275,63 @@ function initBackToTop() {
   }, { passive: true });
 }
 
+const VAPID_PUBLIC_KEY = 'BM6ft791ClQVDu0ld7y449Hvm19wswJuJ9W56p7CR2S4DFp1gBb-PLN4VIevUedvDu4d3QCVecnTXdUTkt8uh2o';
+
+function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+  const raw = atob(base64);
+  return Uint8Array.from([...raw].map(c => c.charCodeAt(0)));
+}
+
+async function initPushNotifications() {
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+  // N'afficher la bannière qu'une seule fois
+  if (localStorage.getItem('push_asked')) return;
+
+  const banner = document.createElement('div');
+  banner.id = 'pushBanner';
+  banner.innerHTML = `
+    <span>🔔 Recevoir les actualités du club ?</span>
+    <div style="display:flex;gap:.6rem;">
+      <button id="pushAccept" class="btn btn--primary" style="padding:.4rem .9rem;font-size:.75rem;">Oui</button>
+      <button id="pushDecline" style="background:none;border:none;color:var(--ash);cursor:pointer;font-size:.75rem;">Non merci</button>
+    </div>`;
+  document.body.appendChild(banner);
+  setTimeout(() => banner.classList.add('is-visible'), 1500);
+
+  document.getElementById('pushDecline').onclick = () => {
+    localStorage.setItem('push_asked', '1');
+    banner.remove();
+  };
+
+  document.getElementById('pushAccept').onclick = async () => {
+    localStorage.setItem('push_asked', '1');
+    banner.remove();
+    try {
+      const reg = await navigator.serviceWorker.register('/sw.js');
+      const perm = await Notification.requestPermission();
+      if (perm !== 'granted') return;
+      const sub = await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+      });
+      await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ subscription: sub.toJSON() })
+      });
+    } catch(e) { console.warn('Push subscription failed', e); }
+  };
+}
+
 function pageInit(activePage) {
   renderNav(activePage);
   renderFooter();
   renderAdminTrigger();
   initScrollReveal();
   initBackToTop();
+  initPushNotifications();
 }
 
 /* ============ APPLY TEXTES ============ */
