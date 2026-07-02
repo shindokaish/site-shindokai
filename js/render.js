@@ -263,11 +263,24 @@ function buildCoachCard(c, fullBio = false) {
 }
 
 /* ============ INIT COMMUNE ============ */
+function initBackToTop() {
+  const btn = document.createElement('button');
+  btn.id = 'backToTop';
+  btn.innerHTML = '&#8679;';
+  btn.setAttribute('aria-label', 'Retour en haut');
+  btn.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+  document.body.appendChild(btn);
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('is-visible', window.scrollY > 400);
+  }, { passive: true });
+}
+
 function pageInit(activePage) {
   renderNav(activePage);
   renderFooter();
   renderAdminTrigger();
   initScrollReveal();
+  initBackToTop();
 }
 
 /* ============ APPLY TEXTES ============ */
