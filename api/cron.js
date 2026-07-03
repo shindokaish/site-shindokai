@@ -34,6 +34,8 @@ module.exports = async (req, res) => {
   const subscriptions = subRow?.value || [];
 
   let totalSent = 0;
+  const newEntries = []; // nouvelles occurrences récurrentes
+
   for (const notif of toSend) {
     const payload = JSON.stringify({
       title: notif.title, body: notif.body,
@@ -47,10 +49,27 @@ module.exports = async (req, res) => {
     totalSent += results.filter(r => r.status === 'fulfilled').length;
     notif.sent = true;
     notif.sentAt = now;
+
+    // Si récurrente, créer la prochaine occurrence
+    if (notif.repeatDays && notif.repeatDays > 0) {
+      const next = new Date(notif.scheduledAt);
+      next.setDate(next.getDate() + notif.repeatDays);
+      newEntries.push({
+        ...notif,
+        id: Date.now() + Math.random(),
+        scheduledAt: next.toISOString(),
+        sent: false,
+        sentAt: undefined
+      });
+    }
   }
 
-  // Sauvegarder (garder 30 dernières entrées max)
-  const updated = scheduled.map(n => toSend.find(s => s.id === n.id) || n).slice(-30);
+  // Sauvegarder — garder 30 entrées envoyées + toutes les en attente
+  const updated = [
+    ...scheduled.map(n => toSend.find(s => s.id === n.id) || n),
+    ...newEntries
+  ].filter((n, i, arr) => !n.sent || arr.filter(x => x.sent).indexOf(n) >= arr.filter(x => x.sent).length - 30);
+
   await client.from('data_store').upsert({ key: 'scheduled_notifications', value: updated });
 
   res.json({ checked: scheduled.length, sent: totalSent });

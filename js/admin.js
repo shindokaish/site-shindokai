@@ -2814,6 +2814,16 @@ function renderNotificationsSection(container) {
         <label class="admin-label">Date et heure d'envoi</label>
         <input type="datetime-local" class="admin-input" id="notif-schedule-date" style="max-width:260px;">
       </div>
+      <div class="admin-field" style="margin-top:1rem;">
+        <label class="admin-label">🔁 Récurrence</label>
+        <select class="admin-input" id="notif-repeat-days" style="max-width:260px;">
+          <option value="0">Pas de répétition</option>
+          <option value="7">Tous les 7 jours</option>
+          <option value="14">Tous les 14 jours</option>
+          <option value="15">Tous les 15 jours</option>
+          <option value="30">Tous les 30 jours</option>
+        </select>
+      </div>
       <div style="display:flex;align-items:center;gap:1rem;margin-top:1.2rem;">
         <button class="btn btn--primary" id="notif-schedule-btn">🕐 Programmer</button>
         <span id="notif-status-schedule" style="font-family:var(--mono);font-size:.78rem;color:var(--ash-2);"></span>
@@ -2875,12 +2885,15 @@ function renderNotificationsSection(container) {
     if (!data.title || !data.body) { status.textContent = '⚠ Titre et message requis.'; return; }
     if (!dt) { status.textContent = '⚠ Date requise.'; return; }
 
+    const repeatDays = parseInt(document.getElementById('notif-repeat-days').value) || 0;
     const d = getData();
     if (!d.scheduled_notifications) d.scheduled_notifications = [];
-    d.scheduled_notifications.push({ id: Date.now(), ...data, scheduledAt: new Date(dt).toISOString(), sent: false });
+    d.scheduled_notifications.push({ id: Date.now(), ...data, scheduledAt: new Date(dt).toISOString(), sent: false, ...(repeatDays > 0 ? { repeatDays } : {}) });
     saveData(d);
-    status.textContent = `✓ Programmée pour le ${new Date(dt).toLocaleString('fr-FR')}.`;
+    const repeatLabel = repeatDays > 0 ? ` (récurrente tous les ${repeatDays} j)` : '';
+    status.textContent = `✓ Programmée pour le ${new Date(dt).toLocaleString('fr-FR')}${repeatLabel}.`;
     document.getElementById('notif-schedule-date').value = '';
+    document.getElementById('notif-repeat-days').value = '0';
   });
 
   // Liste des programmées
@@ -2892,7 +2905,7 @@ function renderNotificationsSection(container) {
     list.innerHTML = items.map(n => `
       <div class="admin-item" data-id="${n.id}">
         <div class="admin-item__info">
-          <div class="admin-item__tag">${n.sent ? '✅ Envoyée' : '🕐 En attente'} — ${new Date(n.scheduledAt).toLocaleString('fr-FR')}</div>
+          <div class="admin-item__tag">${n.sent ? '✅ Envoyée' : '🕐 En attente'} — ${new Date(n.scheduledAt).toLocaleString('fr-FR')}${n.repeatDays ? ` · 🔁 tous les ${n.repeatDays} j` : ''}</div>
           <div class="admin-item__title">${esc(n.title)}</div>
           <div class="admin-item__date">${esc(n.body)}</div>
         </div>
