@@ -2634,6 +2634,282 @@ function renderNotificationsSection(container) {
   });
 }
 
+/* ============ SECTION NOTIFICATIONS PROGRAMMÉES ============ */
+function buildNotifForm(containerId, onSend) {
+  const c = document.getElementById(containerId);
+  if (!c) return;
+  c.innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 300px;gap:1.5rem;align-items:start;">
+      <div style="display:flex;flex-direction:column;gap:1rem;">
+        <div class="admin-field">
+          <label class="admin-label">Titre</label>
+          <div style="position:relative;">
+            <input class="admin-input" id="${containerId}-title" placeholder="ex: 🏆 Résultats du tournoi" style="padding-right:2.5rem;">
+            <button class="emoji-trigger" data-target="${containerId}-title" style="position:absolute;right:.6rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:1.1rem;">😀</button>
+          </div>
+        </div>
+        <div class="admin-field">
+          <label class="admin-label">Message</label>
+          <div style="position:relative;">
+            <textarea class="admin-input" id="${containerId}-body" rows="3" placeholder="Votre message..." style="padding-right:2.5rem;"></textarea>
+            <button class="emoji-trigger" data-target="${containerId}-body" style="position:absolute;right:.6rem;top:.7rem;background:none;border:none;cursor:pointer;font-size:1.1rem;">😀</button>
+          </div>
+        </div>
+        <div id="${containerId}-emoji-picker" style="display:none;flex-wrap:wrap;gap:.4rem;padding:.8rem;background:var(--char-2);border:1px solid var(--line);border-radius:4px;">
+          ${EMOJIS.map(e=>`<button class="emoji-opt" data-e="${e}" style="font-size:1.3rem;background:none;border:none;cursor:pointer;">${e}</button>`).join('')}
+        </div>
+        <div class="admin-field">
+          <label class="admin-label">Image (URL optionnelle)</label>
+          <input class="admin-input" id="${containerId}-image" placeholder="https://...">
+        </div>
+        <div class="admin-field">
+          <label class="admin-label">Page de destination</label>
+          <select class="admin-input" id="${containerId}-url">
+            <option value="https://site-shindokai.vercel.app/">Accueil</option>
+            <option value="https://site-shindokai.vercel.app/cours.html">Cours</option>
+            <option value="https://site-shindokai.vercel.app/dojos.html">Dojos</option>
+            <option value="https://site-shindokai.vercel.app/actus.html">Actualités</option>
+            <option value="https://site-shindokai.vercel.app/tarifs.html">Tarifs</option>
+            <option value="https://site-shindokai.vercel.app/inscription.html">Inscription</option>
+          </select>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem;">
+          <div class="admin-field">
+            <label class="admin-label">Bouton 1 — Texte</label>
+            <input class="admin-input" id="${containerId}-a1l" placeholder="ex: Voir les cours">
+          </div>
+          <div class="admin-field">
+            <label class="admin-label">Bouton 1 — URL</label>
+            <input class="admin-input" id="${containerId}-a1u" placeholder="https://...">
+          </div>
+          <div class="admin-field">
+            <label class="admin-label">Bouton 2 — Texte</label>
+            <input class="admin-input" id="${containerId}-a2l" placeholder="ex: S'inscrire">
+          </div>
+          <div class="admin-field">
+            <label class="admin-label">Bouton 2 — URL</label>
+            <input class="admin-input" id="${containerId}-a2u" placeholder="https://...">
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem;">
+          <div class="admin-field">
+            <label class="admin-label">Vibration</label>
+            <select class="admin-input" id="${containerId}-vibrate">
+              <option value="200,100,200">Standard</option>
+              <option value="100,50,100,50,100">Rapide ×3</option>
+              <option value="500,200,500">Long ×2</option>
+              <option value="300,100,300,100,600">Alerte urgente</option>
+            </select>
+          </div>
+          <div class="admin-field" style="justify-content:flex-end;">
+            <label class="admin-label">&nbsp;</label>
+            <label style="display:flex;align-items:center;gap:.6rem;cursor:pointer;font-size:.85rem;color:var(--ash);padding-top:.5rem;">
+              <input type="checkbox" id="${containerId}-persistent" style="accent-color:var(--crimson-2);">
+              Persistante
+            </label>
+          </div>
+        </div>
+      </div>
+      <!-- Aperçu -->
+      <div style="background:#2c2c2e;border-radius:12px;padding:1rem;font-family:-apple-system,sans-serif;">
+        <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.5rem;">
+          <img src="/shinodkai.png" style="width:20px;height:20px;border-radius:5px;">
+          <span style="font-size:.65rem;color:#aaa;">EKSN Shindokai</span>
+        </div>
+        <div id="${containerId}-prev-title" style="font-size:.85rem;font-weight:600;color:#fff;margin-bottom:.25rem;">Titre</div>
+        <div id="${containerId}-prev-body" style="font-size:.75rem;color:#ccc;line-height:1.4;">Message...</div>
+        <div id="${containerId}-prev-img-wrap" style="display:none;margin-top:.5rem;"><img id="${containerId}-prev-img" style="width:100%;border-radius:6px;max-height:100px;object-fit:cover;"></div>
+        <div id="${containerId}-prev-actions" style="display:flex;gap:.4rem;margin-top:.6rem;flex-wrap:wrap;"></div>
+      </div>
+    </div>`;
+
+  // Aperçu
+  const upd = () => {
+    document.getElementById(`${containerId}-prev-title`).textContent = document.getElementById(`${containerId}-title`).value || 'Titre';
+    document.getElementById(`${containerId}-prev-body`).textContent  = document.getElementById(`${containerId}-body`).value  || 'Message...';
+    const img = document.getElementById(`${containerId}-image`).value;
+    const iw = document.getElementById(`${containerId}-prev-img-wrap`);
+    if (img) { document.getElementById(`${containerId}-prev-img`).src = img; iw.style.display='block'; } else iw.style.display='none';
+    const a1 = document.getElementById(`${containerId}-a1l`).value;
+    const a2 = document.getElementById(`${containerId}-a2l`).value;
+    document.getElementById(`${containerId}-prev-actions`).innerHTML =
+      [a1,a2].filter(Boolean).map(a=>`<span style="font-size:.65rem;color:#e0241b;border:1px solid #e0241b;border-radius:3px;padding:.15rem .5rem;">${a}</span>`).join('');
+  };
+  [`${containerId}-title`,`${containerId}-body`,`${containerId}-image`,`${containerId}-a1l`,`${containerId}-a2l`].forEach(id => {
+    document.getElementById(id)?.addEventListener('input', upd);
+  });
+
+  // Emojis
+  let emojiTarget = null;
+  c.querySelectorAll('.emoji-trigger').forEach(btn => {
+    btn.onclick = () => {
+      emojiTarget = btn.dataset.target;
+      const p = document.getElementById(`${containerId}-emoji-picker`);
+      p.style.display = p.style.display === 'none' ? 'flex' : 'none';
+    };
+  });
+  c.querySelectorAll('.emoji-opt').forEach(btn => {
+    btn.onclick = () => {
+      const el = document.getElementById(emojiTarget);
+      if (!el) return;
+      const pos = el.selectionStart ?? el.value.length;
+      el.value = el.value.slice(0,pos) + btn.dataset.e + el.value.slice(pos);
+      el.focus(); upd();
+    };
+  });
+
+  // Collecter les données du formulaire
+  c._getData = () => {
+    const a1l = document.getElementById(`${containerId}-a1l`).value.trim();
+    const a2l = document.getElementById(`${containerId}-a2l`).value.trim();
+    return {
+      title:      document.getElementById(`${containerId}-title`).value.trim(),
+      body:       document.getElementById(`${containerId}-body`).value.trim(),
+      image:      document.getElementById(`${containerId}-image`).value.trim() || undefined,
+      url:        document.getElementById(`${containerId}-url`).value,
+      actions:    [
+        ...(a1l ? [{ action:'btn1', title:a1l, url: document.getElementById(`${containerId}-a1u`).value.trim() || 'https://site-shindokai.vercel.app/' }] : []),
+        ...(a2l ? [{ action:'btn2', title:a2l, url: document.getElementById(`${containerId}-a2u`).value.trim() || 'https://site-shindokai.vercel.app/' }] : [])
+      ],
+      vibrate:    document.getElementById(`${containerId}-vibrate`).value.split(',').map(Number),
+      persistent: document.getElementById(`${containerId}-persistent`).checked
+    };
+  };
+}
+
+function renderNotificationsSection(container) {
+  const subs = (getData().push_subscriptions || []).length;
+  container.innerHTML = `
+<div style="display:flex;flex-direction:column;gap:1.5rem;">
+  <div class="admin-card" style="display:flex;align-items:center;gap:2rem;">
+    <div><div class="admin-card__title">👥 Abonnés</div><p style="font-family:var(--mono);font-size:2rem;color:var(--gold);margin:.2rem 0;">${subs}</p></div>
+    <p style="font-size:.82rem;color:var(--ash);">membres ayant activé les notifications push</p>
+  </div>
+
+  <!-- ONGLETS -->
+  <div style="display:flex;gap:0;border-bottom:1px solid var(--line);">
+    <button class="notif-tab is-active" data-tab="manual" style="font-family:var(--eyebrow);font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;padding:.7rem 1.4rem;background:none;border:none;border-bottom:2px solid var(--crimson-2);color:var(--bone);cursor:pointer;">📣 Envoyer maintenant</button>
+    <button class="notif-tab" data-tab="schedule" style="font-family:var(--eyebrow);font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;padding:.7rem 1.4rem;background:none;border:none;border-bottom:2px solid transparent;color:var(--ash);cursor:pointer;">🕐 Programmer</button>
+    <button class="notif-tab" data-tab="list" style="font-family:var(--eyebrow);font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;padding:.7rem 1.4rem;background:none;border:none;border-bottom:2px solid transparent;color:var(--ash);cursor:pointer;">📋 Programmées</button>
+  </div>
+
+  <!-- PANNEAU MANUEL -->
+  <div id="tab-manual" class="notif-panel">
+    <div class="admin-card">
+      <div class="admin-card__title">Composer et envoyer</div>
+      <div id="form-manual" style="margin-top:1rem;"></div>
+      <div style="display:flex;align-items:center;gap:1rem;margin-top:1.2rem;">
+        <button class="btn btn--primary" id="notif-send-now">📣 Envoyer à tous</button>
+        <span id="notif-status-now" style="font-family:var(--mono);font-size:.78rem;color:var(--ash-2);"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANNEAU PROGRAMMER -->
+  <div id="tab-schedule" class="notif-panel" style="display:none;">
+    <div class="admin-card">
+      <div class="admin-card__title">Programmer une notification</div>
+      <div id="form-schedule" style="margin-top:1rem;"></div>
+      <div class="admin-field" style="margin-top:1rem;">
+        <label class="admin-label">Date et heure d'envoi</label>
+        <input type="datetime-local" class="admin-input" id="notif-schedule-date" style="max-width:260px;">
+      </div>
+      <div style="display:flex;align-items:center;gap:1rem;margin-top:1.2rem;">
+        <button class="btn btn--primary" id="notif-schedule-btn">🕐 Programmer</button>
+        <span id="notif-status-schedule" style="font-family:var(--mono);font-size:.78rem;color:var(--ash-2);"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANNEAU LISTE -->
+  <div id="tab-list" class="notif-panel" style="display:none;">
+    <div class="admin-card">
+      <div class="admin-card__title">Notifications programmées</div>
+      <div id="notif-list" style="margin-top:1rem;"></div>
+    </div>
+  </div>
+</div>`;
+
+  // Onglets
+  container.querySelectorAll('.notif-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      container.querySelectorAll('.notif-tab').forEach(t => {
+        t.style.borderBottomColor = 'transparent'; t.style.color = 'var(--ash)';
+      });
+      container.querySelectorAll('.notif-panel').forEach(p => p.style.display = 'none');
+      tab.style.borderBottomColor = 'var(--crimson-2)'; tab.style.color = 'var(--bone)';
+      document.getElementById(`tab-${tab.dataset.tab}`).style.display = 'block';
+      if (tab.dataset.tab === 'list') renderScheduledList();
+    });
+  });
+
+  // Formulaires
+  buildNotifForm('form-manual', null);
+  buildNotifForm('form-schedule', null);
+
+  // Date min = maintenant
+  const dtInput = document.getElementById('notif-schedule-date');
+  const now = new Date(); now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+  dtInput.min = now.toISOString().slice(0,16);
+
+  // Envoi manuel
+  document.getElementById('notif-send-now').addEventListener('click', async () => {
+    const status = document.getElementById('notif-status-now');
+    const data = document.getElementById('form-manual')._getData();
+    if (!data.title || !data.body) { status.textContent = '⚠ Titre et message requis.'; return; }
+    status.textContent = 'Envoi en cours…';
+    try {
+      const pwd = localStorage.getItem('shindokai_admin_pwd') || 'shindo2025';
+      const res = await fetch('/api/notify', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({...data, password:pwd}) });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error);
+      status.textContent = `✓ Envoyé à ${json.sent} abonné(s).`;
+    } catch(e) { status.textContent = '✗ ' + e.message; }
+  });
+
+  // Programmer
+  document.getElementById('notif-schedule-btn').addEventListener('click', () => {
+    const status = document.getElementById('notif-status-schedule');
+    const data = document.getElementById('form-schedule')._getData();
+    const dt   = document.getElementById('notif-schedule-date').value;
+    if (!data.title || !data.body) { status.textContent = '⚠ Titre et message requis.'; return; }
+    if (!dt) { status.textContent = '⚠ Date requise.'; return; }
+
+    const d = getData();
+    if (!d.scheduled_notifications) d.scheduled_notifications = [];
+    d.scheduled_notifications.push({ id: Date.now(), ...data, scheduledAt: new Date(dt).toISOString(), sent: false });
+    saveData(d);
+    status.textContent = `✓ Programmée pour le ${new Date(dt).toLocaleString('fr-FR')}.`;
+    document.getElementById('notif-schedule-date').value = '';
+  });
+
+  // Liste des programmées
+  function renderScheduledList() {
+    const list = document.getElementById('notif-list');
+    const d = getData();
+    const items = (d.scheduled_notifications || []).slice().reverse();
+    if (!items.length) { list.innerHTML = '<p class="admin-empty">Aucune notification programmée.</p>'; return; }
+    list.innerHTML = items.map(n => `
+      <div class="admin-item" data-id="${n.id}">
+        <div class="admin-item__info">
+          <div class="admin-item__tag">${n.sent ? '✅ Envoyée' : '🕐 En attente'} — ${new Date(n.scheduledAt).toLocaleString('fr-FR')}</div>
+          <div class="admin-item__title">${esc(n.title)}</div>
+          <div class="admin-item__date">${esc(n.body)}</div>
+        </div>
+        ${!n.sent ? `<div class="admin-item__actions"><button class="admin-btn admin-btn--del" data-del="${n.id}">Supprimer</button></div>` : ''}
+      </div>`).join('');
+
+    list.querySelectorAll('[data-del]').forEach(btn => {
+      btn.onclick = () => {
+        const d = getData();
+        d.scheduled_notifications = (d.scheduled_notifications||[]).filter(n => n.id !== Number(btn.dataset.del));
+        saveData(d);
+        renderScheduledList();
+      };
+    });
+  }
+}
+
 /* ============ INIT ============ */
 document.addEventListener('DOMContentLoaded', () => {
   initData().then(() => {
