@@ -26,10 +26,18 @@ module.exports = async (req, res) => {
 
   if (!subscriptions.length) return res.json({ sent: 0, failed: 0, total: 0 });
 
+  const { image, url, actions, vibrate, persistent } = req.body || {};
+  const payload = JSON.stringify({
+    title, body,
+    image:    image    || undefined,
+    url:      url      || 'https://site-shindokai.vercel.app/',
+    actions:  actions  || [],
+    vibrate:  vibrate  || [200, 100, 200],
+    persistent: persistent || false
+  });
+
   const results = await Promise.allSettled(
-    subscriptions.map(sub =>
-      webpush.sendNotification(sub, JSON.stringify({ title, body, url: 'https://site-shindokai.vercel.app/' }))
-    )
+    subscriptions.map(sub => webpush.sendNotification(sub, payload))
   );
 
   // Nettoyer les abonnements expirés (410 Gone)

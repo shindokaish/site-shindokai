@@ -1,15 +1,19 @@
 /* Service Worker EKSN — Push Notifications */
 
 self.addEventListener('push', event => {
-  const data = event.data ? event.data.json() : {};
+  const d = event.data ? event.data.json() : {};
+  const options = {
+    body:             d.body || '',
+    icon:             '/shinodkai.png',
+    badge:            '/shinodkai.png',
+    image:            d.image || undefined,
+    vibrate:          d.vibrate || [200, 100, 200],
+    requireInteraction: d.persistent || false,
+    actions:          d.actions || [],
+    data:             { url: d.url || 'https://site-shindokai.vercel.app/' }
+  };
   event.waitUntil(
-    self.registration.showNotification(data.title || 'EKSN Shindokai', {
-      body: data.body || '',
-      icon: '/shinodkai.png',
-      badge: '/shinodkai.png',
-      vibrate: [200, 100, 200],
-      data: { url: data.url || 'https://site-shindokai.vercel.app/' }
-    })
+    self.registration.showNotification(d.title || 'EKSN Shindokai', options)
   );
 });
 

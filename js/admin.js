@@ -2426,64 +2426,210 @@ function openCeintureModal(index) {
 }
 
 /* ============ SECTION NOTIFICATIONS ============ */
+const EMOJIS = ['🥋','🏆','⚔️','🔥','💪','📢','📅','🎯','✅','⚠️','🎉','👊','🧘','🏅','📌','💬','🙏','👋','🚨','📣'];
+
 function renderNotificationsSection(container) {
-  const d = getData();
-  const subs = (d.push_subscriptions || []).length;
+  const subs = (getData().push_subscriptions || []).length;
   container.innerHTML = `
-<div style="display:flex;flex-direction:column;gap:2rem;max-width:600px;">
-  <div class="admin-card">
-    <div class="admin-card__title">Abonnés aux notifications</div>
-    <p style="font-family:var(--mono);font-size:2rem;color:var(--gold);margin:.5rem 0;">${subs}</p>
-    <p style="font-size:.85rem;color:var(--ash);">Membres ayant accepté les notifications push.</p>
-  </div>
-  <div class="admin-card">
-    <div class="admin-card__title">Envoyer une notification</div>
-    <div style="display:flex;flex-direction:column;gap:1rem;margin-top:1rem;">
-      <div class="admin-field">
-        <label class="admin-label">Titre</label>
-        <input class="admin-input" id="notif-title" placeholder="ex: Nouveau cours disponible">
-      </div>
-      <div class="admin-field">
-        <label class="admin-label">Message</label>
-        <textarea class="admin-input" id="notif-body" rows="3" placeholder="ex: Un cours adulte s'ouvre le mardi soir à Santes."></textarea>
-      </div>
-      <div style="display:flex;align-items:center;gap:1rem;">
-        <button class="btn btn--primary" id="notif-send">Envoyer à tous</button>
-        <span id="notif-status" style="font-family:var(--mono);font-size:.78rem;color:var(--ash-2);"></span>
+<div style="display:grid;grid-template-columns:1fr 340px;gap:2rem;align-items:start;">
+
+  <!-- FORMULAIRE -->
+  <div style="display:flex;flex-direction:column;gap:1.4rem;">
+
+    <div class="admin-card">
+      <div class="admin-card__title">👥 Abonnés</div>
+      <p style="font-family:var(--mono);font-size:2.2rem;color:var(--gold);margin:.4rem 0;">${subs}</p>
+      <p style="font-size:.82rem;color:var(--ash);">membres ayant activé les notifications</p>
+    </div>
+
+    <div class="admin-card">
+      <div class="admin-card__title">Composer la notification</div>
+      <div style="display:flex;flex-direction:column;gap:1.1rem;margin-top:1rem;">
+
+        <!-- Titre -->
+        <div class="admin-field">
+          <label class="admin-label">Titre</label>
+          <div style="position:relative;">
+            <input class="admin-input" id="notif-title" placeholder="ex: 🏆 Résultats du tournoi" style="padding-right:2.5rem;">
+            <button id="emoji-btn-title" title="Emojis" style="position:absolute;right:.6rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:1.1rem;">😀</button>
+          </div>
+        </div>
+
+        <!-- Message -->
+        <div class="admin-field">
+          <label class="admin-label">Message</label>
+          <div style="position:relative;">
+            <textarea class="admin-input" id="notif-body" rows="3" placeholder="ex: Nos équipes ont décroché 3 médailles ce week-end 🥇" style="padding-right:2.5rem;"></textarea>
+            <button id="emoji-btn-body" title="Emojis" style="position:absolute;right:.6rem;top:.7rem;background:none;border:none;cursor:pointer;font-size:1.1rem;">😀</button>
+          </div>
+        </div>
+
+        <!-- Picker emojis -->
+        <div id="emoji-picker" style="display:none;flex-wrap:wrap;gap:.4rem;padding:.8rem;background:var(--char-2);border:1px solid var(--line);border-radius:4px;">
+          ${EMOJIS.map(e => `<button class="emoji-opt" data-e="${e}" style="font-size:1.4rem;background:none;border:none;cursor:pointer;padding:.2rem;">${e}</button>`).join('')}
+        </div>
+
+        <!-- Image URL -->
+        <div class="admin-field">
+          <label class="admin-label">Image (URL optionnelle)</label>
+          <input class="admin-input" id="notif-image" placeholder="https://... (affichée sous le message)">
+        </div>
+
+        <!-- URL destination -->
+        <div class="admin-field">
+          <label class="admin-label">Page de destination au clic</label>
+          <select class="admin-input" id="notif-url">
+            <option value="https://site-shindokai.vercel.app/">Accueil</option>
+            <option value="https://site-shindokai.vercel.app/cours.html">Cours & plannings</option>
+            <option value="https://site-shindokai.vercel.app/dojos.html">Dojos</option>
+            <option value="https://site-shindokai.vercel.app/actus.html">Actualités</option>
+            <option value="https://site-shindokai.vercel.app/tarifs.html">Tarifs</option>
+            <option value="https://site-shindokai.vercel.app/inscription.html">Inscription</option>
+            <option value="https://site-shindokai.vercel.app/contact.html">Contact</option>
+          </select>
+        </div>
+
+        <!-- Boutons d'action -->
+        <div class="admin-field">
+          <label class="admin-label">Bouton 1 (optionnel)</label>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem;">
+            <input class="admin-input" id="notif-action1-label" placeholder="Texte (ex: Voir les cours)">
+            <input class="admin-input" id="notif-action1-url" placeholder="URL">
+          </div>
+        </div>
+        <div class="admin-field">
+          <label class="admin-label">Bouton 2 (optionnel)</label>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem;">
+            <input class="admin-input" id="notif-action2-label" placeholder="Texte (ex: S'inscrire)">
+            <input class="admin-input" id="notif-action2-url" placeholder="URL">
+          </div>
+        </div>
+
+        <!-- Vibration -->
+        <div class="admin-field">
+          <label class="admin-label">Vibration</label>
+          <select class="admin-input" id="notif-vibrate">
+            <option value="200,100,200">Standard (court-pause-court)</option>
+            <option value="100,50,100,50,100">Rapide (×3)</option>
+            <option value="500,200,500">Long (×2)</option>
+            <option value="300,100,300,100,600">Alerte urgente</option>
+          </select>
+        </div>
+
+        <!-- Persistante -->
+        <label style="display:flex;align-items:center;gap:.8rem;cursor:pointer;font-size:.88rem;color:var(--ash);">
+          <input type="checkbox" id="notif-persistent" style="accent-color:var(--crimson-2);width:16px;height:16px;">
+          Notification persistante (reste jusqu'à interaction)
+        </label>
+
+        <!-- Envoi -->
+        <div style="display:flex;align-items:center;gap:1rem;margin-top:.4rem;">
+          <button class="btn btn--primary" id="notif-send">📣 Envoyer à tous</button>
+          <span id="notif-status" style="font-family:var(--mono);font-size:.78rem;color:var(--ash-2);"></span>
+        </div>
       </div>
     </div>
   </div>
-  <div class="admin-card" style="border-color:rgba(201,162,39,.2);">
-    <div class="admin-card__title" style="color:var(--gold);">Configuration requise</div>
-    <p style="font-size:.82rem;color:var(--ash);line-height:1.7;">
-      Dans <strong>Vercel → Settings → Environment Variables</strong>, ajouter :<br>
-      <code style="font-family:var(--mono);font-size:.75rem;color:var(--gold);">VAPID_PUBLIC_KEY</code> = <code style="font-family:var(--mono);font-size:.7rem;color:var(--ash);">BM6ft791ClQVDu0ld7y449Hvm19wswJuJ9W56p7CR2S4DFp1gBb-PLN4VIevUedvDu4d3QCVecnTXdUTkt8uh2o</code><br>
-      <code style="font-family:var(--mono);font-size:.75rem;color:var(--gold);">VAPID_PRIVATE_KEY</code> = <code style="font-family:var(--mono);font-size:.7rem;color:var(--ash);">UwPerDm9nXMbIzZm_xE93xMnTZJuQSKD1Mj1JlDA5bw</code><br>
-      <code style="font-family:var(--mono);font-size:.75rem;color:var(--gold);">ADMIN_PASSWORD</code> = <code style="font-family:var(--mono);font-size:.7rem;color:var(--ash);">shindo2025</code>
-    </p>
+
+  <!-- APERÇU -->
+  <div style="position:sticky;top:1rem;">
+    <div class="admin-card">
+      <div class="admin-card__title">Aperçu</div>
+      <div id="notif-preview" style="margin-top:1rem;background:#2c2c2e;border-radius:12px;padding:1rem;font-family:-apple-system,sans-serif;">
+        <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.6rem;">
+          <img src="/shinodkai.png" style="width:24px;height:24px;border-radius:6px;">
+          <span style="font-size:.7rem;color:#aaa;">EKSN Shindokai</span>
+        </div>
+        <div id="prev-title" style="font-size:.88rem;font-weight:600;color:#fff;margin-bottom:.3rem;">Titre de la notification</div>
+        <div id="prev-body" style="font-size:.8rem;color:#ccc;line-height:1.4;">Message de la notification...</div>
+        <div id="prev-image-wrap" style="display:none;margin-top:.6rem;">
+          <img id="prev-image" style="width:100%;border-radius:8px;max-height:120px;object-fit:cover;">
+        </div>
+        <div id="prev-actions" style="display:flex;gap:.5rem;margin-top:.8rem;"></div>
+      </div>
+    </div>
   </div>
+
 </div>`;
 
+  // Aperçu temps réel
+  function updatePreview() {
+    const t = document.getElementById('notif-title').value || 'Titre de la notification';
+    const b = document.getElementById('notif-body').value || 'Message de la notification...';
+    const img = document.getElementById('notif-image').value;
+    const a1 = document.getElementById('notif-action1-label').value;
+    const a2 = document.getElementById('notif-action2-label').value;
+    document.getElementById('prev-title').textContent = t;
+    document.getElementById('prev-body').textContent = b;
+    const imgWrap = document.getElementById('prev-image-wrap');
+    if (img) { document.getElementById('prev-image').src = img; imgWrap.style.display = 'block'; }
+    else imgWrap.style.display = 'none';
+    const actDiv = document.getElementById('prev-actions');
+    actDiv.innerHTML = [a1, a2].filter(Boolean).map(a =>
+      `<span style="font-size:.72rem;color:#e0241b;border:1px solid #e0241b;border-radius:4px;padding:.2rem .6rem;">${a}</span>`
+    ).join('');
+  }
+
+  ['notif-title','notif-body','notif-image','notif-action1-label','notif-action2-label'].forEach(id => {
+    document.getElementById(id)?.addEventListener('input', updatePreview);
+  });
+
+  // Emoji picker
+  let emojiTarget = null;
+  function showPicker(target) {
+    emojiTarget = target;
+    const p = document.getElementById('emoji-picker');
+    p.style.display = p.style.display === 'none' ? 'flex' : 'none';
+  }
+  document.getElementById('emoji-btn-title').onclick = () => showPicker('notif-title');
+  document.getElementById('emoji-btn-body').onclick  = () => showPicker('notif-body');
+  document.querySelectorAll('.emoji-opt').forEach(btn => {
+    btn.onclick = () => {
+      const el = document.getElementById(emojiTarget);
+      if (!el) return;
+      const pos = el.selectionStart ?? el.value.length;
+      el.value = el.value.slice(0, pos) + btn.dataset.e + el.value.slice(pos);
+      el.focus();
+      updatePreview();
+    };
+  });
+
+  // Envoi
   document.getElementById('notif-send').addEventListener('click', async () => {
     const title = document.getElementById('notif-title').value.trim();
     const body  = document.getElementById('notif-body').value.trim();
     const status = document.getElementById('notif-status');
-    if (!title || !body) { status.textContent = 'Titre et message requis.'; return; }
+    if (!title || !body) { status.textContent = '⚠ Titre et message requis.'; return; }
+
+    const a1l = document.getElementById('notif-action1-label').value.trim();
+    const a1u = document.getElementById('notif-action1-url').value.trim();
+    const a2l = document.getElementById('notif-action2-label').value.trim();
+    const a2u = document.getElementById('notif-action2-url').value.trim();
+    const actions = [];
+    if (a1l) actions.push({ action: 'btn1', title: a1l, url: a1u || 'https://site-shindokai.vercel.app/' });
+    if (a2l) actions.push({ action: 'btn2', title: a2l, url: a2u || 'https://site-shindokai.vercel.app/' });
+
     status.textContent = 'Envoi en cours…';
     try {
       const pwd = localStorage.getItem('shindokai_admin_pwd') || 'shindo2025';
       const res = await fetch('/api/notify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, body, password: pwd })
+        body: JSON.stringify({
+          title, body,
+          image:      document.getElementById('notif-image').value.trim() || undefined,
+          url:        document.getElementById('notif-url').value,
+          actions,
+          vibrate:    document.getElementById('notif-vibrate').value.split(',').map(Number),
+          persistent: document.getElementById('notif-persistent').checked,
+          password:   pwd
+        })
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || 'Erreur');
       status.textContent = `✓ Envoyé à ${json.sent} abonné(s).`;
-      document.getElementById('notif-title').value = '';
-      document.getElementById('notif-body').value = '';
     } catch(e) {
-      status.textContent = '✗ Erreur : ' + e.message;
+      status.textContent = '✗ ' + e.message;
     }
   });
 }
