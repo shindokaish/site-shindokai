@@ -2925,7 +2925,8 @@ function renderNotificationsSection(container) {
 
 /* ============ INIT ============ */
 document.addEventListener('DOMContentLoaded', () => {
-  initData().then(() => {
+  const timeout = new Promise(r => setTimeout(r, 5000));
+  Promise.race([initData(), timeout]).then(() => {
   migrateData();
   initLogin();
 
