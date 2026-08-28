@@ -2428,7 +2428,7 @@ function openCeintureModal(index) {
 /* ============ SECTION NOTIFICATIONS ============ */
 const EMOJIS = ['🥋','🏆','⚔️','🔥','💪','📢','📅','🎯','✅','⚠️','🎉','👊','🧘','🏅','📌','💬','🙏','👋','🚨','📣'];
 
-function renderNotificationsSection(container) {
+function _renderNotificationsSection_OLD(container) {
   const subs = (getData().push_subscriptions || []).length;
   container.innerHTML = `
 <div style="display:grid;grid-template-columns:1fr 340px;gap:2rem;align-items:start;">
