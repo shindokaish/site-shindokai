@@ -267,5 +267,24 @@ body { overflow: hidden; }
 <script src="js/data.js"></script>
 <script src="js/render.js"></script>
 <script src="js/admin.js"></script>
+<script>
+// Fallback login immédiat si admin.js ne s'initialise pas correctement
+document.getElementById('loginBtn').addEventListener('click', function() {
+  var pwd = document.getElementById('loginPwd').value;
+  var correctPwd = (typeof getData === 'function' && getData().adminPassword) ? getData().adminPassword : 'shindo2025';
+  if (pwd === correctPwd) {
+    document.getElementById('loginOverlay').style.display = 'none';
+    document.getElementById('adminApp').style.display = 'flex';
+    if (typeof loadSection === 'function') loadSection('club');
+  } else {
+    document.getElementById('loginErr').style.display = 'block';
+    document.getElementById('loginPwd').value = '';
+    document.getElementById('loginPwd').focus();
+  }
+});
+document.getElementById('loginPwd').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') document.getElementById('loginBtn').click();
+});
+</script>
 </body>
 </html>
