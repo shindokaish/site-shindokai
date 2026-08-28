@@ -101,7 +101,7 @@ function initLogin() {
 
   function tryLogin() {
     const data = getData();
-    if (input.value === data.adminPassword) {
+    if (input.value === (data.adminPassword || 'shindo2025')) {
       overlay.style.display = 'none';
       document.getElementById('adminApp').style.display = 'flex';
       loadSection('club');
