@@ -19,7 +19,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@400;500;600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 <style>
-.coach-grid { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+.coach-grid { grid-template-columns: repeat(3, 1fr); }
+@media (max-width: 600px) { .coach-grid { grid-template-columns: 1fr 1fr; } }
 .coach-card__photo { height: 200px; }
 .coach-card__name { font-size: .9rem; }
 .coach-card__grade { font-size: .7rem; }
