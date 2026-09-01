@@ -9,7 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@400;500;600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../css/style.css">
 <style>
-body { overflow: hidden; background: #0d0d10; }
+body { overflow-x: hidden; overflow-y: auto; background: #0d0d10; }
 .login-bg {
   position: fixed; inset: 0; z-index: 0;
   background:
@@ -18,7 +18,7 @@ body { overflow: hidden; background: #0d0d10; }
 }
 .login-wrap {
   position: relative; z-index: 1; min-height: 100vh;
-  display: flex; align-items: center; justify-content: center; padding: 2rem;
+  display: flex; align-items: flex-start; justify-content: center; padding: 2rem;
 }
 .login-box {
   background: var(--char); border: 1px solid rgba(201,162,39,.25);
