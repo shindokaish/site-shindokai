@@ -269,6 +269,8 @@ function _abInjectCSS() {
   .ab-insert-line { flex:1;height:1px;background:rgba(224,36,27,.25); }
   .ab-insert-btn  { display:flex;align-items:center;gap:.35rem;padding:.25rem .7rem;border:1px dashed rgba(224,36,27,.55);background:rgba(10,10,12,.95);color:rgba(224,36,27,.85);cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:.63rem;letter-spacing:.06em;white-space:nowrap;transition:all .2s;border-radius:2px; }
   .ab-insert-btn:hover { background:rgba(224,36,27,.15);border-color:#e0241b;color:#e0241b; }
+  .ab-insert-btn--img { border-color:rgba(201,162,39,.55);color:rgba(201,162,39,.85); }
+  .ab-insert-btn--img:hover { background:rgba(201,162,39,.12);border-color:var(--gold);color:var(--gold); }
 
   /* ── Blocs custom ── */
   .custom-block { margin:0; }
@@ -861,8 +863,9 @@ function _abInjectSectionInserts(pageKey) {
 function _abInsertZone(pageKey,afterIdx){
   const z=document.createElement('div');
   z.className='ab-insert-zone';
-  z.innerHTML=`<span class="ab-insert-line"></span><button class="ab-insert-btn">＋ Insérer un bloc ici</button><span class="ab-insert-line"></span>`;
-  z.querySelector('.ab-insert-btn').onclick=()=>_abOpenBlockForm(pageKey,afterIdx);
+  z.innerHTML=`<span class="ab-insert-line"></span><button class="ab-insert-btn">＋ Texte</button><button class="ab-insert-btn ab-insert-btn--img">🖼 Image</button><span class="ab-insert-line"></span>`;
+  z.querySelectorAll('.ab-insert-btn')[0].onclick=()=>_abOpenBlockForm(pageKey,afterIdx);
+  z.querySelectorAll('.ab-insert-btn')[1].onclick=()=>_abOpenImageForm(pageKey,afterIdx);
   return z;
 }
 function _abOpenBlockForm(pageKey,afterIdx){
@@ -921,7 +924,12 @@ function _abBuildBlock(block){
   const eyebrow=block.eyebrow?`<span class="eyebrow-text" style="margin-bottom:1rem;display:inline-flex;">${_abEsc(block.eyebrow)}</span>`:'';
   const paras=(block.content||'').split('\n').filter(l=>l.trim()).map(l=>`<p style="color:var(--ash);margin-bottom:.8rem;line-height:1.7;">${_abEsc(l)}</p>`).join('');
   let inner='';
-  if(block.type==='callout'){
+  if(block.type==='image'){
+    const maxW=block.size==='full'?'100%':block.size==='small'?'400px':'760px';
+    const margin=block.align==='center'?'0 auto':block.align==='right'?'0 0 0 auto':'0';
+    const caption=block.caption?`<figcaption style="text-align:center;font-size:.8rem;color:var(--ash-2);margin-top:.5rem;font-style:italic;">${_abEsc(block.caption)}</figcaption>`:'';
+    inner=`<div class="wrap"><figure style="max-width:${maxW};margin:${margin};display:block;">${delBtn}<img src="${_abEsc(block.src)}" alt="${_abEsc(block.caption||'')}" style="width:100%;display:block;">${caption}</figure></div>`;
+  }else if(block.type==='callout'){
     inner=`<div class="wrap"><div class="custom-block--callout">${delBtn}${eyebrow}${block.title?`<h3 style="font-family:var(--display);font-size:1.4rem;text-transform:uppercase;color:var(--bone);margin-bottom:.8rem;">${_abEsc(block.title)}</h3>`:''}<div class="cb-content">${paras}</div></div></div>`;
   }else if(block.type==='title-only'){
     inner=`<div class="wrap"><div style="max-width:760px;margin:0 auto;text-align:center;">${delBtn}${eyebrow}<h2 class="section__title">${_abEsc(block.title)}</h2></div></div>`;
@@ -936,6 +944,76 @@ function _abDeleteBlock(id){
   if(!confirm('Supprimer ce bloc ?'))return;
   saveSection('custom_blocks',(getSection('custom_blocks')||[]).filter(b=>b.id!==id));
   setTimeout(()=>location.reload(),900);
+}
+
+/* ── Insertion d'image ── */
+function _abOpenImageForm(pageKey,afterIdx){
+  document.getElementById('abModalBox').innerHTML=`
+    <div class="ab-modal-title">Insérer une image</div>
+    <div class="ab-field">
+      <label class="ab-label">Image — URL ou upload</label>
+      <input id="abImgUrl" class="ab-input" type="text" placeholder="https://… ou img/photo.jpg">
+      <input id="abImgFile" type="file" accept="image/*" style="margin-top:.5rem;background:var(--char-2);border:1px solid var(--line);color:var(--bone);padding:.5rem;width:100%;box-sizing:border-box;">
+      <img id="abImgPreview" style="max-width:100%;max-height:160px;margin-top:.6rem;display:none;border:1px solid var(--line);">
+    </div>
+    <div class="ab-field"><label class="ab-label">Légende (optionnelle)</label>
+      <input id="abImgCaption" class="ab-input" type="text" placeholder="Description de l'image…"></div>
+    <div class="ab-field"><label class="ab-label">Taille</label>
+      <select id="abImgSize" class="ab-select-input">
+        <option value="medium">Moyenne (760px)</option>
+        <option value="full">Pleine largeur</option>
+        <option value="small">Petite (400px)</option>
+      </select></div>
+    <div class="ab-field"><label class="ab-label">Alignement</label>
+      <select id="abImgAlign" class="ab-select-input">
+        <option value="center">Centré</option>
+        <option value="left">Gauche</option>
+        <option value="right">Droite</option>
+      </select></div>
+    <div class="ab-modal-btns">
+      <button class="ab-modal-cancel" onclick="_abCloseModal()">Annuler</button>
+      <button class="ab-modal-ok" id="abImgOk" onclick="_abSubmitImage('${pageKey}',${afterIdx})">Insérer</button>
+    </div>`;
+  const urlEl=document.getElementById('abImgUrl');
+  const fileEl=document.getElementById('abImgFile');
+  const prev=document.getElementById('abImgPreview');
+  urlEl.addEventListener('input',()=>{if(urlEl.value){prev.src=urlEl.value;prev.style.display='block';}else{prev.style.display='none';}});
+  fileEl.addEventListener('change',()=>{
+    const f=fileEl.files[0];if(!f)return;
+    const r=new FileReader();r.onload=e=>{prev.src=e.target.result;prev.style.display='block';urlEl.value='';};r.readAsDataURL(f);
+  });
+  document.getElementById('abModal').classList.remove('ab-hidden');
+}
+async function _abSubmitImage(pageKey,afterIdx){
+  const btn=document.getElementById('abImgOk');
+  btn.disabled=true;btn.textContent='…';
+  const urlEl=document.getElementById('abImgUrl');
+  const fileEl=document.getElementById('abImgFile');
+  const caption=(document.getElementById('abImgCaption').value||'').trim();
+  const size=document.getElementById('abImgSize').value;
+  const align=document.getElementById('abImgAlign').value;
+  let src=urlEl.value.trim();
+
+  if(!src && fileEl.files[0]){
+    try{
+      const file=fileEl.files[0];
+      const path=`custom/${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g,'_')}`;
+      const sb=supabase.createClient('https://jcfltkuobbjqicczpsjn.supabase.co','sb_publishable_15BDd64WYwMfW8VV9ZXDqg_Oa2ySvKc');
+      const {error}=await sb.storage.from('site-images').upload(path,file,{upsert:true,contentType:file.type});
+      if(error)throw error;
+      const {data:{publicUrl}}=sb.storage.from('site-images').getPublicUrl(path);
+      src=publicUrl;
+    }catch(e){
+      const r=new FileReader();
+      await new Promise(res=>{r.onload=e=>{src=e.target.result;res();};r.readAsDataURL(fileEl.files[0]);});
+    }
+  }
+
+  if(!src){alert('Ajoutez une image (URL ou fichier).');btn.disabled=false;btn.textContent='Insérer';return;}
+  const block={id:Date.now().toString(36),page:pageKey,after:afterIdx,type:'image',src,caption,size,align,order:Date.now()};
+  const blocks=JSON.parse(JSON.stringify(getSection('custom_blocks')||[]));
+  blocks.push(block);saveSection('custom_blocks',blocks);
+  _abCloseModal();setTimeout(()=>location.reload(),1000);
 }
 
 /* ══════════════════════════════════════════════════════════════
