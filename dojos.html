@@ -67,9 +67,17 @@
 .bureau-grid .coach-card__contact a:hover { color: var(--gold); }
 
 /* ── Infos dojo ── */
-.dojo-info-grid {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: .8rem; margin-bottom: 1.6rem;
+.dojo-info-list {
+  display: flex; flex-direction: column; margin-bottom: 1.6rem;
 }
+.dojo-info-list .dojo-item { display: flex; gap: 1rem; padding: .75rem 0; border-bottom: 1px solid var(--line); align-items: baseline; }
+.dojo-info-list .dojo-item:first-child { padding-top: 0; }
+.dojo-info-list .dojo-item:last-child { border-bottom: none; }
+.dojo-info-list .dojo-item__label {
+  font-family: var(--eyebrow); font-size: .68rem; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--ash-2); width: 160px; flex-shrink: 0;
+}
+.dojo-info-list .dojo-item__value { color: var(--bone); font-size: .9rem; }
 </style>
 </head>
 <body>
@@ -211,7 +219,7 @@ dojos.forEach((d, i) => {
 
     <div class="dojo-subsection">
       <div class="dojo-subsection__title">🏯 Le Dojo</div>
-      <div class="dojo-info-grid">
+      <div class="dojo-info-list">
         ${d.phone ? `<div class="dojo-item"><span class="dojo-item__label">Téléphone</span><span class="dojo-item__value">${esc(d.phone)}</span></div>` : ''}
         ${d.acces ? `<div class="dojo-item"><span class="dojo-item__label">Accès</span><span class="dojo-item__value">${esc(d.acces)}</span></div>` : ''}
         ${d.instructeur ? `<div class="dojo-item"><span class="dojo-item__label">Instructeur référent</span><span class="dojo-item__value">${esc(d.instructeur)}</span></div>` : ''}
