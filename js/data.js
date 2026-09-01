@@ -32,7 +32,9 @@ const DEFAULT_DATA = {
   coaches: [
     { initials: "DA", photo: "img/coach-david.png",  name: "David",  grade: "5e Dan Shindokai · 5e Dan FFK", role: "Instructeur Fédéral", bio: "Diplômé Instructeur Fédéral FFK. Référence technique de l'association, garant de la transmission des valeurs et de l'enseignement du Shindokai.", dojo: "" },
     { initials: "MO", photo: "img/coach-morgan.png", name: "Morgan", grade: "3e Dan Shindokai · 2e Dan FFK", role: "Animateur Fédéral", bio: "Diplômé Animateur Fédéral FFK. Encadre les cours avec rigueur et pédagogie, alliant maîtrise technique et esprit combatif.", dojo: "" },
-    { initials: "JU", photo: "img/coach-julien.png", name: "Julien", grade: "2e Dan Shindokai · 2e Dan FFK", role: "Animateur Fédéral", bio: "Diplômé Animateur Fédéral FFK. Accompagne les pratiquants de tous niveaux dans leur progression.", dojo: "" }
+    { initials: "JU", photo: "img/coach-julien.png",      name: "Julien",     grade: "2e Dan Shindokai · 2e Dan FFK", role: "Animateur Fédéral", bio: "Diplômé Animateur Fédéral FFK. Accompagne les pratiquants de tous niveaux dans leur progression.", dojo: "" },
+    { initials: "CH", photo: "img/coach-christophe.png", name: "Christophe", grade: "", role: "", bio: "", dojo: "" },
+    { initials: "PH", photo: "img/coach-philippe.png",   name: "Philippe",   grade: "", role: "", bio: "", dojo: "" }
   ],
   courses: [
     { age: "4-6 ans",       name: "Mini Karaté",  level: "Découverte · motricité, jeux",   days: "Mercredi",           time: "17h00 – 17h45", belt: "#f3efe7" },
