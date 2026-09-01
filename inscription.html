@@ -4,15 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Inscription — EKSN</title>
-<meta name="description" content="Formulaire d'inscription au EKSN. Karaté contact, dès 4 ans.">
+<meta name="description" content="Téléchargez le dossier d'inscription au EKSN. Karaté contact, dès 4 ans.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://site-shindokai.vercel.app/inscription.html">
 <meta property="og:title" content="Inscription — EKSN">
-<meta property="og:description" content="Formulaire d'inscription au EKSN. Karaté contact, dès 4 ans.">
+<meta property="og:description" content="Téléchargez le dossier d'inscription au EKSN. Karaté contact, dès 4 ans.">
 <meta property="og:image" content="https://site-shindokai.vercel.app/shinodkai.png">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Inscription — EKSN">
-<meta name="twitter:description" content="Formulaire d'inscription au EKSN. Karaté contact, dès 4 ans.">
+<meta name="twitter:description" content="Téléchargez le dossier d'inscription au EKSN. Karaté contact, dès 4 ans.">
 <meta name="twitter:image" content="https://site-shindokai.vercel.app/shinodkai.png">
 <link rel="icon" href="shinodkai.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -35,7 +35,7 @@
   pointer-events:none;
 }
 
-/* ── Formulaire ── */
+/* ── Download card ── */
 .insc-layout{
   display:grid;
   grid-template-columns:1fr 340px;
@@ -44,127 +44,109 @@
 }
 @media(max-width:860px){ .insc-layout{ grid-template-columns:1fr; } }
 
-.insc-form-wrap{
+.pdf-card{
   background:var(--char);
   border:1px solid var(--line);
-  padding:2.4rem;
-}
-
-/* Groupes de champs */
-.field-group{
-  margin-bottom:2rem;
-}
-.field-group__title{
-  font-family:var(--eyebrow);
-  font-size:.72rem;
-  letter-spacing:.14em;
-  text-transform:uppercase;
-  color:var(--crimson-2);
-  border-bottom:1px solid var(--line);
-  padding-bottom:.6rem;
-  margin-bottom:1.2rem;
+  padding:3rem 2.4rem;
   display:flex;
+  flex-direction:column;
   align-items:center;
-  gap:.6rem;
+  text-align:center;
+  gap:1.8rem;
 }
-.field-group__title::before{
-  content:'';
-  width:14px; height:2px;
-  background:var(--crimson-2);
+.pdf-icon{
+  width:80px; height:80px; border-radius:50%;
+  background:linear-gradient(135deg, var(--crimson), var(--crimson-2));
+  display:flex; align-items:center; justify-content:center;
+  font-size:2.2rem;
 }
-.field-group__grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:.9rem;
-}
-.field-group__grid .field--full{ grid-column:1/-1; }
-@media(max-width:600px){ .field-group__grid{ grid-template-columns:1fr; } }
-
-/* Champs */
-.field{ display:flex; flex-direction:column; gap:.35rem; }
-.field label{
-  font-family:var(--eyebrow);
-  font-size:.68rem;
-  letter-spacing:.08em;
+.pdf-card h2{
+  font-family:var(--display);
+  font-size:1.8rem;
   text-transform:uppercase;
-  color:var(--ash-2);
+  color:var(--bone);
 }
-.field label .req{ color:var(--crimson-2); margin-left:2px; }
-.field input,
-.field select,
-.field textarea{
+.pdf-card p{
+  color:var(--ash);
+  line-height:1.7;
+  max-width:480px;
+}
+.pdf-download-btn{
+  display:inline-flex;
+  align-items:center;
+  gap:.8rem;
+  padding:1rem 2.2rem;
+  background:var(--crimson);
+  color:#fff;
+  font-family:var(--display);
+  font-size:1rem;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+  text-decoration:none;
+  border:none;
+  cursor:pointer;
+  transition:background .2s, transform .15s;
+}
+.pdf-download-btn:hover{ background:var(--crimson-2); transform:translateY(-2px); }
+.pdf-download-btn svg{ flex-shrink:0; }
+
+.pdf-no-file{
+  background:rgba(224,36,27,.06);
+  border:1px dashed rgba(224,36,27,.3);
+  color:var(--ash-2);
+  padding:1.2rem 2rem;
+  font-size:.9rem;
+  font-family:var(--mono);
+}
+
+/* ── Admin upload zone ── */
+.pdf-admin-zone{
+  display:none;
+  margin-top:1.4rem;
+  padding:1.4rem;
+  background:rgba(201,162,39,.05);
+  border:1px dashed rgba(201,162,39,.35);
+  flex-direction:column;
+  gap:.9rem;
+  width:100%;
+  box-sizing:border-box;
+}
+body.is-admin .pdf-admin-zone{ display:flex; }
+.pdf-admin-zone label{
+  font-family:var(--eyebrow);
+  font-size:.7rem;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  color:var(--gold);
+}
+.pdf-admin-zone input[type=file]{
   background:var(--char-2);
   border:1px solid var(--line);
   color:var(--bone);
-  padding:.8rem 1rem;
-  font-family:var(--body);
-  font-size:.92rem;
-  border-radius:var(--radius);
+  padding:.6rem .9rem;
+  font-size:.85rem;
   width:100%;
-  transition:border-color .2s;
 }
-.field input:focus,
-.field select:focus,
-.field textarea:focus{ border-color:var(--crimson-2); outline:none; }
-.field input.error,
-.field select.error,
-.field textarea.error{ border-color:var(--crimson); }
-.field__error{
-  font-family:var(--mono);
-  font-size:.7rem;
-  color:var(--crimson-2);
-  display:none;
-}
-.field__error.visible{ display:block; }
-
-/* Checkbox */
-.field--check{
-  flex-direction:row;
-  align-items:flex-start;
-  gap:.8rem;
-  padding:.8rem 0;
-  border-top:1px solid var(--line);
-}
-.field--check:first-child{ border-top:none; }
-.field--check input[type=checkbox]{
-  width:18px; height:18px; flex-shrink:0;
-  accent-color:var(--crimson-2);
-  margin-top:2px;
+.pdf-admin-upload-btn{
+  align-self:flex-start;
+  padding:.6rem 1.4rem;
+  background:var(--gold);
+  color:var(--void);
+  font-family:var(--eyebrow);
+  font-size:.75rem;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  border:none;
   cursor:pointer;
 }
-.field--check label{
-  font-family:var(--body);
-  font-size:.88rem;
-  letter-spacing:0;
-  text-transform:none;
-  color:var(--ash);
-  cursor:pointer;
-  line-height:1.5;
-}
-
-/* Statut envoi */
-.form-status{
-  padding:1rem 1.2rem;
-  border-radius:var(--radius);
+.pdf-admin-upload-btn:disabled{ opacity:.5; cursor:not-allowed; }
+.pdf-admin-msg{
   font-family:var(--mono);
-  font-size:.82rem;
-  margin-top:1rem;
-  display:none;
-}
-.form-status.ok{
-  background:rgba(100,200,100,.1);
-  border:1px solid rgba(100,200,100,.3);
-  color:#7ecf7e;
-  display:block;
-}
-.form-status.err{
-  background:rgba(224,36,27,.1);
-  border:1px solid rgba(224,36,27,.3);
-  color:var(--crimson-2);
-  display:block;
+  font-size:.78rem;
+  color:var(--gold);
 }
 
-/* ── Sidebar infos ── */
+/* ── Sidebar ── */
 .insc-sidebar{ display:flex; flex-direction:column; gap:1.4rem; }
 .info-block{
   background:var(--char);
@@ -204,25 +186,6 @@
 .doc-item:last-child{ border-bottom:none; }
 .doc-item::before{ content:'📄'; font-size:.8rem; }
 
-/* ── Succès ── */
-.success-screen{
-  display:none;
-  flex-direction:column;
-  align-items:center;
-  text-align:center;
-  padding:4rem 2rem;
-  gap:1.2rem;
-}
-.success-screen.visible{ display:flex; }
-.success-icon{
-  width:72px; height:72px; border-radius:50%;
-  background:linear-gradient(135deg, var(--crimson), var(--crimson-2));
-  display:flex; align-items:center; justify-content:center;
-  font-size:2rem;
-}
-.success-screen h2{ font-family:var(--display); font-size:2rem; text-transform:uppercase; }
-.success-screen p{ color:var(--ash); max-width:480px; }
-
 </style>
 </head>
 <body>
@@ -237,9 +200,9 @@
     <div class="hero-mini__content">
       <span class="eyebrow-text hero-mini__eyebrow">Rejoindre le club</span>
       <h1 class="hero-mini__title">
-        <span class="line"><span id="insc-titre">Demande d'inscription</span></span>
+        <span class="line"><span id="insc-titre">Inscription</span></span>
       </h1>
-      <p style="color:var(--ash);margin-top:.8rem;max-width:560px;font-size:.95rem;" id="insc-intro"></p>
+      <p style="color:var(--ash);margin-top:.8rem;max-width:560px;font-size:.95rem;" id="insc-intro">Téléchargez le dossier d'inscription, remplissez-le et apportez-le lors de votre premier cours.</p>
     </div>
   </div>
 </section>
@@ -249,17 +212,20 @@
   <div class="wrap">
     <div class="insc-layout">
 
-      <!-- Formulaire -->
-      <div class="insc-form-wrap">
-        <div id="formContainer">
-          <form id="inscriptionForm" novalidate></form>
-          <div class="form-status" id="formStatus"></div>
-        </div>
-        <div class="success-screen" id="successScreen">
-          <div class="success-icon">✓</div>
-          <h2>Demande envoyée !</h2>
-          <p id="successMsg">Merci pour votre inscription. Un responsable du club vous contactera sous 48h pour finaliser votre adhésion.</p>
-          <a href="index.html" class="btn btn--ghost" style="margin-top:.5rem;">Retour à l'accueil</a>
+      <!-- Téléchargement PDF -->
+      <div class="pdf-card">
+        <div class="pdf-icon">📋</div>
+        <h2>Dossier d'inscription</h2>
+        <p id="pdf-desc">Téléchargez le dossier d'inscription, remplissez-le et apportez-le avec les pièces justificatives lors de votre premier cours d'essai.</p>
+
+        <div id="pdf-download-wrap"></div>
+
+        <!-- Zone admin : uploader un PDF -->
+        <div class="pdf-admin-zone" id="pdfAdminZone">
+          <label>⚙ Admin — Remplacer le dossier PDF</label>
+          <input type="file" accept="application/pdf" id="pdfFileInput">
+          <button class="pdf-admin-upload-btn" id="pdfUploadBtn" onclick="_abUploadInscriptionPdf()">Uploader le PDF</button>
+          <span class="pdf-admin-msg" id="pdfAdminMsg"></span>
         </div>
       </div>
 
@@ -268,10 +234,10 @@
 
         <div class="info-block">
           <div class="info-block__title">Comment ça marche ?</div>
-          <div class="info-step"><span class="info-step__num">1</span><span class="info-step__text">Remplissez ce formulaire en ligne</span></div>
-          <div class="info-step"><span class="info-step__num">2</span><span class="info-step__text">Un responsable vous contacte sous 48h</span></div>
-          <div class="info-step"><span class="info-step__num">3</span><span class="info-step__text">Venez faire votre cours d'essai gratuit</span></div>
-          <div class="info-step"><span class="info-step__num">4</span><span class="info-step__text">Finalisez l'inscription avec les documents</span></div>
+          <div class="info-step"><span class="info-step__num">1</span><span class="info-step__text">Téléchargez et remplissez le dossier d'inscription</span></div>
+          <div class="info-step"><span class="info-step__num">2</span><span class="info-step__text">Venez faire votre cours d'essai gratuit</span></div>
+          <div class="info-step"><span class="info-step__num">3</span><span class="info-step__text">Apportez votre dossier rempli et les pièces justificatives</span></div>
+          <div class="info-step"><span class="info-step__num">4</span><span class="info-step__text">Finalisez l'inscription sur place</span></div>
         </div>
 
         <div class="info-block">
@@ -301,303 +267,75 @@
   </svg>
 </button>
 
-<script src="js/docx.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="js/data.js"></script>
 <script src="js/render.js"></script>
 <script src="js/admin-bar.js"></script>
 <script>
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-async function generateInscriptionDocx(submission, activeFields, dojoInfo, club) {
-  const { Document, Packer, Paragraph, TextRun, AlignmentType, BorderStyle, Table, TableRow, TableCell, WidthType, ShadingType } = docx;
+function _renderPdfDownload() {
+  const wrap = document.getElementById('pdf-download-wrap');
+  const settings = getSection('settings') || {};
+  const pdfUrl = settings.inscriptionPdfUrl;
+  if (pdfUrl) {
+    wrap.innerHTML = `<a class="pdf-download-btn" href="${esc(pdfUrl)}" target="_blank" rel="noopener">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="7 10 12 15 17 10"/>
+        <line x1="12" y1="15" x2="12" y2="3"/>
+      </svg>
+      Télécharger le dossier (PDF)
+    </a>`;
+  } else {
+    wrap.innerHTML = `<div class="pdf-no-file">Aucun dossier PDF disponible pour le moment.<br>Contactez-nous directement.</div>`;
+  }
+}
 
-  const dojoName = dojoInfo.name || club.name || 'EKSN';
-  const dojoAddr = dojoInfo.address || '';
-  const dojoPhone = dojoInfo.presidentPhone || club.phone || '';
-  const dojoEmail = dojoInfo.presidentEmail || club.email || '';
-  const date = new Date().toLocaleDateString('fr-FR', { day:'2-digit', month:'long', year:'numeric' });
-
-  const groups = {};
-  activeFields.forEach(f => {
-    if (!groups[f.group]) groups[f.group] = [];
-    groups[f.group].push(f);
-  });
-
-  const children = [];
-
-  children.push(new Paragraph({
-    children: [new TextRun({ text: 'EKSN — École de Karaté Shindokai Nord', bold: true, size: 32, color: '8b0000', font: 'Arial' })],
-    alignment: AlignmentType.CENTER, spacing: { after: 80 },
-  }));
-  children.push(new Paragraph({
-    children: [new TextRun({ text: dojoName, bold: true, size: 24, font: 'Arial' })],
-    alignment: AlignmentType.CENTER, spacing: { after: 40 },
-  }));
-  if (dojoAddr) children.push(new Paragraph({
-    children: [new TextRun({ text: dojoAddr, size: 18, color: '555555', font: 'Arial' })],
-    alignment: AlignmentType.CENTER, spacing: { after: 40 },
-  }));
-  if (dojoPhone || dojoEmail) children.push(new Paragraph({
-    children: [new TextRun({ text: [dojoPhone, dojoEmail].filter(Boolean).join('  •  '), size: 18, color: '555555', font: 'Arial' })],
-    alignment: AlignmentType.CENTER, spacing: { after: 200 },
-  }));
-
-  children.push(new Paragraph({
-    children: [new TextRun({ text: "FICHE D'INSCRIPTION", bold: true, size: 28, color: '8b0000', font: 'Arial' })],
-    alignment: AlignmentType.CENTER,
-    border: { bottom: { style: BorderStyle.SINGLE, size: 6, color: '8b0000' } },
-    spacing: { after: 100 },
-  }));
-  children.push(new Paragraph({
-    children: [new TextRun({ text: `Date : ${date}`, size: 18, italics: true, color: '555555', font: 'Arial' })],
-    alignment: AlignmentType.RIGHT, spacing: { after: 300 },
-  }));
-
-  Object.entries(groups).forEach(([groupName, fields]) => {
-    children.push(new Paragraph({
-      children: [new TextRun({ text: groupName.toUpperCase(), bold: true, size: 22, color: '8b0000', font: 'Arial' })],
-      border: { bottom: { style: BorderStyle.SINGLE, size: 4, color: 'dddddd' } },
-      spacing: { before: 300, after: 120 },
-    }));
-    const rows = fields.map(f => {
-      const el = document.getElementById(`f-${f.id}`);
-      let val = '—';
-      if (el) val = f.type === 'checkbox' ? (el.checked ? 'Oui' : 'Non') : (el.value || '—');
-      return new TableRow({ children: [
-        new TableCell({
-          children: [new Paragraph({ children: [new TextRun({ text: f.label, bold: true, size: 18, font: 'Arial' })] })],
-          width: { size: 35, type: WidthType.PERCENTAGE },
-          shading: { type: ShadingType.SOLID, color: 'f5f5f5' },
-        }),
-        new TableCell({
-          children: [new Paragraph({ children: [new TextRun({ text: val, size: 18, font: 'Arial' })] })],
-          width: { size: 65, type: WidthType.PERCENTAGE },
-        }),
-      ]});
-    });
-    if (rows.length) children.push(new Table({ rows, width: { size: 100, type: WidthType.PERCENTAGE } }));
-  });
-
-  children.push(new Paragraph({
-    children: [new TextRun({ text: `Document généré le ${date} — ${club.name || 'EKSN'}`, size: 16, italics: true, color: '999999', font: 'Arial' })],
-    alignment: AlignmentType.CENTER,
-    border: { top: { style: BorderStyle.SINGLE, size: 4, color: 'dddddd' } },
-    spacing: { before: 600 },
-  }));
-
-  const doc = new Document({ sections: [{ properties: {}, children }] });
-  const blob = await Packer.toBlob(doc);
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  const nom = document.getElementById('f-nom')?.value || 'inscription';
-  const prenom = document.getElementById('f-prenom')?.value || '';
-  a.href = url;
-  a.download = `inscription_${prenom}_${nom}.docx`.replace(/\s+/g, '_');
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+async function _abUploadInscriptionPdf() {
+  const file = document.getElementById('pdfFileInput').files[0];
+  const msg  = document.getElementById('pdfAdminMsg');
+  const btn  = document.getElementById('pdfUploadBtn');
+  if (!file) { msg.textContent = 'Sélectionnez un fichier PDF.'; return; }
+  btn.disabled = true;
+  msg.textContent = 'Upload en cours…';
+  try {
+    const SB_URL = 'https://jcfltkuobbjqicczpsjn.supabase.co';
+    const SB_KEY = 'sb_publishable_15BDd64WYwMfW8VV9ZXDqg_Oa2ySvKc';
+    const sb = supabase.createClient(SB_URL, SB_KEY);
+    const path = 'inscription/dossier-inscription.pdf';
+    const { error } = await sb.storage.from('site-images').upload(path, file, { upsert: true, contentType: 'application/pdf' });
+    if (error) throw error;
+    const { data: { publicUrl } } = sb.storage.from('site-images').getPublicUrl(path);
+    const settings = Object.assign({}, getSection('settings') || {});
+    settings.inscriptionPdfUrl = publicUrl + '?t=' + Date.now();
+    saveSection('settings', settings);
+    msg.textContent = '✓ PDF mis en ligne !';
+    setTimeout(() => { location.reload(); }, 1200);
+  } catch(e) {
+    msg.textContent = 'Erreur : ' + e.message;
+    btn.disabled = false;
+  }
 }
 
 initData().then(() => {
-renderNav('inscription');
-renderFooter();
+  pageInit('inscription');
 
-const data        = getData();
-const insc        = data.inscription;
-const dojos       = data.dojos;
-const courses     = data.courses;
-const tarifs      = data.tarifs;
-const club        = data.club;
+  const club = getData().club || {};
 
-/* Titre & intro */
-document.getElementById('insc-titre').textContent = insc.titre || "Demande d'inscription";
-document.getElementById('insc-intro').textContent = insc.intro || '';
+  document.getElementById('sidebar-contact').innerHTML = `
+    <div class="info-block__title">Contact</div>
+    <p>📧 <a href="mailto:${esc(club.email)}" style="color:var(--crimson-2);">${esc(club.email)}</a></p>
+    <p>📞 ${esc(club.phone)}</p>`;
 
-/* Sidebar contact */
-document.getElementById('sidebar-contact').innerHTML = `
-  <div class="info-block__title">Contact</div>
-  <p>📧 <a href="mailto:${esc(club.email)}" style="color:var(--crimson-2);">${esc(club.email)}</a></p>
-  <p>📞 ${esc(club.phone)}</p>`;
+  _renderPdfDownload();
 
-/* ── Construction du formulaire ── */
-const form = document.getElementById('inscriptionForm');
-
-/* Grouper les champs actifs par groupe */
-const activeFields = insc.fields.filter(f => f.enabled);
-const groups = {};
-activeFields.forEach(f => {
-  if (!groups[f.group]) groups[f.group] = [];
-  groups[f.group].push(f);
-});
-
-Object.entries(groups).forEach(([groupName, fields]) => {
-  const groupEl = document.createElement('div');
-  groupEl.className = 'field-group';
-  groupEl.innerHTML = `<div class="field-group__title">${esc(groupName)}</div>`;
-  const grid = document.createElement('div');
-  grid.className = 'field-group__grid';
-
-  /* Champs checkbox dans un bloc séparé (pas dans la grille) */
-  const checkboxFields = fields.filter(f => f.type === 'checkbox');
-  const regularFields  = fields.filter(f => f.type !== 'checkbox');
-
-  regularFields.forEach(f => {
-    const wrapper = document.createElement('div');
-    const isFullWidth = ['textarea','select-dojos','select-cours','select-tarifs'].includes(f.type);
-    wrapper.className = `field${isFullWidth ? ' field--full' : ''}`;
-
-    let inputHTML = '';
-    if (f.type === 'select' || f.type === 'select-dojos' || f.type === 'select-cours' || f.type === 'select-tarifs') {
-      let opts = '';
-      if (f.type === 'select-dojos') opts = dojos.map(d => `<option value="${esc(d.name)}">${esc(d.name)}</option>`).join('');
-      else if (f.type === 'select-cours') opts = courses.map(c => `<option value="${esc(c.name)}">${esc(c.name)} (${esc(c.age)})</option>`).join('');
-      else if (f.type === 'select-tarifs') opts = tarifs.map(t => `<option value="${esc(t.name)}">${esc(t.name)} — ${esc(t.price)}${esc(t.period)}</option>`).join('');
-      else opts = (f.options || []).map(o => `<option value="${esc(o)}">${esc(o)}</option>`).join('');
-      inputHTML = `<select id="f-${esc(f.id)}" name="${esc(f.id)}"${f.required?' required':''}><option value="">— Choisir —</option>${opts}</select>`;
-    } else if (f.type === 'textarea') {
-      inputHTML = `<textarea id="f-${esc(f.id)}" name="${esc(f.id)}" rows="3" placeholder="${esc(f.placeholder||'')}"${f.required?' required':''}></textarea>`;
-    } else {
-      inputHTML = `<input type="${esc(f.type)}" id="f-${esc(f.id)}" name="${esc(f.id)}" placeholder="${esc(f.placeholder||'')}"${f.required?' required':''}>`;
-    }
-
-    wrapper.innerHTML = `
-      <label for="f-${esc(f.id)}">${esc(f.label)}${f.required ? '<span class="req">*</span>' : ''}</label>
-      ${inputHTML}
-      <span class="field__error" id="err-${esc(f.id)}">Ce champ est obligatoire.</span>`;
-    grid.appendChild(wrapper);
-  });
-
-  groupEl.appendChild(grid);
-
-  /* Checkboxes */
-  if (checkboxFields.length) {
-    const checkBlock = document.createElement('div');
-    checkBlock.style.marginTop = '1rem';
-    checkboxFields.forEach(f => {
-      const wrap = document.createElement('div');
-      wrap.className = 'field field--check';
-      wrap.innerHTML = `
-        <input type="checkbox" id="f-${esc(f.id)}" name="${esc(f.id)}"${f.required?' required':''}>
-        <label for="f-${esc(f.id)}">${esc(f.label)}${f.required ? ' <span class="req">*</span>' : ''}</label>`;
-      checkBlock.appendChild(wrap);
-    });
-    groupEl.appendChild(checkBlock);
-  }
-
-  form.appendChild(groupEl);
-});
-
-/* Bouton submit */
-const submitBtn = document.createElement('button');
-submitBtn.type = 'submit';
-submitBtn.className = 'btn btn--primary';
-submitBtn.style.cssText = 'margin-top:1.4rem;width:100%;justify-content:center;';
-submitBtn.textContent = 'Envoyer ma demande d\'inscription';
-form.appendChild(submitBtn);
-
-/* ── Validation & envoi ── */
-form.addEventListener('submit', async function(e) {
-  e.preventDefault();
-  let valid = true;
-
-  activeFields.forEach(f => {
-    const el = document.getElementById(`f-${f.id}`);
-    const errEl = document.getElementById(`err-${f.id}`);
-    if (!el) return;
-    const isEmpty = f.type === 'checkbox' ? !el.checked : !el.value.trim();
-    if (f.required && isEmpty) {
-      el.classList.add('error');
-      if (errEl) errEl.classList.add('visible');
-      valid = false;
-    } else {
-      el.classList.remove('error');
-      if (errEl) errEl.classList.remove('visible');
-    }
-  });
-
-  if (!valid) {
-    const status = document.getElementById('formStatus');
-    status.textContent = 'Merci de remplir tous les champs obligatoires (marqués *).';
-    status.className = 'form-status err';
-    form.querySelector('.error')?.scrollIntoView({ behavior:'smooth', block:'center' });
-    return;
-  }
-
-  /* Collecte des données */
-  const submission = { id: Date.now(), date: new Date().toLocaleDateString('fr-FR'), fields: {} };
-  activeFields.forEach(f => {
-    const el = document.getElementById(`f-${f.id}`);
-    if (!el) return;
-    submission.fields[f.id] = f.type === 'checkbox' ? el.checked : el.value;
-  });
-
-  submitBtn.disabled = true;
-  submitBtn.textContent = 'Envoi en cours…';
-
-  /* Sauvegarde locale */
-  const d = getData();
-  if (!d.inscription.submissions) d.inscription.submissions = [];
-  d.inscription.submissions.unshift(submission);
-  saveData(d);
-
-  /* Collecte des champs pour l'email */
-  const emailBody = {};
-  activeFields.forEach(f => {
-    const el = document.getElementById(`f-${f.id}`);
-    if (el) emailBody[f.label] = f.type === 'checkbox' ? (el.checked ? 'Oui' : 'Non') : el.value;
-  });
-  const nom    = document.getElementById('f-nom')?.value || '';
-  const prenom = document.getElementById('f-prenom')?.value || '';
-
-  /* Envoi Web3Forms */
   try {
-    const res = await fetch('https://api.web3forms.com/submit', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-      body: JSON.stringify({
-        access_key: (getSection('settings') || {}).web3formsKey || '109f2859-b8c5-49fa-b6e9-4fd2fee3c5ab',
-        subject: `Nouvelle inscription — ${prenom} ${nom}`,
-        from_name: 'Site EKSN',
-        ...emailBody
-      })
-    });
-    if (!res.ok) throw new Error('Web3Forms error');
-  } catch (err) {
-    /* Fallback mailto si Web3Forms échoue */
-    const lines = Object.entries(emailBody).map(([k,v]) => `${k}: ${v}`).join('\n');
-    window.location.href = `mailto:${club.email}?subject=${encodeURIComponent('Inscription — ' + prenom + ' ' + nom)}&body=${encodeURIComponent(lines)}`;
-  }
+    if (sessionStorage.getItem('shindokai_admin')) document.body.classList.add('is-admin');
+  } catch(e) {}
 
-  /* Génération du document Word */
-  try {
-    if (typeof docx === 'undefined') throw new Error('Bibliothèque docx non chargée');
-    const dojoName = document.getElementById('f-dojo')?.value || '';
-    const dojoInfo = (getData().dojos || []).find(d => d.name === dojoName) || {};
-    await generateInscriptionDocx(submission, activeFields, dojoInfo, club);
-  } catch(e) {
-    console.error('Erreur génération Word:', e);
-    alert('Le fichier Word n\'a pas pu être généré : ' + e.message);
-  }
-
-  /* Affichage succès */
-  document.getElementById('formContainer').style.display = 'none';
-  document.getElementById('successScreen').classList.add('visible');
+  initAdminBar('inscription');
 });
-
-/* Effacer erreur au focus */
-form.addEventListener('focusin', e => {
-  if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA') {
-    e.target.classList.remove('error');
-    const id = e.target.id.replace('f-','');
-    const errEl = document.getElementById(`err-${id}`);
-    if (errEl) errEl.classList.remove('visible');
-  }
-});
-
-initScrollReveal();
-initAdminBar('inscription');
-}); // fin initData
 </script>
 </body>
 </html>
