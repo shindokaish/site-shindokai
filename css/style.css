@@ -482,7 +482,7 @@ td:first-child { color: var(--bone); font-family: var(--eyebrow); }
 .etape-card__text { font-size: .88rem; color: var(--ash); }
 
 /* ============ DOJOS (page dédiée) ============ */
-.dojos-tabs { display: flex; gap: 0; border-bottom: 1px solid var(--line); margin-bottom: 2.8rem; overflow-x: auto; }
+.dojos-tabs { display: flex; justify-content: center; gap: 0; border-bottom: 1px solid var(--line); margin-bottom: 2.8rem; overflow-x: auto; }
 .dojo-tab {
   font-family: var(--eyebrow); font-size: .8rem; letter-spacing: .1em; text-transform: uppercase;
   padding: .9rem 1.6rem; border-bottom: 2px solid transparent; color: var(--ash);
