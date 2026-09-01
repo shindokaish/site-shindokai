@@ -153,6 +153,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="js/data.js"></script>
 <script src="js/render.js"></script>
+<script src="js/admin-bar.js"></script>
 <script>
 initData().then(() => {
 pageInit('encadrement');
@@ -193,6 +194,7 @@ setT('ch-s2-eyebrow', tx.s2Eyebrow); setH('ch-s2-titre', tx.s2Titre); setT('ch-s
 setT('ch-s3-eyebrow', tx.s3Eyebrow); setH('ch-s3-titre', tx.s3Titre);
 setT('ch-cta-titre', tx.ctaTitre); setT('ch-cta-sub', tx.ctaSub);
 initScrollReveal();
+initAdminBar('encadrement');
 }); // fin initData
 </script>
 </body>

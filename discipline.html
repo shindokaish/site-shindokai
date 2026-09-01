@@ -153,6 +153,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="js/data.js"></script>
 <script src="js/render.js"></script>
+<script src="js/admin-bar.js"></script>
 <script>
 initData().then(() => {
 pageInit('discipline');
@@ -216,6 +217,7 @@ if (disc.ctaTitre) document.getElementById('discCtaTitre').textContent = disc.ct
 if (disc.ctaSub) document.getElementById('discCtaSub').textContent = disc.ctaSub;
 
 initScrollReveal();
+initAdminBar('discipline');
 }); // fin initData
 </script>
 </body>

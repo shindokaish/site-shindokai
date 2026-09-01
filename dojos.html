@@ -132,6 +132,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="js/data.js"></script>
 <script src="js/render.js"></script>
+<script src="js/admin-bar.js"></script>
 <script>
 initData().then(() => {
 pageInit('dojos');
@@ -240,6 +241,7 @@ dojosTabs.addEventListener('click', e => {
 });
 
 initScrollReveal();
+initAdminBar('dojos');
 }); // fin initData
 </script>
 </body>
