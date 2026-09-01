@@ -192,11 +192,7 @@ dojos.forEach((d, i) => {
   // ── Map ──
   const mapContent = d.mapEmbed
     ? `<iframe src="${esc(d.mapEmbed)}" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Plan ${esc(d.name)}" style="width:100%;height:380px;border:none;display:block;"></iframe>`
-    : `<div class="dojo-map__placeholder" style="height:200px;">
-        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
-        <p>Carte à configurer dans l'administration</p>
-        ${d.mapLink && d.mapLink !== '#' ? `<a href="${esc(d.mapLink)}" target="_blank" rel="noopener" class="btn btn--ghost" style="font-size:.72rem;padding:.6rem 1.2rem;">Ouvrir dans Maps</a>` : ''}
-      </div>`;
+    : '';
 
   const block = document.createElement('div');
   block.className = 'dojo-block reveal' + (i === 0 ? ' is-active' : '');
@@ -209,7 +205,6 @@ dojos.forEach((d, i) => {
         <div class="dojo-block__name">${esc(shortName)}</div>
         <div class="dojo-block__sub">${esc(d.address) || 'Adresse à renseigner'}</div>
       </div>
-      ${d.mapLink && d.mapLink !== '#' ? `<a href="${esc(d.mapLink)}" target="_blank" rel="noopener" class="btn btn--ghost" style="margin-left:auto;font-size:.72rem;padding:.5rem 1rem;white-space:nowrap;">Itinéraire →</a>` : ''}
     </div>
 
     <div class="dojo-subsection" data-bureau="${i}">
@@ -223,6 +218,7 @@ dojos.forEach((d, i) => {
         ${d.phone ? `<div class="dojo-item"><span class="dojo-item__label">Téléphone</span><span class="dojo-item__value">${esc(d.phone)}</span></div>` : ''}
         ${d.acces ? `<div class="dojo-item"><span class="dojo-item__label">Accès</span><span class="dojo-item__value">${esc(d.acces)}</span></div>` : ''}
         ${d.instructeur ? `<div class="dojo-item"><span class="dojo-item__label">Instructeur référent</span><span class="dojo-item__value">${esc(d.instructeur)}</span></div>` : ''}
+        ${d.mapLink && d.mapLink !== '#' ? `<div class="dojo-item"><span class="dojo-item__label">Itinéraire</span><span class="dojo-item__value"><a href="${esc(d.mapLink)}" target="_blank" rel="noopener" style="color:var(--crimson-2);text-decoration:none;">Ouvrir dans Maps →</a></span></div>` : ''}
       </div>
       ${mapContent}
     </div>
