@@ -241,6 +241,10 @@ function _abInjectCSS() {
   [data-ab]:empty:hover::before { color:rgba(224,36,27,.6); }
   [data-ab]:focus:empty::before { display:none; }
 
+  /* ── Décalage nav pour laisser place à la barre admin ── */
+  #navbar { top: 52px !important; }
+  #navMobile { top: calc(52px + 64px) !important; }
+
   /* ── Boutons image ── */
   .ab-img-wrap { position:relative;display:inline-block; }
   .ab-img-edit-btn {
@@ -307,9 +311,10 @@ function _abOpenSettings() {
       <div class="ab-row"><label class="ab-lbl">Instagram (URL)</label><input class="ab-inp" id="cfg-instagram" value="${_abEsc(club.instagram||'')}"></div>
     </div>
     <div class="ab-group">
-      <div class="ab-group-title">Page d'accueil</div>
-      <div class="ab-row"><label class="ab-lbl">Titre hero (ligne 1)</label><input class="ab-inp" id="cfg-h0" value="${_abEsc((club.heroTitle&&club.heroTitle[0])||'')}"></div>
-      <div class="ab-row"><label class="ab-lbl">Titre hero (ligne 2)</label><input class="ab-inp" id="cfg-h1" value="${_abEsc((club.heroTitle&&club.heroTitle[1])||'')}"></div>
+      <div class="ab-group-title">Page d'accueil — Hero</div>
+      <div class="ab-row"><label class="ab-lbl">Titre principal (ex: Respect • Honneur • Discipline)</label><input class="ab-inp" id="cfg-heroTitle" value="${_abEsc(club.heroTitle ? club.heroTitle.join(' • ') : '')}"></div>
+      <div class="ab-row"><label class="ab-lbl">Tagline (ex: Le Shindokai)</label><input class="ab-inp" id="cfg-heroTagline" value="${_abEsc(club.heroTagline||'')}"></div>
+      <div class="ab-row"><label class="ab-lbl">Disciplines (ex: Karaté contact • Boxe…)</label><input class="ab-inp" id="cfg-heroDisciplines" value="${_abEsc(club.heroDisciplines||'')}"></div>
       <div class="ab-row"><label class="ab-lbl">Sous-titre hero</label><textarea class="ab-inp ab-ta" id="cfg-heroSub">${_abEsc(club.heroSub||'')}</textarea></div>
     </div>
     <div class="ab-group">
@@ -329,12 +334,11 @@ function _abSaveSettings() {
   club.phone     = document.getElementById('cfg-phone').value.trim();
   club.facebook  = document.getElementById('cfg-facebook').value.trim();
   club.instagram = document.getElementById('cfg-instagram').value.trim();
-  club.heroTitle = [
-    document.getElementById('cfg-h0').value.trim(),
-    document.getElementById('cfg-h1').value.trim()
-  ];
-  club.heroSub   = document.getElementById('cfg-heroSub').value.trim();
-  const pwd      = document.getElementById('cfg-pwd').value.trim();
+  club.heroTitle       = document.getElementById('cfg-heroTitle').value.trim().split('•').map(s=>s.trim()).filter(Boolean);
+  club.heroTagline     = document.getElementById('cfg-heroTagline').value.trim();
+  club.heroDisciplines = document.getElementById('cfg-heroDisciplines').value.trim();
+  club.heroSub         = document.getElementById('cfg-heroSub').value.trim();
+  const pwd            = document.getElementById('cfg-pwd').value.trim();
   if (pwd) saveSection('adminPassword', pwd);
   saveSection('club', club);
   const btn = document.querySelector('.ab-panel-save');
@@ -600,14 +604,24 @@ function _abMakeAllEditable(pageKey) {
   if (!main) return;
   const SEL = [
     'h1','h2','h3','h4',
+    // Hero accueil (index.html)
+    '.hero__title','.hero__tagline','.hero__disciplines','.hero__sub',
+    // Hero mini (autres pages)
     '.hero-mini__title .line span','.hero-mini__eyebrow',
+    // Sections communes
     '.eyebrow-text','.section__title','.section__lede',
     '.cta-band__title','.cta-band__sub',
-    'p[id]','[id^="ch-"],[id^="ct-"],[id^="ins-"],[id^="disc-"]',
+    // Éléments avec ID
+    'p[id]','[id^="ch-"],[id^="ct-"],[id^="ins-"],[id^="disc-"],[id^="aboutP"],[id^="idx-"]',
+    // Cartes
     '.diplome-card__title','.diplome-card__text','.diplome-card__badge',
     '.tarif-card__name','.tarif-card__price',
     '.stat-card__label','.stat-card__suffix',
-    '.discipline-intro','.hero__tagline',
+    '.discipline-intro',
+    // Planning
+    '.planning-card__name','.planning-card__days','.planning-card__time','.planning-card__age',
+    // Stats numériques label
+    '[class*="stat"] [class*="label"],[class*="counter"] [class*="label"]',
   ].join(',');
   main.querySelectorAll(SEL).forEach(el => _abMakeText(el, pageKey));
   main.querySelectorAll('section p:not([data-ab])').forEach(el => {

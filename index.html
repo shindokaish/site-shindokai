@@ -45,14 +45,14 @@
   <img class="hero__kanji" src="img/kanji-shindokai.png" alt="" aria-hidden="true">
   <div class="wrap">
     <div class="hero__content">
-      <h1 class="hero__title hero__title--single">Respect&nbsp;•&nbsp;Honneur&nbsp;•&nbsp;Discipline</h1>
-      <p class="hero__tagline">Le Shindokai</p>
-      <p class="hero__disciplines">Karaté contact&nbsp;•&nbsp;Boxe&nbsp;•&nbsp;Soumissions au sol</p>
-      <p class="hero__sub">Une discipline complète, reconnue comme Karaté-Jutsu par la Fédération Française de Karaté. Dépassez vos limites. Développez votre confiance. Révélez votre potentiel.</p>
+      <h1 class="hero__title hero__title--single" id="idx-heroTitle">Respect&nbsp;•&nbsp;Honneur&nbsp;•&nbsp;Discipline</h1>
+      <p class="hero__tagline" id="idx-heroTagline">Le Shindokai</p>
+      <p class="hero__disciplines" id="idx-heroDisciplines">Karaté contact&nbsp;•&nbsp;Boxe&nbsp;•&nbsp;Soumissions au sol</p>
+      <p class="hero__sub" id="idx-heroSub">Une discipline complète, reconnue comme Karaté-Jutsu par la Fédération Française de Karaté. Dépassez vos limites. Développez votre confiance. Révélez votre potentiel.</p>
       <img class="hero__ffk" src="img/ffk-logo.png" alt="Fédération Française de Karaté">
       <div class="hero__cta">
-        <a href="dojos.html" class="btn btn--primary">Voir les dojos</a>
-        <a href="dojos.html" class="btn btn--ghost">Voir les cours</a>
+        <a href="dojos.html" class="btn btn--primary" id="idx-ctaBtn1">Voir les dojos</a>
+        <a href="dojos.html" class="btn btn--ghost" id="idx-ctaBtn2">Voir les cours</a>
       </div>
     </div>
   </div>
@@ -67,8 +67,17 @@
 <script>
 initData().then(() => {
   pageInit('index');
-
   initHeroGlow('heroGlow', 'home');
+
+  // Rendu depuis les données club (modifiables via admin)
+  const club = getSection('club') || {};
+  const setEl = (id, v) => { const e = document.getElementById(id); if (e && v) e.textContent = v; };
+  setEl('idx-heroTitle',       club.heroTitle ? club.heroTitle.join(' • ') : null);
+  setEl('idx-heroTagline',     club.heroTagline);
+  setEl('idx-heroDisciplines', club.heroDisciplines);
+  setEl('idx-heroSub',         club.heroSub);
+
+  initAdminBar('index');
 });
 </script>
 </body>
