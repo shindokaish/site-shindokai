@@ -20,15 +20,15 @@
 <link rel="stylesheet" href="css/style.css">
 <style>
 .dojo-section-tabs {
-  display: flex; gap: 0; margin: 2rem 0 0; border-bottom: 1px solid var(--line);
+  display: flex; justify-content: center; gap: 0; margin: 2.5rem 0 0; border-bottom: 1px solid var(--line);
 }
 .dojo-section-tab {
-  font-family: var(--eyebrow); font-size: .72rem; letter-spacing: .08em; text-transform: uppercase;
-  padding: .75rem 1.4rem; background: none; border: none; border-bottom: 2px solid transparent;
+  font-family: var(--eyebrow); font-size: .75rem; letter-spacing: .08em; text-transform: uppercase;
+  padding: .9rem 2rem; background: none; border: none; border-bottom: 2px solid transparent;
   color: var(--ash); cursor: pointer; transition: color .2s, border-color .2s; margin-bottom: -1px;
 }
 .dojo-section-tab.is-active { color: var(--bone); border-bottom-color: var(--crimson-2); }
-.dojo-section-panel { display: none; padding-top: 2rem; }
+.dojo-section-panel { display: none; padding-top: 2.5rem; }
 .dojo-section-panel.is-active { display: block; }
 
 .bureau-grid {
@@ -182,21 +182,21 @@ dojos.forEach((d, i) => {
     : `<div style="font-family:var(--display);font-size:1.1rem;text-transform:uppercase;padding-bottom:1rem;border-bottom:1px solid var(--line);margin-bottom:1rem;">${esc(d.name)}</div>`;
 
   const infoHTML = `
-    <div class="dojo-info">
-      ${dojoLogoHTML}
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:2rem;">
       <div class="dojo-item"><span class="dojo-item__label">Adresse</span><span class="dojo-item__value">${esc(d.address)}</span></div>
       ${d.phone ? `<div class="dojo-item"><span class="dojo-item__label">Téléphone</span><span class="dojo-item__value">${esc(d.phone)}</span></div>` : ''}
       ${d.acces ? `<div class="dojo-item"><span class="dojo-item__label">Accès</span><span class="dojo-item__value">${esc(d.acces)}</span></div>` : ''}
-      ${d.instructeur ? `<div class="dojo-item" style="margin-top:.6rem;padding-top:.6rem;border-top:1px solid var(--line)"><span class="dojo-item__label">Instructeur référent</span><span class="dojo-item__value">${esc(d.instructeur)}</span></div>` : ''}
-      ${d.mapLink && d.mapLink !== '#' ? `<div class="dojo-item"><a href="${esc(d.mapLink)}" target="_blank" rel="noopener" class="btn btn--ghost" style="font-size:.72rem;padding:.6rem 1.2rem;margin-top:.5rem;">Itinéraire →</a></div>` : ''}
+      ${d.instructeur ? `<div class="dojo-item"><span class="dojo-item__label">Instructeur référent</span><span class="dojo-item__value">${esc(d.instructeur)}</span></div>` : ''}
+      ${d.mapLink && d.mapLink !== '#' ? `<div class="dojo-item"><span class="dojo-item__label">&nbsp;</span><a href="${esc(d.mapLink)}" target="_blank" rel="noopener" class="btn btn--ghost" style="font-size:.72rem;padding:.6rem 1.2rem;">Itinéraire →</a></div>` : ''}
     </div>
-    <div class="dojo-map">${mapContent}</div>`;
+    <div class="dojo-map" style="height:420px;">${mapContent}</div>`;
 
   // ── Panel principal ──
   const panel = document.createElement('div');
   panel.className = 'dojo-panel reveal' + (i === 0 ? ' is-active' : '');
   panel.dataset.index = i;
   panel.innerHTML = `
+    ${dojoLogoHTML}
     <div class="dojo-section-tabs">
       <button class="dojo-section-tab is-active" data-sub="info">🏯 Le Dojo</button>
       <button class="dojo-section-tab" data-sub="cours">📅 Cours</button>
