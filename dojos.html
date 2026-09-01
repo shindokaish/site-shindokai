@@ -8,16 +8,54 @@
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://site-shindokai.vercel.app/dojos.html">
 <meta property="og:title" content="Les Dojos — EKSN">
-<meta property="og:description" content="Cours, plannings et dojos EKSN. Trouvez votre dojo dans le Nord (59) — 3 sites avec les mêmes coachs diplômés FFKDA.">
+<meta property="og:description" content="Cours, plannings et dojos EKSN. Trouvez votre dojo dans le Nord (59).">
 <meta property="og:image" content="https://site-shindokai.vercel.app/shinodkai.png">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Les Dojos — EKSN">
-<meta name="twitter:description" content="Cours, plannings et dojos EKSN. Trouvez votre dojo dans le Nord (59) — 3 sites avec les mêmes coachs diplômés FFKDA.">
+<meta name="twitter:description" content="Cours, plannings et dojos EKSN.">
 <meta name="twitter:image" content="https://site-shindokai.vercel.app/shinodkai.png">
 <link rel="icon" href="shinodkai.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@400;500;600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
+<style>
+.dojo-section-tabs {
+  display: flex; gap: 0; margin: 2rem 0 0; border-bottom: 1px solid var(--line);
+}
+.dojo-section-tab {
+  font-family: var(--eyebrow); font-size: .72rem; letter-spacing: .08em; text-transform: uppercase;
+  padding: .75rem 1.4rem; background: none; border: none; border-bottom: 2px solid transparent;
+  color: var(--ash); cursor: pointer; transition: color .2s, border-color .2s; margin-bottom: -1px;
+}
+.dojo-section-tab.is-active { color: var(--bone); border-bottom-color: var(--crimson-2); }
+.dojo-section-panel { display: none; padding-top: 2rem; }
+.dojo-section-panel.is-active { display: block; }
+
+.bureau-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.2rem; margin-top: 1.5rem;
+}
+.bureau-card {
+  background: var(--char); border: 1px solid var(--line); padding: 1.8rem; position: relative;
+}
+.bureau-card__role {
+  font-family: var(--eyebrow); font-size: .65rem; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--crimson-2); margin-bottom: .5rem;
+}
+.bureau-card__name {
+  font-family: var(--display); font-size: 1.2rem; text-transform: uppercase; color: var(--bone);
+  margin-bottom: 1rem;
+}
+.bureau-card__empty {
+  font-family: var(--mono); font-size: .75rem; color: var(--ash-2); font-style: italic;
+}
+.bureau-contact { display: flex; flex-direction: column; gap: .4rem; }
+.bureau-contact a {
+  font-size: .82rem; color: var(--ash); text-decoration: none; display: flex; align-items: center; gap: .5rem;
+  transition: color .2s;
+}
+.bureau-contact a:hover { color: var(--gold); }
+.bureau-contact__icon { color: var(--crimson-2); flex-shrink: 0; }
+</style>
 </head>
 <body>
 
@@ -35,59 +73,23 @@
     <div class="hero-mini__content">
       <span class="eyebrow-text hero-mini__eyebrow">Les Dojos</span>
       <h1 class="hero-mini__title">
-        <span class="line" id="dj-hero-l1"><span>Cours, horaires</span></span>
-        <span class="line" id="dj-hero-l2"><span>& lieux.</span></span>
+        <span class="line"><span>Cours, horaires</span></span>
+        <span class="line"><span>& lieux.</span></span>
       </h1>
     </div>
   </div>
 </section>
 
-<!-- ============ PLANNINGS PAR DOJO ============ -->
-<section class="section section--alt">
-  <div class="wrap">
-    <div class="section__head reveal">
-      <span class="eyebrow-text">Plannings</span>
-      <h2 class="section__title">Horaires par<br>dojo.</h2>
-    </div>
-    <div class="dojos-tabs reveal" id="planningTabs"></div>
-    <div id="planningPanels"></div>
-  </div>
-</section>
-
-<!-- ============ DOJOS ============ -->
+<!-- ============ DOJOS TABS ============ -->
 <section class="section">
   <div class="wrap">
     <div class="section__head reveal">
-      <span class="eyebrow-text">Localisation</span>
-      <h2 class="section__title" id="dj-s1-titre">Choisissez votre<br>dojo.</h2>
-      <p class="section__lede" id="dj-s1-lede">Mêmes coachs diplômés, même enseignement, même exigence sur les trois sites. Choisissez celui qui vous convient géographiquement.</p>
+      <span class="eyebrow-text">Nos sites</span>
+      <h2 class="section__title">Choisissez votre<br>dojo.</h2>
+      <p class="section__lede">Mêmes coachs diplômés, même enseignement, même exigence sur les trois sites.</p>
     </div>
     <div class="dojos-tabs reveal" id="dojosTabs"></div>
     <div id="dojosPanels"></div>
-  </div>
-</section>
-
-<!-- ============ INFOS PRATIQUES ============ -->
-<section class="section section--alt">
-  <div class="wrap">
-    <div class="section__head reveal">
-      <span class="eyebrow-text">Informations</span>
-      <h2 class="section__title">Infos pratiques.</h2>
-    </div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:var(--gap);">
-      <div class="reveal" style="background:var(--char);border:1px solid var(--line);padding:2rem;">
-        <div style="font-family:var(--display);font-size:1.4rem;text-transform:uppercase;margin-bottom:1rem;">Parking</div>
-        <p style="color:var(--ash);font-size:.9rem;">Des parkings gratuits sont disponibles à proximité de chaque dojo. Renseignez-vous auprès de votre site pour les détails.</p>
-      </div>
-      <div class="reveal" style="background:var(--char);border:1px solid var(--line);padding:2rem;">
-        <div style="font-family:var(--display);font-size:1.4rem;text-transform:uppercase;margin-bottom:1rem;">Accueil</div>
-        <p style="color:var(--ash);font-size:.9rem;">Arrivez 10 minutes avant le cours pour vous installer. Pour votre premier cours, signalez-vous au coach à l'entrée — il vous accueillera personnellement.</p>
-      </div>
-      <div class="reveal" style="background:var(--char);border:1px solid var(--line);padding:2rem;">
-        <div style="font-family:var(--display);font-size:1.4rem;text-transform:uppercase;margin-bottom:1rem;">Vestiaires</div>
-        <p style="color:var(--ash);font-size:.9rem;">Des vestiaires sont disponibles sur chaque site. Apportez vos affaires de rechange et de la monnaie pour les casiers si disponibles.</p>
-      </div>
-    </div>
   </div>
 </section>
 
@@ -114,56 +116,56 @@
 initData().then(() => {
 pageInit('dojos');
 
-// ── Planning ──
+const dojos    = getSection('dojos') || [];
 const plannings = getSection('plannings') || [];
-const planningTabs = document.getElementById('planningTabs');
-const planningPanels = document.getElementById('planningPanels');
-plannings.forEach((p, i) => {
-  const btn = document.createElement('button');
-  btn.className = 'dojo-tab' + (i === 0 ? ' is-active' : '');
-  btn.textContent = p.dojo.replace('Dojo de ', '');
-  btn.dataset.index = i;
-  planningTabs.appendChild(btn);
-
-  const panel = document.createElement('div');
-  panel.className = 'dojo-panel' + (i === 0 ? ' is-active' : '');
-  panel.dataset.index = i;
-  const grid = document.createElement('div');
-  grid.className = 'planning-grid';
-  (p.cours || []).filter(c => c.name !== 'Compétition').forEach(c => {
-    const card = document.createElement('div');
-    card.className = 'planning-card';
-    card.innerHTML = `
-      <div class="planning-card__belt" style="background:${esc(c.belt)}"></div>
-      <div class="planning-card__age">${esc(c.age)}</div>
-      <div class="planning-card__name">${esc(c.name)}</div>
-      <div class="planning-card__days">${esc(c.days)}</div>
-      <div class="planning-card__time">${esc(c.time)}</div>`;
-    grid.appendChild(card);
-  });
-  panel.appendChild(grid);
-  planningPanels.appendChild(panel);
-});
-planningTabs.addEventListener('click', e => {
-  const btn = e.target.closest('.dojo-tab');
-  if (!btn) return;
-  planningTabs.querySelectorAll('.dojo-tab').forEach(b => b.classList.remove('is-active'));
-  planningPanels.querySelectorAll('.dojo-panel').forEach(p => p.classList.remove('is-active'));
-  btn.classList.add('is-active');
-  planningPanels.querySelector(`[data-index="${btn.dataset.index}"]`).classList.add('is-active');
-});
-
-// ── Dojos ──
-const dojos = getSection('dojos');
-const dojosTabs = document.getElementById('dojosTabs');
+const dojosTabs   = document.getElementById('dojosTabs');
 const dojosPanels = document.getElementById('dojosPanels');
+
 dojos.forEach((d, i) => {
+  // ── Onglet dojo principal ──
   const btn = document.createElement('button');
   btn.className = 'dojo-tab' + (i === 0 ? ' is-active' : '');
-  btn.textContent = d.name;
+  btn.textContent = d.name.replace('Dojo de ', '');
   btn.dataset.index = i;
   dojosTabs.appendChild(btn);
 
+  // ── Planning de ce dojo ──
+  const planning = plannings.find(p => p.dojo === d.name) || plannings[i] || null;
+  const coursHTML = planning
+    ? (() => {
+        const cours = (planning.cours || []).filter(c => c.name !== 'Compétition');
+        if (!cours.length) return '<p style="color:var(--ash-2);font-size:.9rem;font-family:var(--mono);">Aucun cours renseigné pour ce dojo.</p>';
+        return '<div class="planning-grid">' + cours.map(c => `
+          <div class="planning-card">
+            <div class="planning-card__belt" style="background:${esc(c.belt)}"></div>
+            <div class="planning-card__age">${esc(c.age)}</div>
+            <div class="planning-card__name">${esc(c.name)}</div>
+            <div class="planning-card__days">${esc(c.days)}</div>
+            <div class="planning-card__time">${esc(c.time)}</div>
+          </div>`).join('') + '</div>';
+      })()
+    : '<p style="color:var(--ash-2);font-size:.9rem;font-family:var(--mono);">Planning non renseigné — à configurer dans l\'administration.</p>';
+
+  // ── Bureau ──
+  function bureauCard(role, icon, name, phone, email) {
+    const hasInfo = name || phone || email;
+    return `<div class="bureau-card">
+      <div class="bureau-card__role">${icon} ${role}</div>
+      ${name ? `<div class="bureau-card__name">${esc(name)}</div>` : `<div class="bureau-card__name bureau-card__empty">À renseigner</div>`}
+      ${hasInfo && (phone || email) ? `<div class="bureau-contact">
+        ${phone ? `<a href="tel:${esc(phone)}"><span class="bureau-contact__icon">📞</span>${esc(phone)}</a>` : ''}
+        ${email ? `<a href="mailto:${esc(email)}"><span class="bureau-contact__icon">✉️</span>${esc(email)}</a>` : ''}
+      </div>` : (!name ? '<p class="bureau-card__empty" style="margin-top:.5rem;">Coordonnées à renseigner dans l\'administration.</p>' : '')}
+    </div>`;
+  }
+
+  const bureauHTML = `<div class="bureau-grid">
+    ${bureauCard('Président', '👑', d.president, d.presidentPhone, d.presidentEmail)}
+    ${bureauCard('Trésorier', '💼', d.tresorier, d.tresorierPhone, d.tresorierEmail)}
+    ${bureauCard('Secrétaire', '📋', d.secretaire, d.secretairePhone, d.secretaireEmail)}
+  </div>`;
+
+  // ── Map ──
   const mapContent = d.mapEmbed
     ? `<iframe src="${esc(d.mapEmbed)}" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Plan ${esc(d.name)}"></iframe>`
     : `<div class="dojo-map__placeholder">
@@ -173,31 +175,51 @@ dojos.forEach((d, i) => {
        </div>`;
 
   const dojoLogoHTML = d.logo
-    ? `<div style="display:flex;align-items:center;gap:1rem;padding-bottom:1rem;border-bottom:1px solid var(--line);margin-bottom:.2rem;">
+    ? `<div style="display:flex;align-items:center;gap:1rem;padding-bottom:1rem;border-bottom:1px solid var(--line);margin-bottom:1rem;">
          <img src="${esc(d.logo)}" alt="Logo ${esc(d.name)}" style="width:56px;height:56px;object-fit:contain;">
          <span style="font-family:var(--display);font-size:1.1rem;text-transform:uppercase;">${esc(d.name)}</span>
        </div>`
-    : '';
+    : `<div style="font-family:var(--display);font-size:1.1rem;text-transform:uppercase;padding-bottom:1rem;border-bottom:1px solid var(--line);margin-bottom:1rem;">${esc(d.name)}</div>`;
 
-  const panel = document.createElement('div');
-  panel.className = 'dojo-panel reveal' + (i === 0 ? ' is-active' : '');
-  panel.dataset.index = i;
-  panel.innerHTML = `
+  const infoHTML = `
     <div class="dojo-info">
       ${dojoLogoHTML}
       <div class="dojo-item"><span class="dojo-item__label">Adresse</span><span class="dojo-item__value">${esc(d.address)}</span></div>
       ${d.phone ? `<div class="dojo-item"><span class="dojo-item__label">Téléphone</span><span class="dojo-item__value">${esc(d.phone)}</span></div>` : ''}
-      <div class="dojo-item"><span class="dojo-item__label">Horaires</span><span class="dojo-item__value" style="white-space:pre-line;">${esc(d.horaires)}</span></div>
       ${d.acces ? `<div class="dojo-item"><span class="dojo-item__label">Accès</span><span class="dojo-item__value">${esc(d.acces)}</span></div>` : ''}
       ${d.instructeur ? `<div class="dojo-item" style="margin-top:.6rem;padding-top:.6rem;border-top:1px solid var(--line)"><span class="dojo-item__label">Instructeur référent</span><span class="dojo-item__value">${esc(d.instructeur)}</span></div>` : ''}
-      ${d.president ? `<div class="dojo-item"><span class="dojo-item__label">Président</span><span class="dojo-item__value">${esc(d.president)}</span></div>` : ''}
-      ${d.presidentPhone ? `<div class="dojo-item"><span class="dojo-item__label">Tél. président</span><span class="dojo-item__value"><a href="tel:${esc(d.presidentPhone)}" style="color:var(--gold)">${esc(d.presidentPhone)}</a></span></div>` : ''}
-      ${d.presidentEmail ? `<div class="dojo-item"><span class="dojo-item__label">Email président</span><span class="dojo-item__value"><a href="mailto:${esc(d.presidentEmail)}" style="color:var(--gold)">${esc(d.presidentEmail)}</a></span></div>` : ''}
       ${d.mapLink && d.mapLink !== '#' ? `<div class="dojo-item"><a href="${esc(d.mapLink)}" target="_blank" rel="noopener" class="btn btn--ghost" style="font-size:.72rem;padding:.6rem 1.2rem;margin-top:.5rem;">Itinéraire →</a></div>` : ''}
     </div>
     <div class="dojo-map">${mapContent}</div>`;
+
+  // ── Panel principal ──
+  const panel = document.createElement('div');
+  panel.className = 'dojo-panel reveal' + (i === 0 ? ' is-active' : '');
+  panel.dataset.index = i;
+  panel.innerHTML = `
+    <div class="dojo-section-tabs">
+      <button class="dojo-section-tab is-active" data-sub="info">🏯 Le Dojo</button>
+      <button class="dojo-section-tab" data-sub="cours">📅 Cours</button>
+      <button class="dojo-section-tab" data-sub="bureau">👥 Le Bureau</button>
+    </div>
+    <div class="dojo-section-panel is-active" data-sub="info">${infoHTML}</div>
+    <div class="dojo-section-panel" data-sub="cours">${coursHTML}</div>
+    <div class="dojo-section-panel" data-sub="bureau">${bureauHTML}</div>`;
+
+  // Navigation sous-onglets
+  panel.querySelectorAll('.dojo-section-tab').forEach(t => {
+    t.addEventListener('click', () => {
+      panel.querySelectorAll('.dojo-section-tab').forEach(x => x.classList.remove('is-active'));
+      panel.querySelectorAll('.dojo-section-panel').forEach(x => x.classList.remove('is-active'));
+      t.classList.add('is-active');
+      panel.querySelector(`.dojo-section-panel[data-sub="${t.dataset.sub}"]`).classList.add('is-active');
+    });
+  });
+
   dojosPanels.appendChild(panel);
 });
+
+// Navigation onglets dojos
 dojosTabs.addEventListener('click', e => {
   const btn = e.target.closest('.dojo-tab');
   if (!btn) return;

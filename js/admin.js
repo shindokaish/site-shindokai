@@ -489,7 +489,7 @@ function renderDojosList() {
 function openDojoModal(index) {
   editingIndex = index;
   const dojos = getSection('dojos');
-  const d = index !== null ? dojos[index] : { name: '', logo: '', address: '', phone: '', horaires: '', acces: '', mapEmbed: '', mapLink: '', president: '', presidentPhone: '', presidentEmail: '', instructeur: '' };
+  const d = index !== null ? dojos[index] : { name: '', logo: '', address: '', phone: '', horaires: '', acces: '', mapEmbed: '', mapLink: '', president: '', presidentPhone: '', presidentEmail: '', instructeur: '', tresorier: '', tresorierPhone: '', tresorierEmail: '', secretaire: '', secretairePhone: '', secretaireEmail: '' };
   openModal('Dojo', [
     { id: 'dm-name',           label: 'Nom du dojo',                  value: d.name },
     { id: 'dm-logo',           label: 'Logo (URL ou nom de fichier)',  value: d.logo || '' },
@@ -497,12 +497,18 @@ function openDojoModal(index) {
     { id: 'dm-phone',          label: 'Téléphone du dojo',            value: d.phone || '' },
     { id: 'dm-horaires',       label: 'Horaires',                     value: d.horaires, textarea: true },
     { id: 'dm-acces',          label: 'Accès / transports',           value: d.acces || '' },
-    { id: 'dm-president',      label: 'Président — Nom',              value: d.president || '' },
-    { id: 'dm-presidentPhone', label: 'Président — Téléphone',        value: d.presidentPhone || '' },
-    { id: 'dm-presidentEmail', label: 'Président — Email',            value: d.presidentEmail || '' },
-    { id: 'dm-instructeur',    label: 'Instructeur référent',         value: d.instructeur || '' },
-    { id: 'dm-mapEmbed',       label: 'Src iframe Google Maps',       value: d.mapEmbed || '' },
-    { id: 'dm-mapLink',        label: 'Lien Google Maps',             value: d.mapLink || '' }
+    { id: 'dm-president',        label: 'Président — Nom',              value: d.president || '' },
+    { id: 'dm-presidentPhone',   label: 'Président — Téléphone',        value: d.presidentPhone || '' },
+    { id: 'dm-presidentEmail',   label: 'Président — Email',            value: d.presidentEmail || '' },
+    { id: 'dm-tresorier',        label: 'Trésorier — Nom',              value: d.tresorier || '' },
+    { id: 'dm-tresorierPhone',   label: 'Trésorier — Téléphone',        value: d.tresorierPhone || '' },
+    { id: 'dm-tresorierEmail',   label: 'Trésorier — Email',            value: d.tresorierEmail || '' },
+    { id: 'dm-secretaire',       label: 'Secrétaire — Nom',             value: d.secretaire || '' },
+    { id: 'dm-secretairePhone',  label: 'Secrétaire — Téléphone',       value: d.secretairePhone || '' },
+    { id: 'dm-secretaireEmail',  label: 'Secrétaire — Email',           value: d.secretaireEmail || '' },
+    { id: 'dm-instructeur',      label: 'Instructeur référent',         value: d.instructeur || '' },
+    { id: 'dm-mapEmbed',         label: 'Src iframe Google Maps',       value: d.mapEmbed || '' },
+    { id: 'dm-mapLink',          label: 'Lien Google Maps',             value: d.mapLink || '' }
   ], () => {
     const dojos = getSection('dojos');
     const entry = {
@@ -512,12 +518,18 @@ function openDojoModal(index) {
       phone:          fv('dm-phone'),
       horaires:       fv('dm-horaires'),
       acces:          fv('dm-acces'),
-      president:      fv('dm-president'),
-      presidentPhone: fv('dm-presidentPhone'),
-      presidentEmail: fv('dm-presidentEmail'),
-      instructeur:    fv('dm-instructeur'),
-      mapEmbed:       fv('dm-mapEmbed'),
-      mapLink:        fv('dm-mapLink')
+      president:        fv('dm-president'),
+      presidentPhone:   fv('dm-presidentPhone'),
+      presidentEmail:   fv('dm-presidentEmail'),
+      tresorier:        fv('dm-tresorier'),
+      tresorierPhone:   fv('dm-tresorierPhone'),
+      tresorierEmail:   fv('dm-tresorierEmail'),
+      secretaire:       fv('dm-secretaire'),
+      secretairePhone:  fv('dm-secretairePhone'),
+      secretaireEmail:  fv('dm-secretaireEmail'),
+      instructeur:      fv('dm-instructeur'),
+      mapEmbed:         fv('dm-mapEmbed'),
+      mapLink:          fv('dm-mapLink')
     };
     if (editingIndex !== null) dojos[editingIndex] = entry;
     else dojos.push(entry);
