@@ -57,49 +57,6 @@
 .bureau-contact a:hover { color: var(--gold); }
 .bureau-contact__icon { color: var(--crimson-2); flex-shrink: 0; }
 
-/* ── Animation lumineuse ── */
-@keyframes glow-sweep {
-  0%   { transform: translateX(-100%) skewX(-20deg); opacity: 0; }
-  10%  { opacity: 1; }
-  90%  { opacity: 1; }
-  100% { transform: translateX(400%) skewX(-20deg); opacity: 0; }
-}
-@keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(224,36,27,0); }
-  50%       { box-shadow: 0 0 40px 8px rgba(224,36,27,.18), 0 0 80px 20px rgba(201,162,39,.08); }
-}
-.dojo-tab.is-active {
-  position: relative;
-  overflow: hidden;
-  animation: pulse-glow 3s ease-in-out infinite;
-}
-.dojo-tab.is-active::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(105deg, transparent 30%, rgba(201,162,39,.35) 50%, transparent 70%);
-  animation: glow-sweep 3.5s ease-in-out infinite;
-  pointer-events: none;
-}
-.dojos-tabs {
-  position: relative;
-}
-.dojos-tabs::before {
-  content: '';
-  position: absolute;
-  bottom: -1px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--crimson-2), var(--gold), var(--crimson-2), transparent);
-  animation: tab-line 4s ease-in-out infinite;
-  pointer-events: none;
-}
-@keyframes tab-line {
-  0%, 100% { width: 0; opacity: 0; }
-  20%, 80%  { width: 60%; opacity: 1; }
-}
 </style>
 </head>
 <body>
