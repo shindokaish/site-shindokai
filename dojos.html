@@ -215,10 +215,10 @@ dojos.forEach((d, i) => {
     <div class="dojo-subsection">
       <div class="dojo-subsection__title">🏯 Le Dojo</div>
       <div class="dojo-info-list">
-        ${d.phone ? `<div class="dojo-item"><span class="dojo-item__label">Téléphone</span><span class="dojo-item__value">${esc(d.phone)}</span></div>` : ''}
-        ${d.acces ? `<div class="dojo-item"><span class="dojo-item__label">Accès</span><span class="dojo-item__value">${esc(d.acces)}</span></div>` : ''}
-        ${d.instructeur ? `<div class="dojo-item"><span class="dojo-item__label">Instructeur référent</span><span class="dojo-item__value">${esc(d.instructeur)}</span></div>` : ''}
-        ${d.mapLink && d.mapLink !== '#' ? `<div class="dojo-item"><span class="dojo-item__label">Itinéraire</span><span class="dojo-item__value"><a href="${esc(d.mapLink)}" target="_blank" rel="noopener" style="color:var(--crimson-2);text-decoration:none;">Ouvrir dans Maps →</a></span></div>` : ''}
+        <div class="dojo-item"><span class="dojo-item__label">Téléphone</span><span class="dojo-item__value">${d.phone ? esc(d.phone) : '<span style="color:var(--ash-2);font-style:italic;">À renseigner</span>'}</span></div>
+        <div class="dojo-item"><span class="dojo-item__label">Accès</span><span class="dojo-item__value">${d.acces ? esc(d.acces) : '<span style="color:var(--ash-2);font-style:italic;">À renseigner</span>'}</span></div>
+        <div class="dojo-item"><span class="dojo-item__label">Instructeur référent</span><span class="dojo-item__value">${d.instructeur ? esc(d.instructeur) : '<span style="color:var(--ash-2);font-style:italic;">À renseigner</span>'}</span></div>
+        <div class="dojo-item"><span class="dojo-item__label">Itinéraire</span><span class="dojo-item__value">${d.mapLink && d.mapLink !== '#' ? `<a href="${esc(d.mapLink)}" target="_blank" rel="noopener" style="color:var(--crimson-2);text-decoration:none;">Ouvrir dans Maps →</a>` : '<span style="color:var(--ash-2);font-style:italic;">À renseigner</span>'}</span></div>
       </div>
       ${mapContent}
     </div>
