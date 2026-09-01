@@ -27,10 +27,12 @@
 .coach-card__grade { font-size: .68rem; }
 .coach-card__role { font-size: .78rem; }
 .coach-card__body { padding: .8rem 1rem 1rem; }
-#gradesDojos .coach-grid { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
-#gradesDojos .coach-card__photo { height: 180px; }
+#gradesDojos .coach-grid { grid-template-columns: repeat(3, minmax(0, 280px)); justify-content: center; }
+@media (max-width: 700px) { #gradesDojos .coach-grid { grid-template-columns: 1fr 1fr; } }
+#gradesDojos .coach-card__photo { height: 320px; }
+#gradesDojos .coach-card__photo img { object-position: center center; }
 #gradesDojos .coach-card__name { font-size: .82rem; }
-#gradesDojos .coach-card__grade { font-size: .66rem; }
+#gradesDojos .coach-card__grade { font-size: .68rem; }
 </style>
 </head>
 <body>
