@@ -109,6 +109,7 @@
       <h2 class="section__title">Trois dojos,<br>un seul esprit.</h2>
       <p class="section__lede">Mêmes coachs diplômés, même enseignement, même exigence sur les trois sites.</p>
     </div>
+    <div class="dojos-tabs reveal" id="dojosTabs"></div>
     <div id="dojosContainer"></div>
   </div>
 </section>
@@ -135,8 +136,9 @@
 initData().then(() => {
 pageInit('dojos');
 
-const dojos    = getSection('dojos') || [];
+const dojos     = getSection('dojos') || [];
 const plannings = getSection('plannings') || [];
+const dojosTabs = document.getElementById('dojosTabs');
 const container = document.getElementById('dojosContainer');
 
 function bureauCard(role, icon, name, phone, email) {
@@ -154,6 +156,13 @@ function bureauCard(role, icon, name, phone, email) {
 
 dojos.forEach((d, i) => {
   const shortName = d.name.replace(/^Dojo d[e']?\s*/i, '');
+
+  // ── Onglet ──
+  const btn = document.createElement('button');
+  btn.className = 'dojo-tab' + (i === 0 ? ' is-active' : '');
+  btn.textContent = shortName;
+  btn.dataset.index = i;
+  dojosTabs.appendChild(btn);
 
   // ── Cours ──
   const planning = plannings.find(p => p.dojo === d.name) || plannings[i] || null;
@@ -179,7 +188,9 @@ dojos.forEach((d, i) => {
       </div>`;
 
   const block = document.createElement('div');
-  block.className = 'dojo-block reveal';
+  block.className = 'dojo-block reveal' + (i === 0 ? ' is-active' : '');
+  block.style.display = i === 0 ? 'block' : 'none';
+  block.dataset.index = i;
   block.innerHTML = `
     <div class="dojo-block__header">
       ${d.logo ? `<img src="${esc(d.logo)}" alt="Logo ${esc(shortName)}" class="dojo-block__logo">` : ''}
@@ -215,6 +226,17 @@ dojos.forEach((d, i) => {
     </div>`;
 
   container.appendChild(block);
+});
+
+// Navigation onglets dojos
+dojosTabs.addEventListener('click', e => {
+  const btn = e.target.closest('.dojo-tab');
+  if (!btn) return;
+  const idx = btn.dataset.index;
+  dojosTabs.querySelectorAll('.dojo-tab').forEach(b => b.classList.remove('is-active'));
+  container.querySelectorAll('.dojo-block').forEach(p => { p.style.display = 'none'; });
+  btn.classList.add('is-active');
+  container.querySelector(`.dojo-block[data-index="${idx}"]`).style.display = 'block';
 });
 
 initScrollReveal();
