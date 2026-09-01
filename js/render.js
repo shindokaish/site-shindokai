@@ -16,11 +16,9 @@ function renderNav(activePage) {
   const club = getSection('club');
   const pages = [
     { href: 'discipline.html',  label: 'La discipline', key: 'discipline' },
-    { href: 'coachs.html',      label: 'Coachs',        key: 'coachs' },
-    { href: 'cours.html',       label: 'Cours',         key: 'cours' },
-    { href: 'dojos.html',       label: 'Dojos',         key: 'dojos' },
+    { href: 'encadrement.html', label: "L'encadrement", key: 'encadrement' },
+    { href: 'dojos.html',       label: 'Les Dojos',     key: 'dojos' },
     { href: 'actus.html',       label: 'Actualités',    key: 'actus' },
-    { href: 'tarifs.html',      label: 'Tarifs',        key: 'tarifs' },
     { href: 'contact.html',     label: 'Contact',       key: 'contact' }
   ];
 
@@ -111,12 +109,10 @@ function renderFooter() {
         <div class="footer-col__links">
           <a href="index.html">Accueil</a>
           <a href="discipline.html">La discipline</a>
-          <a href="coachs.html">Coachs</a>
-          <a href="cours.html">Cours & planning</a>
-          <a href="dojos.html">Nos dojos</a>
+          <a href="encadrement.html">L'encadrement</a>
+          <a href="dojos.html">Les Dojos</a>
           <a href="actus.html">Actualités</a>
           <a href="galerie.html">Galerie</a>
-          <a href="tarifs.html">Tarifs</a>
           <a href="contact.html">Contact</a>
         </div>
       </div>

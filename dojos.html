@@ -3,16 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nos dojos — EKSN</title>
-<meta name="description" content="Trouvez le dojo EKSN le plus proche. 3 sites dans le Nord (59) avec les mêmes coachs diplômés FFKDA.">
+<title>Les Dojos — EKSN</title>
+<meta name="description" content="Cours, plannings et dojos EKSN. Trouvez votre dojo dans le Nord (59) — 3 sites avec les mêmes coachs diplômés FFKDA.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://site-shindokai.vercel.app/dojos.html">
-<meta property="og:title" content="Nos dojos — EKSN">
-<meta property="og:description" content="Trouvez le dojo EKSN le plus proche. 3 sites dans le Nord (59) avec les mêmes coachs diplômés FFKDA.">
+<meta property="og:title" content="Les Dojos — EKSN">
+<meta property="og:description" content="Cours, plannings et dojos EKSN. Trouvez votre dojo dans le Nord (59) — 3 sites avec les mêmes coachs diplômés FFKDA.">
 <meta property="og:image" content="https://site-shindokai.vercel.app/shinodkai.png">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Nos dojos — EKSN">
-<meta name="twitter:description" content="Trouvez le dojo EKSN le plus proche. 3 sites dans le Nord (59) avec les mêmes coachs diplômés FFKDA.">
+<meta name="twitter:title" content="Les Dojos — EKSN">
+<meta name="twitter:description" content="Cours, plannings et dojos EKSN. Trouvez votre dojo dans le Nord (59) — 3 sites avec les mêmes coachs diplômés FFKDA.">
 <meta name="twitter:image" content="https://site-shindokai.vercel.app/shinodkai.png">
 <link rel="icon" href="shinodkai.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -33,12 +33,24 @@
   </svg>
   <div class="wrap">
     <div class="hero-mini__content">
-      <span class="eyebrow-text hero-mini__eyebrow" id="dj-hero-eyebrow">Nos dojos</span>
+      <span class="eyebrow-text hero-mini__eyebrow">Les Dojos</span>
       <h1 class="hero-mini__title">
-        <span class="line" id="dj-hero-l1"><span>Trois sites,</span></span>
-        <span class="line" id="dj-hero-l2"><span>une discipline.</span></span>
+        <span class="line" id="dj-hero-l1"><span>Cours, horaires</span></span>
+        <span class="line" id="dj-hero-l2"><span>& lieux.</span></span>
       </h1>
     </div>
+  </div>
+</section>
+
+<!-- ============ PLANNINGS PAR DOJO ============ -->
+<section class="section section--alt">
+  <div class="wrap">
+    <div class="section__head reveal">
+      <span class="eyebrow-text">Plannings</span>
+      <h2 class="section__title">Horaires par<br>dojo.</h2>
+    </div>
+    <div class="dojos-tabs reveal" id="planningTabs"></div>
+    <div id="planningPanels"></div>
   </div>
 </section>
 
@@ -46,7 +58,7 @@
 <section class="section">
   <div class="wrap">
     <div class="section__head reveal">
-      <span class="eyebrow-text" id="dj-s1-eyebrow">Localisation</span>
+      <span class="eyebrow-text">Localisation</span>
       <h2 class="section__title" id="dj-s1-titre">Choisissez votre<br>dojo.</h2>
       <p class="section__lede" id="dj-s1-lede">Mêmes coachs diplômés, même enseignement, même exigence sur les trois sites. Choisissez celui qui vous convient géographiquement.</p>
     </div>
@@ -59,8 +71,8 @@
 <section class="section section--alt">
   <div class="wrap">
     <div class="section__head reveal">
-      <span class="eyebrow-text" id="dj-s2-eyebrow">Informations</span>
-      <h2 class="section__title" id="dj-s2-titre">Infos pratiques.</h2>
+      <span class="eyebrow-text">Informations</span>
+      <h2 class="section__title">Infos pratiques.</h2>
     </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:var(--gap);">
       <div class="reveal" style="background:var(--char);border:1px solid var(--line);padding:2rem;">
@@ -82,10 +94,10 @@
 <!-- ============ CTA ============ -->
 <section class="cta-band">
   <div class="wrap">
-    <h2 class="cta-band__title reveal" id="dj-cta-titre">Prêt à nous rejoindre ?</h2>
-    <p class="cta-band__sub reveal" id="dj-cta-sub">Venez essayer gratuitement dans le dojo de votre choix. Aucun équipement requis.</p>
+    <h2 class="cta-band__title reveal">Prêt à nous rejoindre ?</h2>
+    <p class="cta-band__sub reveal">Venez essayer gratuitement dans le dojo de votre choix. Aucun équipement requis.</p>
     <div class="cta-band__btns reveal">
-      <a href="tarifs.html" class="btn btn--primary">Essai gratuit</a>
+      <a href="inscription.html" class="btn btn--primary">S'inscrire</a>
       <a href="contact.html" class="btn btn--ghost">Nous contacter</a>
     </div>
   </div>
@@ -101,20 +113,57 @@
 <script>
 initData().then(() => {
 pageInit('dojos');
-const dojos = getSection('dojos');
 
+// ── Planning ──
+const plannings = getSection('plannings') || [];
+const planningTabs = document.getElementById('planningTabs');
+const planningPanels = document.getElementById('planningPanels');
+plannings.forEach((p, i) => {
+  const btn = document.createElement('button');
+  btn.className = 'dojo-tab' + (i === 0 ? ' is-active' : '');
+  btn.textContent = p.dojo.replace('Dojo de ', '');
+  btn.dataset.index = i;
+  planningTabs.appendChild(btn);
+
+  const panel = document.createElement('div');
+  panel.className = 'dojo-panel' + (i === 0 ? ' is-active' : '');
+  panel.dataset.index = i;
+  const grid = document.createElement('div');
+  grid.className = 'planning-grid';
+  (p.cours || []).filter(c => c.name !== 'Compétition').forEach(c => {
+    const card = document.createElement('div');
+    card.className = 'planning-card';
+    card.innerHTML = `
+      <div class="planning-card__belt" style="background:${esc(c.belt)}"></div>
+      <div class="planning-card__age">${esc(c.age)}</div>
+      <div class="planning-card__name">${esc(c.name)}</div>
+      <div class="planning-card__days">${esc(c.days)}</div>
+      <div class="planning-card__time">${esc(c.time)}</div>`;
+    grid.appendChild(card);
+  });
+  panel.appendChild(grid);
+  planningPanels.appendChild(panel);
+});
+planningTabs.addEventListener('click', e => {
+  const btn = e.target.closest('.dojo-tab');
+  if (!btn) return;
+  planningTabs.querySelectorAll('.dojo-tab').forEach(b => b.classList.remove('is-active'));
+  planningPanels.querySelectorAll('.dojo-panel').forEach(p => p.classList.remove('is-active'));
+  btn.classList.add('is-active');
+  planningPanels.querySelector(`[data-index="${btn.dataset.index}"]`).classList.add('is-active');
+});
+
+// ── Dojos ──
+const dojos = getSection('dojos');
 const dojosTabs = document.getElementById('dojosTabs');
 const dojosPanels = document.getElementById('dojosPanels');
-
 dojos.forEach((d, i) => {
-  // Tab
   const btn = document.createElement('button');
   btn.className = 'dojo-tab' + (i === 0 ? ' is-active' : '');
   btn.textContent = d.name;
   btn.dataset.index = i;
   dojosTabs.appendChild(btn);
 
-  // Map
   const mapContent = d.mapEmbed
     ? `<iframe src="${esc(d.mapEmbed)}" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Plan ${esc(d.name)}"></iframe>`
     : `<div class="dojo-map__placeholder">
@@ -149,7 +198,6 @@ dojos.forEach((d, i) => {
     <div class="dojo-map">${mapContent}</div>`;
   dojosPanels.appendChild(panel);
 });
-
 dojosTabs.addEventListener('click', e => {
   const btn = e.target.closest('.dojo-tab');
   if (!btn) return;
@@ -160,14 +208,6 @@ dojosTabs.addEventListener('click', e => {
   dojosPanels.querySelector(`[data-index="${idx}"]`).classList.add('is-active');
 });
 
-
-// Textes dynamiques
-const tx = applyPageTextes('dojos');
-setT('dj-hero-eyebrow', tx.heroEyebrow);
-setLines('dj-hero-l', tx.heroTitre);
-setT('dj-s1-eyebrow', tx.s1Eyebrow); setH('dj-s1-titre', tx.s1Titre); setT('dj-s1-lede', tx.s1Lede);
-setT('dj-s2-eyebrow', tx.s2Eyebrow); setH('dj-s2-titre', tx.s2Titre);
-setT('dj-cta-titre', tx.ctaTitre); setT('dj-cta-sub', tx.ctaSub);
 initScrollReveal();
 }); // fin initData
 </script>
