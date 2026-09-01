@@ -590,44 +590,65 @@ function _abMake(el, key) {
   el.addEventListener('keydown', e => { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();el.blur();} });
 }
 
+/* ── ID stable basé sur position dans le DOM (déterministe) ── */
+let _abScanIdx = 0;
 function _abMakeText(el, pageKey) {
-  if (!el || !el.textContent.trim()) return;
-  if (el.querySelector('img,iframe,canvas,svg,input,button,select')) return;
+  if (!el || el.dataset.ab) return;
+  const txt = el.textContent.trim();
+  if (!txt) return;
+  if (el.querySelector('img,iframe,canvas,svg,input,button,select,textarea')) return;
+  // Assigner un ID stable : basé sur tag + classes + position de scan
   if (!el.id) {
-    el.id = `_ab_${pageKey}_${el.tagName.toLowerCase()}_${Math.random().toString(36).slice(2,7)}`;
+    const cls = (el.className||'').replace(/[^a-z0-9]/gi,'_').slice(0,18);
+    el.id = `_t_${pageKey}_${el.tagName.toLowerCase()}_${cls}_${++_abScanIdx}`;
   }
+  el.dataset.placeholder = 'Cliquer pour éditer…';
   _abMake(el, `text_overrides|${pageKey}|${el.id}`);
 }
 
+/* ── Scan agressif : TOUT élément texte feuille dans <main> ── */
 function _abMakeAllEditable(pageKey) {
+  _abScanIdx = 0; // reset compteur pour IDs déterministes
   const main = document.querySelector('main');
   if (!main) return;
-  const SEL = [
-    'h1','h2','h3','h4',
-    // Hero accueil (index.html)
-    '.hero__title','.hero__tagline','.hero__disciplines','.hero__sub',
-    // Hero mini (autres pages)
-    '.hero-mini__title .line span','.hero-mini__eyebrow',
-    // Sections communes
-    '.eyebrow-text','.section__title','.section__lede',
-    '.cta-band__title','.cta-band__sub',
-    // Éléments avec ID
-    'p[id]','[id^="ch-"],[id^="ct-"],[id^="ins-"],[id^="disc-"],[id^="aboutP"],[id^="idx-"]',
-    // Cartes
-    '.diplome-card__title','.diplome-card__text','.diplome-card__badge',
-    '.tarif-card__name','.tarif-card__price',
-    '.stat-card__label','.stat-card__suffix',
-    '.discipline-intro',
-    // Planning
-    '.planning-card__name','.planning-card__days','.planning-card__time','.planning-card__age',
-    // Stats numériques label
-    '[class*="stat"] [class*="label"],[class*="counter"] [class*="label"]',
-  ].join(',');
-  main.querySelectorAll(SEL).forEach(el => _abMakeText(el, pageKey));
-  main.querySelectorAll('section p:not([data-ab])').forEach(el => {
-    if (el.closest('.actu-card,.coach-card,.bureau-card,.dojo-block,.custom-block')) return;
+
+  const SKIP_TAGS  = new Set(['SCRIPT','STYLE','IMG','SVG','IFRAME','INPUT','BUTTON','SELECT',
+                               'TEXTAREA','BR','HR','PRE','CODE','CANVAS','VIDEO','AUDIO']);
+  const BLOCK_TAGS = new Set(['DIV','SECTION','ARTICLE','HEADER','FOOTER','MAIN','NAV',
+                               'UL','OL','TABLE','TBODY','THEAD','TR','FORM','FIGURE']);
+
+  main.querySelectorAll('*').forEach(el => {
+    if (SKIP_TAGS.has(el.tagName)) return;
+    if (el.dataset.ab) return;                           // déjà traité (données structurées)
+    if (el.closest('#adminBar,#abPanel,#abModal,#abImgOverlay,.ab-insert-zone,.ab-add-btn')) return;
+    if (el.closest('[data-ab]')) return;                 // enfant d'un élément déjà éditable
+    if (el.closest('a') && el.tagName !== 'A') return;  // texte dans un lien, on édite le lien
+    if (BLOCK_TAGS.has(el.tagName)) return;              // on ne veut pas les conteneurs
+
+    const txt = el.textContent.trim();
+    if (!txt) return;
+
+    // Éviter les éléments qui ne contiennent que d'autres blocs
+    const blockChild = Array.from(el.children).find(c => BLOCK_TAGS.has(c.tagName));
+    if (blockChild) return;
+
+    // Éviter les images / éléments interactifs imbriqués
+    if (el.querySelector('img,iframe,canvas,svg,input,button,select')) return;
+
     _abMakeText(el, pageKey);
   });
+
+  // Cas spéciaux : liens des boutons CTA (texte modifiable)
+  main.querySelectorAll('a.btn:not([data-ab])').forEach(el => {
+    el.dataset.placeholder = 'Texte du bouton';
+    _abMake(el, `text_overrides|${pageKey}|${el.id || (_abStableId(el, pageKey))}`);
+  });
+}
+
+function _abStableId(el, pageKey) {
+  const cls = (el.className||'').replace(/[^a-z0-9]/gi,'_').slice(0,18);
+  el.id = `_t_${pageKey}_${el.tagName.toLowerCase()}_${cls}_${++_abScanIdx}`;
+  return el.id;
 }
 
 /* ══════════════════════════════════════════════════════════════
@@ -637,6 +658,8 @@ function _abStructured(pageKey) {
   if (pageKey==='encadrement') _abEncadrement();
   if (pageKey==='dojos')       _abDojos();
   if (pageKey==='actus')       _abActus();
+  if (pageKey==='index')       _abIndex();
+  if (pageKey==='inscription') _abInscription();
 }
 function _abEncadrement() {
   document.querySelectorAll('.coach-grid .coach-card').forEach((card,i) => {
@@ -682,6 +705,43 @@ function _abActus() {
     _abMake(card.querySelector('.actu-card__text'), `actus|${i}|text`);
     _abMake(card.querySelector('.actu-card__tag'),  `actus|${i}|tag`);
     _abMake(card.querySelector('.actu-card__date'), `actus|${i}|date`);
+  });
+}
+
+function _abIndex() {
+  // Stats (chiffres clés)
+  document.querySelectorAll('.stat-card, [data-value]').forEach((card, i) => {
+    const label = card.querySelector('.stat-card__label,[class*="label"]');
+    const count = card.querySelector('.count,[class*="count"]');
+    const suffix = card.querySelector('.stat-card__suffix,[class*="suffix"]');
+    if (label) _abMake(label, `stats|${i}|label`);
+    if (suffix) _abMake(suffix, `stats|${i}|suffix`);
+    // La valeur chiffrée
+    if (card.dataset.value !== undefined) {
+      card.dataset.ab = `stats|${i}|value`;
+      card.addEventListener('dblclick', () => {
+        const v = prompt('Nouvelle valeur (nombre) :', card.dataset.value);
+        if (v !== null && !isNaN(parseInt(v))) {
+          const stats = JSON.parse(JSON.stringify(getSection('stats')||[]));
+          while(stats.length<=i) stats.push({});
+          stats[i].value = parseInt(v);
+          saveSection('stats', stats);
+          setTimeout(()=>location.reload(),900);
+        }
+      });
+    }
+  });
+}
+
+function _abInscription() {
+  // Tarifs
+  document.querySelectorAll('.tarif-card').forEach((card, i) => {
+    _abMake(card.querySelector('.tarif-card__name'),   `tarifs|${i}|name`);
+    _abMake(card.querySelector('.tarif-card__price'),  `tarifs|${i}|price`);
+    _abMake(card.querySelector('.tarif-card__period'), `tarifs|${i}|period`);
+    card.querySelectorAll('.tarif-card__feature, li').forEach((li, j) => {
+      _abMake(li, `tarifs|${i}|feature${j}`);
+    });
   });
 }
 
@@ -927,7 +987,13 @@ function _abSave() {
       sectionUpdates[sec]=JSON.parse(JSON.stringify(getSection(sec)||[]));
     }
     while(sectionUpdates[sec].length<=idx)sectionUpdates[sec].push({});
-    sectionUpdates[sec][idx][field]=val;
+    const featMatch=field.match(/^feature(\d+)$/);
+    if(featMatch){
+      const fi=parseInt(featMatch[1],10);
+      if(!Array.isArray(sectionUpdates[sec][idx].features))sectionUpdates[sec][idx].features=JSON.parse(JSON.stringify((getSection(sec)||[])[idx]?.features||[]));
+      while(sectionUpdates[sec][idx].features.length<=fi)sectionUpdates[sec][idx].features.push('');
+      sectionUpdates[sec][idx].features[fi]=val;
+    }else{sectionUpdates[sec][idx][field]=val;}
   });
 
   Object.entries(sectionUpdates).forEach(([sec,data])=>saveSection(sec,data));
