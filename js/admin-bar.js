@@ -224,6 +224,23 @@ function _abInjectCSS() {
   [data-ab][data-dirty]:focus { outline:2px solid #c9a227!important; }
   [data-ab] { border-radius:2px;transition:outline .12s,background .12s; }
 
+  /* ── Champs vides : placeholder visible pour pouvoir cliquer ── */
+  [data-ab]:empty {
+    display:block;
+    min-height:1.4em;
+    min-width:80px;
+    position:relative;
+  }
+  [data-ab]:empty::before {
+    content: attr(data-placeholder);
+    color:rgba(224,36,27,.35);
+    font-style:italic;
+    font-size:.8em;
+    pointer-events:none;
+  }
+  [data-ab]:empty:hover::before { color:rgba(224,36,27,.6); }
+  [data-ab]:focus:empty::before { display:none; }
+
   /* ── Boutons image ── */
   .ab-img-wrap { position:relative;display:inline-block; }
   .ab-img-edit-btn {
@@ -547,11 +564,24 @@ function _abSaveImageKey(key, url) {
 /* ══════════════════════════════════════════════════════════════
    TEXTE ÉDITABLE INLINE
 ══════════════════════════════════════════════════════════════ */
+/* Placeholders pour chaque champ structuré */
+const _abPlaceholders = {
+  'name':'Cliquer pour ajouter un nom','grade':'Cliquer pour ajouter un grade',
+  'role':'Cliquer pour ajouter un rôle','bio':'Cliquer pour ajouter une bio',
+  'dojo':'Cliquer pour indiquer le dojo','title':'Cliquer pour ajouter un titre',
+  'text':'Cliquer pour ajouter un texte','tag':'Tag','date':'Date',
+  'address':'Adresse','phone':'Téléphone','president':'Président',
+  'tresorier':'Trésorier','secretaire':'Secrétaire',
+};
+
 function _abMake(el, key) {
   if (!el || el.dataset.ab) return;
   el.dataset.ab = key;
   el.contentEditable = true;
   el.spellcheck = false;
+  // Placeholder selon le champ
+  const field = key.split('|')[2] || key.split('|')[1] || '';
+  el.dataset.placeholder = _abPlaceholders[field] || 'Cliquer pour éditer…';
   el.addEventListener('input', () => { el.dataset.dirty='1'; _abMarkDirty(); });
   el.addEventListener('keydown', e => { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();el.blur();} });
 }
