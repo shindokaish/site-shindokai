@@ -88,7 +88,12 @@ const DEFAULT_DATA = {
   ],
   disciplineBadges: ["Karaté contact", "Boxe", "Soumission au sol", "Projections & clés", "Karaté-Jutsu FFKDA", "Dès 6 ans"],
   ceintures_noires: [
-    { name: "Gilles Richard", dan: "7e Dan Shindokai", dojo: "", photo: "" }
+    { name: "Gilles Richard", grade: "7e Dan Shindokai", dojo: "Dojo de Santes", photo: "", initials: "GR" }
+  ],
+  praticiens: [
+    { name: "", grade: "1er Dan", dojo: "Dojo de Santes",      photo: "", initials: "" },
+    { name: "", grade: "1er Dan", dojo: "Dojo de Wambrechies", photo: "", initials: "" },
+    { name: "", grade: "1er Dan", dojo: "Dojo de Halluin",     photo: "", initials: "" }
   ],
   membres: {
     password: "dojo2025",
@@ -367,7 +372,7 @@ async function initData() {
 /* Pousse toutes les sections par défaut vers Supabase (premier démarrage) */
 async function _pushAllDefaults(sb) {
   const keys = ['club','adminPassword','stats','coaches','courses','dojos',
-                 'actus','galerie','tarifs','disciplineBadges','ceintures_noires','plannings','discipline','membres','inscription','settings','textes'];
+                 'actus','galerie','tarifs','disciplineBadges','ceintures_noires','praticiens','plannings','discipline','membres','inscription','settings','textes'];
   const rows = keys.map(k => ({ key: k, value: DEFAULT_DATA[k] }));
   await sb.from('data_store').upsert(rows, { onConflict: 'key' });
 }
