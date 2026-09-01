@@ -342,8 +342,9 @@ function pageInit(activePage) {
   initScrollReveal();
   initBackToTop();
   initPushNotifications();
-  // Applique les surcharges de texte sauvegardées par l'admin
+  // Applique les surcharges de texte et blocs custom sauvegardés par l'admin
   if (typeof applyTextOverrides === 'function') applyTextOverrides(activePage);
+  if (typeof renderCustomBlocks === 'function') renderCustomBlocks(activePage);
 }
 
 /* ============ APPLY TEXTES ============ */

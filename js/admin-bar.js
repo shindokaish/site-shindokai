@@ -12,6 +12,7 @@ function initAdminBar(pageKey) {
     _abMakeAllEditable(pageKey);
     _abStructured(pageKey);
     _abAddDeleteControls(pageKey);
+    _abInjectSectionInserts(pageKey);
   }, 150);
 }
 
@@ -120,6 +121,42 @@ function _abInjectStyles() {
     /* Image preview */
     .ab-img-preview { max-width:100%;max-height:140px;object-fit:contain;border:1px solid #333;margin-top:.4rem;display:none; }
     .ab-img-preview.visible { display:block; }
+
+    /* Boutons d'insertion de blocs entre sections */
+    .ab-insert-zone {
+      display:flex;align-items:center;gap:.8rem;padding:.3rem 0;
+      opacity:0;transition:opacity .2s;pointer-events:none;
+    }
+    .ab-insert-zone:hover, main:hover .ab-insert-zone { opacity:1;pointer-events:auto; }
+    .ab-insert-line { flex:1;height:1px;background:rgba(224,36,27,.3); }
+    .ab-insert-btn {
+      display:flex;align-items:center;gap:.4rem;padding:.3rem .8rem;
+      border:1px dashed rgba(224,36,27,.6);background:rgba(10,10,12,.9);
+      color:rgba(224,36,27,.9);cursor:pointer;font-family:'JetBrains Mono',monospace;
+      font-size:.66rem;letter-spacing:.06em;white-space:nowrap;transition:all .2s;
+      border-radius:2px;
+    }
+    .ab-insert-btn:hover { background:rgba(224,36,27,.15);border-color:#e0241b;color:#e0241b; }
+
+    /* Blocs custom rendus */
+    .custom-block { margin:0; }
+    .custom-block--text { }
+    .custom-block--callout {
+      border-left:3px solid var(--crimson-2);
+      padding:1.4rem 1.8rem;
+      background:var(--char);
+      margin:2rem 0;
+    }
+    .custom-block--callout .cb-content {
+      color:var(--ash);font-size:.95rem;line-height:1.7;
+    }
+    .custom-block__del {
+      float:right;margin-left:1rem;padding:.2rem .5rem;
+      border:1px solid rgba(224,36,27,.4);background:none;
+      color:#e0241b;cursor:pointer;font-size:.65rem;
+      font-family:'JetBrains Mono',monospace;transition:all .15s;
+    }
+    .custom-block__del:hover { background:#e0241b;color:#fff; }
   `;
   document.head.appendChild(s);
 
@@ -471,4 +508,139 @@ function _abSave() {
   }, 1400);
 }
 
-/* applyTextOverrides est défini dans render.js (chargé avant) */
+/* ══════════════════════════════════════════════════════════════
+   BLOCS DE TEXTE INSÉRABLES
+══════════════════════════════════════════════════════════════ */
+
+function _abInjectSectionInserts(pageKey) {
+  const main = document.querySelector('main');
+  if (!main) return;
+  const sections = Array.from(main.children).filter(el =>
+    el.tagName === 'SECTION' || el.tagName === 'DIV'
+  );
+  // Bouton avant la première section
+  if (sections[0]) {
+    const z = _abInsertZone(pageKey, -1);
+    sections[0].before(z);
+  }
+  // Bouton après chaque section
+  sections.forEach((sec, i) => {
+    const z = _abInsertZone(pageKey, i);
+    sec.after(z);
+  });
+}
+
+function _abInsertZone(pageKey, afterIdx) {
+  const zone = document.createElement('div');
+  zone.className = 'ab-insert-zone';
+  zone.innerHTML = `
+    <span class="ab-insert-line"></span>
+    <button class="ab-insert-btn">＋ Insérer un bloc ici</button>
+    <span class="ab-insert-line"></span>`;
+  zone.querySelector('.ab-insert-btn').onclick = () => _abOpenBlockForm(pageKey, afterIdx);
+  return zone;
+}
+
+function _abOpenBlockForm(pageKey, afterIdx) {
+  document.getElementById('abModalBox').innerHTML = `
+    <div class="ab-modal-title">Ajouter un bloc de texte</div>
+    <div class="ab-field">
+      <label class="ab-label">Type de bloc</label>
+      <select id="abBlockType" class="ab-input">
+        <option value="text">Paragraphe(s)</option>
+        <option value="title-text">Titre + texte</option>
+        <option value="callout">Encadré mis en valeur</option>
+        <option value="title-only">Titre seul</option>
+      </select>
+    </div>
+    <div class="ab-field" id="abBlockTitleField">
+      <label class="ab-label">Titre</label>
+      <input id="abBlockTitle" class="ab-input" type="text" placeholder="Titre du bloc">
+    </div>
+    <div class="ab-field">
+      <label class="ab-label">Texte (retour à la ligne = nouveau paragraphe)</label>
+      <textarea id="abBlockContent" class="ab-input ab-textarea" placeholder="Votre texte ici…"></textarea>
+    </div>
+    <div class="ab-field">
+      <label class="ab-label">Eyebrow (petit texte au-dessus, optionnel)</label>
+      <input id="abBlockEyebrow" class="ab-input" type="text" placeholder="ex : Formation continue">
+    </div>
+    <div class="ab-modal-btns">
+      <button class="ab-modal-cancel" onclick="_abCloseModal()">Annuler</button>
+      <button class="ab-modal-ok" onclick="_abSubmitBlock('${pageKey}',${afterIdx})">Insérer</button>
+    </div>`;
+
+  const typeEl    = document.getElementById('abBlockType');
+  const titleFld  = document.getElementById('abBlockTitleField');
+  typeEl.onchange = () => { titleFld.style.display = typeEl.value === 'text' ? 'none' : ''; };
+  typeEl.dispatchEvent(new Event('change'));
+  document.getElementById('abModal').classList.remove('ab-hidden');
+}
+
+function _abSubmitBlock(pageKey, afterIdx) {
+  const type    = document.getElementById('abBlockType').value;
+  const title   = (document.getElementById('abBlockTitle').value   || '').trim();
+  const content = (document.getElementById('abBlockContent').value || '').trim();
+  const eyebrow = (document.getElementById('abBlockEyebrow').value || '').trim();
+  if (!content && !title) { alert('Ajoutez au moins un titre ou un texte.'); return; }
+  const block = { id: Date.now().toString(36), page: pageKey, after: afterIdx,
+                  type, title, content, eyebrow, order: Date.now() };
+  const blocks = JSON.parse(JSON.stringify(getSection('custom_blocks') || []));
+  blocks.push(block);
+  saveSection('custom_blocks', blocks);
+  _abCloseModal();
+  setTimeout(() => location.reload(), 1000);
+}
+
+/* ── renderCustomBlocks : appelé depuis pageInit (render.js) ── */
+function renderCustomBlocks(pageKey) {
+  const blocks = (typeof getSection === 'function') ? (getSection('custom_blocks') || []) : [];
+  const forPage = blocks.filter(b => b.page === pageKey).sort((a, b) => b.after - a.after || b.order - a.order);
+  const main    = document.querySelector('main');
+  if (!main || !forPage.length) return;
+  const sections = Array.from(main.children).filter(el =>
+    el.tagName === 'SECTION' || (el.tagName === 'DIV' && !el.classList.contains('ab-insert-zone'))
+  );
+  forPage.forEach(block => {
+    const el = _abBuildBlock(block);
+    const ref = sections[block.after];
+    if (ref) ref.after(el); else if (sections[0]) sections[0].before(el); else main.appendChild(el);
+  });
+}
+
+function _abBuildBlock(block) {
+  const isAdmin = (function(){ try { return !!sessionStorage.getItem('shindokai_admin'); }catch(e){return false;} })();
+  const delBtn  = isAdmin ? `<button class="custom-block__del" onclick="_abDeleteBlock('${block.id}')">✕ Supprimer</button>` : '';
+  const eyebrow = block.eyebrow ? `<span class="eyebrow-text" style="margin-bottom:1rem;display:inline-flex;">${_abEsc(block.eyebrow)}</span>` : '';
+  const paras   = (block.content||'').split('\n').filter(l=>l.trim())
+    .map(l=>`<p style="color:var(--ash);margin-bottom:.8rem;line-height:1.7;">${_abEsc(l)}</p>`).join('');
+  let inner = '';
+  if (block.type === 'callout') {
+    inner = `<div class="wrap"><div class="custom-block--callout">${delBtn}${eyebrow}
+      ${block.title?`<h3 style="font-family:var(--display);font-size:1.4rem;text-transform:uppercase;color:var(--bone);margin-bottom:.8rem;">${_abEsc(block.title)}</h3>`:''}
+      <div class="cb-content">${paras}</div></div></div>`;
+  } else if (block.type === 'title-only') {
+    inner = `<div class="wrap"><div style="max-width:760px;margin:0 auto;text-align:center;">${delBtn}${eyebrow}
+      <h2 class="section__title">${_abEsc(block.title)}</h2></div></div>`;
+  } else {
+    inner = `<div class="wrap"><div style="max-width:760px;margin:0 auto;">${delBtn}${eyebrow}
+      ${block.title?`<h2 class="section__title" style="margin-bottom:1.4rem;">${_abEsc(block.title)}</h2>`:''}
+      ${paras}</div></div>`;
+  }
+  const sec = document.createElement('section');
+  sec.className = 'section custom-block';
+  sec.dataset.cbId = block.id;
+  sec.innerHTML = inner;
+  return sec;
+}
+
+function _abDeleteBlock(id) {
+  if (!confirm('Supprimer ce bloc ?')) return;
+  const filtered = (getSection('custom_blocks')||[]).filter(b => b.id !== id);
+  saveSection('custom_blocks', filtered);
+  setTimeout(() => location.reload(), 900);
+}
+
+function _abEsc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
