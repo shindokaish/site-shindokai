@@ -20,15 +20,16 @@
 <link rel="stylesheet" href="css/style.css">
 <style>
 .dojo-section-tabs {
-  display: flex; justify-content: center; gap: 0; margin: 2.5rem 0 0; border-bottom: 1px solid var(--line);
+  display: flex; justify-content: center; gap: 0;
+  border-bottom: 1px solid var(--line); margin-bottom: 0;
 }
 .dojo-section-tab {
   font-family: var(--eyebrow); font-size: .75rem; letter-spacing: .08em; text-transform: uppercase;
-  padding: .9rem 2rem; background: none; border: none; border-bottom: 2px solid transparent;
+  padding: .9rem 2.2rem; background: none; border: none; border-bottom: 2px solid transparent;
   color: var(--ash); cursor: pointer; transition: color .2s, border-color .2s; margin-bottom: -1px;
 }
 .dojo-section-tab.is-active { color: var(--bone); border-bottom-color: var(--crimson-2); }
-.dojo-section-panel { display: none; padding-top: 2.5rem; }
+.dojo-section-panel { display: none; padding-top: 2.5rem; max-width: 900px; margin: 0 auto; }
 .dojo-section-panel.is-active { display: block; }
 
 .bureau-grid {
@@ -175,11 +176,11 @@ dojos.forEach((d, i) => {
        </div>`;
 
   const dojoLogoHTML = d.logo
-    ? `<div style="display:flex;align-items:center;gap:1rem;padding-bottom:1rem;border-bottom:1px solid var(--line);margin-bottom:1rem;">
-         <img src="${esc(d.logo)}" alt="Logo ${esc(d.name)}" style="width:56px;height:56px;object-fit:contain;">
-         <span style="font-family:var(--display);font-size:1.1rem;text-transform:uppercase;">${esc(d.name)}</span>
+    ? `<div style="display:flex;flex-direction:column;align-items:center;gap:.8rem;text-align:center;margin-bottom:1.5rem;">
+         <img src="${esc(d.logo)}" alt="Logo ${esc(d.name)}" style="width:64px;height:64px;object-fit:contain;">
+         <span style="font-family:var(--display);font-size:1.4rem;text-transform:uppercase;">${esc(d.name)}</span>
        </div>`
-    : `<div style="font-family:var(--display);font-size:1.1rem;text-transform:uppercase;padding-bottom:1rem;border-bottom:1px solid var(--line);margin-bottom:1rem;">${esc(d.name)}</div>`;
+    : `<div style="text-align:center;font-family:var(--display);font-size:1.4rem;text-transform:uppercase;margin-bottom:1.5rem;">${esc(d.name)}</div>`;
 
   const infoHTML = `
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:2rem;">
