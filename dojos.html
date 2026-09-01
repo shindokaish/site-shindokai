@@ -51,9 +51,12 @@
 }
 
 /* ── Bureau grid ── */
-.bureau-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 240px)); justify-content: center; gap: 1rem; }
+.bureau-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 160px)); justify-content: center; gap: .8rem; }
 @media (max-width: 700px) { .bureau-grid { grid-template-columns: 1fr 1fr; } }
-.bureau-grid .coach-card__photo { height: 260px; }
+.bureau-grid .coach-card__photo { height: 160px; }
+.bureau-grid .coach-card__name { font-size: .75rem; }
+.bureau-grid .coach-card__grade { font-size: .62rem; }
+.bureau-grid .coach-card__body { padding: .6rem .8rem .8rem; }
 .bureau-grid .coach-card__contact {
   display: flex; flex-direction: column; gap: .3rem; margin-top: .4rem; padding: 0 1rem .8rem;
 }
