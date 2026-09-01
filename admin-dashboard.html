@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Admin — EKSN</title>
+<link rel="icon" href="shinodkai.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@400;500;600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ── Reset & tokens ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --void:#0a0a0c;--char:#16161a;--char-2:#1e1e24;--line:rgba(255,255,255,.08);
+  --bone:#f3efe7;--ash:#9a98a0;--ash-2:#6a6870;
+  --crimson:#b91c1c;--crimson-2:#e0241b;
+  --gold:#c9a227;--gold-2:#e8c050;
+  --green:#22c55e;--red:#ef4444;--orange:#f97316;
+  --display:'Anton',sans-serif;--eyebrow:'Oswald',sans-serif;
+  --body:'Inter',sans-serif;--mono:'JetBrains Mono',monospace;
+  --radius:2px;
+}
+body{background:var(--void);color:var(--bone);font-family:var(--body);min-height:100vh;display:flex;flex-direction:column;}
+
+/* ── Topbar ── */
+.topbar{
+  display:flex;align-items:center;gap:1.2rem;
+  padding:.9rem 2rem;
+  background:var(--char);border-bottom:1px solid var(--line);
+  position:sticky;top:0;z-index:100;
+}
+.topbar__logo{width:32px;height:32px;border-radius:50%;border:1px solid rgba(224,36,27,.4);}
+.topbar__title{font-family:var(--display);font-size:1.1rem;text-transform:uppercase;letter-spacing:.04em;color:var(--bone);}
+.topbar__badge{font-family:var(--mono);font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;background:rgba(224,36,27,.15);color:var(--crimson-2);border:1px solid rgba(224,36,27,.3);padding:.2rem .6rem;border-radius:2px;}
+.topbar__right{margin-left:auto;display:flex;align-items:center;gap:.8rem;}
+.topbar__site-link{font-family:var(--eyebrow);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ash);text-decoration:none;transition:color .2s;}
+.topbar__site-link:hover{color:var(--bone);}
+.topbar__logout{font-family:var(--eyebrow);font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;background:rgba(224,36,27,.12);border:1px solid rgba(224,36,27,.35);color:var(--crimson-2);padding:.4rem .9rem;cursor:pointer;transition:all .2s;}
+.topbar__logout:hover{background:var(--crimson-2);color:#fff;}
+
+/* ── Layout ── */
+.layout{display:flex;flex:1;min-height:0;}
+
+/* ── Sidebar nav ── */
+.sidebar{
+  width:220px;flex-shrink:0;
+  background:var(--char);border-right:1px solid var(--line);
+  padding:1.4rem 0;
+  position:sticky;top:53px;height:calc(100vh - 53px);overflow-y:auto;
+}
+.sidebar__section{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ash-2);padding:.4rem 1.4rem .6rem;}
+.nav-item{
+  display:flex;align-items:center;gap:.7rem;
+  padding:.65rem 1.4rem;cursor:pointer;
+  font-family:var(--eyebrow);font-size:.8rem;letter-spacing:.04em;text-transform:uppercase;
+  color:var(--ash);border-left:2px solid transparent;
+  transition:all .15s;
+}
+.nav-item:hover{color:var(--bone);background:rgba(255,255,255,.03);}
+.nav-item.active{color:var(--crimson-2);border-left-color:var(--crimson-2);background:rgba(224,36,27,.06);}
+.nav-item__icon{font-size:.9rem;width:18px;text-align:center;}
+
+/* ── Main content ── */
+.main{flex:1;padding:2rem;overflow-y:auto;min-width:0;}
+.section{display:none;}
+.section.active{display:block;}
+
+/* ── Page header ── */
+.page-header{margin-bottom:2rem;}
+.page-header h1{font-family:var(--display);font-size:1.8rem;text-transform:uppercase;margin-bottom:.3rem;}
+.page-header p{color:var(--ash);font-size:.88rem;}
+
+/* ── Stat cards ── */
+.stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:2rem;}
+.stat-card{background:var(--char);border:1px solid var(--line);padding:1.2rem 1.4rem;}
+.stat-card__val{font-family:var(--display);font-size:2rem;color:var(--bone);}
+.stat-card__lbl{font-family:var(--mono);font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ash-2);margin-top:.2rem;}
+
+/* ── Tables ── */
+.table-wrap{overflow-x:auto;border:1px solid var(--line);}
+table{width:100%;border-collapse:collapse;font-size:.85rem;}
+th{font-family:var(--eyebrow);font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ash-2);background:var(--char-2);padding:.7rem 1rem;text-align:left;border-bottom:1px solid var(--line);}
+td{padding:.75rem 1rem;border-bottom:1px solid var(--line);color:var(--bone);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(255,255,255,.02);}
+
+/* ── Badges ── */
+.badge{display:inline-flex;align-items:center;gap:.3rem;font-family:var(--mono);font-size:.65rem;letter-spacing:.06em;text-transform:uppercase;padding:.2rem .55rem;border-radius:2px;}
+.badge--green{background:rgba(34,197,94,.12);color:var(--green);border:1px solid rgba(34,197,94,.25);}
+.badge--red{background:rgba(239,68,68,.12);color:var(--red);border:1px solid rgba(239,68,68,.25);}
+.badge--orange{background:rgba(249,115,22,.12);color:var(--orange);border:1px solid rgba(249,115,22,.25);}
+.badge--grey{background:rgba(154,152,160,.1);color:var(--ash);border:1px solid var(--line);}
+
+/* ── Buttons ── */
+.btn{display:inline-flex;align-items:center;gap:.4rem;padding:.5rem 1rem;font-family:var(--eyebrow);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;border:none;transition:all .2s;border-radius:var(--radius);}
+.btn--primary{background:var(--crimson-2);color:#fff;}
+.btn--primary:hover{background:var(--crimson);}
+.btn--ghost{background:transparent;border:1px solid var(--line);color:var(--ash);}
+.btn--ghost:hover{border-color:var(--bone);color:var(--bone);}
+.btn--danger{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:var(--red);}
+.btn--danger:hover{background:var(--red);color:#fff;}
+.btn--warn{background:rgba(249,115,22,.12);border:1px solid rgba(249,115,22,.3);color:var(--orange);}
+.btn--warn:hover{background:var(--orange);color:#fff;}
+.btn--success{background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.3);color:var(--green);}
+.btn--success:hover{background:var(--green);color:#fff;}
+.btn--sm{padding:.3rem .7rem;font-size:.65rem;}
+.btn:disabled{opacity:.4;cursor:not-allowed;}
+
+/* ── Forms ── */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.form-grid--3{grid-template-columns:1fr 1fr 1fr;}
+@media(max-width:700px){.form-grid,.form-grid--3{grid-template-columns:1fr;}}
+.field{display:flex;flex-direction:column;gap:.35rem;}
+.field--full{grid-column:1/-1;}
+.field label{font-family:var(--eyebrow);font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ash-2);}
+.field input,.field select,.field textarea{background:var(--char-2);border:1px solid var(--line);color:var(--bone);padding:.7rem .9rem;font-family:var(--body);font-size:.88rem;width:100%;transition:border-color .2s;}
+.field input:focus,.field select,.field textarea:focus{border-color:var(--crimson-2);outline:none;}
+.field select{cursor:pointer;}
+.field textarea{resize:vertical;min-height:80px;}
+
+/* ── Cards ── */
+.card{background:var(--char);border:1px solid var(--line);padding:1.4rem;margin-bottom:1rem;}
+.card__title{font-family:var(--eyebrow);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--crimson-2);margin-bottom:1rem;display:flex;align-items:center;gap:.5rem;}
+.card__title::before{content:'';width:12px;height:2px;background:var(--crimson-2);}
+
+/* ── Planning tabs ── */
+.plan-tabs{display:flex;gap:.5rem;margin-bottom:1.4rem;flex-wrap:wrap;}
+.plan-tab{font-family:var(--eyebrow);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;padding:.5rem 1.1rem;background:var(--char);border:1px solid var(--line);color:var(--ash);cursor:pointer;transition:all .15s;}
+.plan-tab.active{background:var(--crimson-2);border-color:var(--crimson-2);color:#fff;}
+
+/* ── Cours card ── */
+.cours-list{display:flex;flex-direction:column;gap:.6rem;margin-bottom:1rem;}
+.cours-row{display:flex;align-items:center;gap:.8rem;padding:.8rem 1rem;background:var(--char-2);border:1px solid var(--line);}
+.cours-row__belt{width:4px;height:36px;border-radius:2px;flex-shrink:0;}
+.cours-row__info{flex:1;min-width:0;}
+.cours-row__name{font-family:var(--eyebrow);font-size:.82rem;letter-spacing:.04em;text-transform:uppercase;color:var(--bone);}
+.cours-row__sub{font-family:var(--mono);font-size:.68rem;color:var(--ash);margin-top:.15rem;}
+.cours-row__actions{display:flex;gap:.4rem;flex-shrink:0;}
+
+/* ── Settings ── */
+.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.4rem;}
+@media(max-width:860px){.settings-grid{grid-template-columns:1fr;}}
+
+/* ── Toast ── */
+.toast{position:fixed;bottom:1.4rem;right:1.4rem;z-index:9999;display:flex;flex-direction:column;gap:.5rem;}
+.toast-msg{padding:.75rem 1.2rem;font-family:var(--mono);font-size:.78rem;border-radius:2px;animation:toastIn .25s ease;max-width:320px;}
+.toast-msg--ok{background:#166534;border:1px solid #22c55e;color:#86efac;}
+.toast-msg--err{background:#7f1d1d;border:1px solid #ef4444;color:#fca5a5;}
+@keyframes toastIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* ── Modal ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:flex;align-items:center;justify-content:center;padding:1rem;}
+.modal-overlay.hidden{display:none;}
+.modal{background:var(--char);border:1px solid var(--line);padding:2rem;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;}
+.modal__title{font-family:var(--display);font-size:1.2rem;text-transform:uppercase;margin-bottom:1.4rem;}
+.modal__btns{display:flex;gap:.7rem;justify-content:flex-end;margin-top:1.4rem;}
+
+/* ── Empty state ── */
+.empty{text-align:center;padding:3rem 1rem;color:var(--ash-2);font-family:var(--mono);font-size:.82rem;}
+.empty__icon{font-size:2rem;margin-bottom:.8rem;}
+
+/* ── Loader ── */
+.loader{display:flex;align-items:center;justify-content:center;padding:2rem;color:var(--ash-2);font-family:var(--mono);font-size:.8rem;gap:.6rem;}
+.loader::before{content:'';width:16px;height:16px;border:2px solid var(--line);border-top-color:var(--crimson-2);border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── Responsive ── */
+@media(max-width:700px){
+  .sidebar{display:none;}
+  .main{padding:1rem;}
+}
+</style>
+</head>
+<body>
+
+<!-- Topbar -->
+<div class="topbar">
+  <img src="shinodkai.png" alt="EKSN" class="topbar__logo">
+  <span class="topbar__title">EKSN</span>
+  <span class="topbar__badge">Admin Dashboard</span>
+  <div class="topbar__right">
+    <a href="index.html" class="topbar__site-link">← Voir le site</a>
+    <button class="topbar__logout" onclick="logout()">Déconnexion</button>
+  </div>
+</div>
+
+<div class="layout">
+
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <div class="sidebar__section">Général</div>
+    <div class="nav-item active" onclick="showSection('overview')"><span class="nav-item__icon">📊</span>Vue d'ensemble</div>
+    <div class="nav-item" onclick="showSection('membres')"><span class="nav-item__icon">👤</span>Membres</div>
+
+    <div class="sidebar__section" style="margin-top:.8rem;">Contenu</div>
+    <div class="nav-item" onclick="showSection('planning')"><span class="nav-item__icon">📅</span>Planning</div>
+    <div class="nav-item" onclick="showSection('actus')"><span class="nav-item__icon">📰</span>Actualités</div>
+    <div class="nav-item" onclick="showSection('dojos-mgr')"><span class="nav-item__icon">🏯</span>Dojos</div>
+
+    <div class="sidebar__section" style="margin-top:.8rem;">Administration</div>
+    <div class="nav-item" onclick="showSection('parametres')"><span class="nav-item__icon">⚙️</span>Paramètres</div>
+    <div class="nav-item" onclick="showSection('motdepasse')"><span class="nav-item__icon">🔑</span>Mot de passe</div>
+
+    <div style="padding:1rem 1.4rem;margin-top:auto;">
+      <a href="index.html" style="font-family:var(--mono);font-size:.65rem;color:var(--ash-2);text-decoration:none;display:flex;align-items:center;gap:.4rem;">
+        ✏️ Édition inline du site
+      </a>
+    </div>
+  </nav>
+
+  <!-- Main -->
+  <main class="main">
+
+    <!-- ══════════ VUE D'ENSEMBLE ══════════ -->
+    <div class="section active" id="sec-overview">
+      <div class="page-header">
+        <h1>Vue d'ensemble</h1>
+        <p>Tableau de bord général du site EKSN</p>
+      </div>
+      <div class="stat-row" id="overviewStats">
+        <div class="stat-card"><div class="stat-card__val" id="ov-membres">—</div><div class="stat-card__lbl">Membres inscrits</div></div>
+        <div class="stat-card"><div class="stat-card__val" id="ov-coachs">—</div><div class="stat-card__lbl">Coachs</div></div>
+        <div class="stat-card"><div class="stat-card__val" id="ov-actus">—</div><div class="stat-card__lbl">Actualités</div></div>
+        <div class="stat-card"><div class="stat-card__val" id="ov-dojos">—</div><div class="stat-card__lbl">Dojos</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card__title">Accès rapides</div>
+        <div style="display:flex;flex-wrap:wrap;gap:.6rem;">
+          <button class="btn btn--ghost" onclick="showSection('membres')">👤 Gérer les membres</button>
+          <button class="btn btn--ghost" onclick="showSection('planning')">📅 Modifier le planning</button>
+          <button class="btn btn--ghost" onclick="showSection('actus')">📰 Ajouter une actu</button>
+          <button class="btn btn--ghost" onclick="showSection('parametres')">⚙️ Paramètres du club</button>
+          <a href="index.html" class="btn btn--ghost" style="text-decoration:none;">✏️ Édition inline</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card__title">Derniers membres inscrits</div>
+        <div id="ov-last-membres"><div class="loader"></div></div>
+      </div>
+    </div>
+
+    <!-- ══════════ MEMBRES ══════════ -->
+    <div class="section" id="sec-membres">
+      <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
+        <div>
+          <h1>Membres</h1>
+          <p>Comptes de l'espace membre (Supabase Auth)</p>
+        </div>
+        <div style="display:flex;gap:.6rem;">
+          <input id="membreSearch" class="field input" style="background:var(--char-2);border:1px solid var(--line);color:var(--bone);padding:.5rem .8rem;font-size:.82rem;width:200px;" placeholder="Rechercher…" oninput="filterMembres()">
+          <button class="btn btn--primary" onclick="loadMembres()">↻ Actualiser</button>
+        </div>
+      </div>
+      <div id="membresContainer"><div class="loader"></div></div>
+    </div>
+
+    <!-- ══════════ PLANNING ══════════ -->
+    <div class="section" id="sec-planning">
+      <div class="page-header">
+        <h1>Planning des cours</h1>
+        <p>Gérez les créneaux par dojo</p>
+      </div>
+      <div class="plan-tabs" id="planTabs"></div>
+      <div id="planContent"></div>
+    </div>
+
+    <!-- ══════════ ACTUALITÉS ══════════ -->
+    <div class="section" id="sec-actus">
+      <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
+        <div><h1>Actualités</h1><p>Gérez les articles publiés sur le site</p></div>
+        <button class="btn btn--primary" onclick="openActuModal()">+ Ajouter une actu</button>
+      </div>
+      <div id="actusContainer"></div>
+    </div>
+
+    <!-- ══════════ DOJOS ══════════ -->
+    <div class="section" id="sec-dojos-mgr">
+      <div class="page-header">
+        <h1>Dojos</h1>
+        <p>Informations et bureau de chaque dojo</p>
+      </div>
+      <div id="dojosMgrContent"></div>
+    </div>
+
+    <!-- ══════════ PARAMÈTRES ══════════ -->
+    <div class="section" id="sec-parametres">
+      <div class="page-header">
+        <h1>Paramètres du club</h1>
+        <p>Informations générales, coordonnées, réseaux sociaux</p>
+      </div>
+      <div class="settings-grid">
+        <div>
+          <div class="card">
+            <div class="card__title">Informations générales</div>
+            <div style="display:flex;flex-direction:column;gap:.8rem;">
+              <div class="field"><label>Nom du club</label><input id="p-name" type="text"></div>
+              <div class="field"><label>Nom court</label><input id="p-shortName" type="text"></div>
+              <div class="field"><label>Email de contact</label><input id="p-email" type="email"></div>
+              <div class="field"><label>Téléphone</label><input id="p-phone" type="text"></div>
+              <div class="field"><label>Année de fondation</label><input id="p-founded" type="number"></div>
+              <button class="btn btn--primary" onclick="saveClub()">Enregistrer</button>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="card">
+            <div class="card__title">Réseaux sociaux</div>
+            <div style="display:flex;flex-direction:column;gap:.8rem;">
+              <div class="field"><label>Facebook</label><input id="p-facebook" type="url" placeholder="https://facebook.com/…"></div>
+              <div class="field"><label>Instagram</label><input id="p-instagram" type="url" placeholder="https://instagram.com/…"></div>
+              <button class="btn btn--primary" onclick="saveClub()">Enregistrer</button>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card__title">Intégrations</div>
+            <div style="display:flex;flex-direction:column;gap:.8rem;">
+              <div class="field"><label>Clé Web3Forms (formulaire de contact)</label><input id="p-web3forms" type="text" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"></div>
+              <button class="btn btn--primary" onclick="saveSettings()">Enregistrer</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ MOT DE PASSE ══════════ -->
+    <div class="section" id="sec-motdepasse">
+      <div class="page-header">
+        <h1>Mot de passe admin</h1>
+        <p>Changez le mot de passe de connexion au panneau admin</p>
+      </div>
+      <div class="card" style="max-width:420px;">
+        <div class="card__title">Nouveau mot de passe</div>
+        <div style="display:flex;flex-direction:column;gap:.8rem;">
+          <div class="field"><label>Mot de passe actuel</label><input id="pwd-current" type="password"></div>
+          <div class="field"><label>Nouveau mot de passe</label><input id="pwd-new" type="password"></div>
+          <div class="field"><label>Confirmer</label><input id="pwd-confirm" type="password"></div>
+          <button class="btn btn--primary" onclick="changePassword()">Changer le mot de passe</button>
+        </div>
+      </div>
+      <div class="card" style="max-width:420px;margin-top:1rem;">
+        <div class="card__title">Mot de passe espace membres</div>
+        <div style="display:flex;flex-direction:column;gap:.8rem;">
+          <div class="field"><label>Nouveau mot de passe membres</label><input id="pwd-membres" type="password" placeholder="Laissez vide pour ne pas changer"></div>
+          <button class="btn btn--warn" onclick="changePwdMembres()">Changer</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- Modal générique -->
+<div class="modal-overlay hidden" id="modalOverlay">
+  <div class="modal">
+    <div class="modal__title" id="modalTitle"></div>
+    <div id="modalBody"></div>
+    <div class="modal__btns" id="modalBtns"></div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="js/data.js"></script>
+<script>
+/* ── Auth check ── */
+try { if (!sessionStorage.getItem('shindokai_admin')) { location.href = 'admin.html'; } } catch(e) { location.href = 'admin.html'; }
+
+const SB_URL = 'https://jcfltkuobbjqicczpsjn.supabase.co';
+const SB_KEY = 'sb_publishable_15BDd64WYwMfW8VV9ZXDqg_Oa2ySvKc';
+const sb = supabase.createClient(SB_URL, SB_KEY);
+
+function logout() { try { sessionStorage.removeItem('shindokai_admin'); } catch(e){} location.href = 'admin.html'; }
+
+/* ── Toast ── */
+function toast(msg, type='ok') {
+  const c = document.getElementById('toast');
+  const el = document.createElement('div');
+  el.className = `toast-msg toast-msg--${type}`;
+  el.textContent = msg;
+  c.appendChild(el);
+  setTimeout(() => el.remove(), 3200);
+}
+
+/* ── Section nav ── */
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('sec-' + id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => { if (n.getAttribute('onclick')?.includes(`'${id}'`)) n.classList.add('active'); });
+  if (id === 'membres')    loadMembres();
+  if (id === 'planning')   loadPlanning();
+  if (id === 'actus')      loadActus();
+  if (id === 'dojos-mgr')  loadDojosMgr();
+  if (id === 'parametres') loadParametres();
+  if (id === 'overview')   loadOverview();
+}
+
+/* ── Modal ── */
+function openModal(title, body, btns) {
+  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('modalBody').innerHTML = body;
+  document.getElementById('modalBtns').innerHTML = btns;
+  document.getElementById('modalOverlay').classList.remove('hidden');
+}
+function closeModal() { document.getElementById('modalOverlay').classList.add('hidden'); }
+document.getElementById('modalOverlay').addEventListener('click', e => { if(e.target===e.currentTarget) closeModal(); });
+
+/* ════════════════════════════════════════
+   VUE D'ENSEMBLE
+════════════════════════════════════════ */
+async function loadOverview() {
+  await initData();
+  const coaches = getSection('coaches') || [];
+  const actus   = getSection('actus')   || [];
+  const dojos   = getSection('dojos')   || [];
+  document.getElementById('ov-coachs').textContent = coaches.length;
+  document.getElementById('ov-actus').textContent  = actus.length;
+  document.getElementById('ov-dojos').textContent  = dojos.length;
+  // Membres via Supabase Admin API (pas disponible côté client public — on liste via auth)
+  try {
+    const { data: { users } = {}, error } = await sb.auth.admin.listUsers();
+    if (!error && users) {
+      document.getElementById('ov-membres').textContent = users.length;
+      const recent = users.sort((a,b) => new Date(b.created_at) - new Date(a.created_at)).slice(0,5);
+      document.getElementById('ov-last-membres').innerHTML = recent.length
+        ? `<div class="table-wrap"><table><thead><tr><th>Email</th><th>Prénom</th><th>Inscrit le</th><th>Statut</th></tr></thead><tbody>
+           ${recent.map(u => `<tr>
+             <td>${esc(u.email)}</td>
+             <td>${esc(u.user_metadata?.prenom||'—')}</td>
+             <td>${new Date(u.created_at).toLocaleDateString('fr-FR')}</td>
+             <td>${u.banned_until ? '<span class="badge badge--red">Désactivé</span>' : '<span class="badge badge--green">Actif</span>'}</td>
+           </tr>`).join('')}</tbody></table></div>`
+        : '<div class="empty"><div class="empty__icon">👤</div>Aucun membre inscrit</div>';
+    } else { throw new Error(); }
+  } catch(e) {
+    document.getElementById('ov-membres').textContent = '?';
+    document.getElementById('ov-last-membres').innerHTML = '<div class="empty">API admin non disponible côté client public.<br>Consultez le tableau Membres pour plus de détails.</div>';
+    loadMembresPublic('ov-last-membres', true);
+  }
+}
+
+/* ════════════════════════════════════════
+   MEMBRES
+════════════════════════════════════════ */
+let _allMembres = [];
+async function loadMembres() {
+  document.getElementById('membresContainer').innerHTML = '<div class="loader"></div>';
+  // Essai via Admin API
+  try {
+    const { data, error } = await sb.auth.admin.listUsers({ perPage: 1000 });
+    if (!error && data?.users) {
+      _allMembres = data.users;
+      document.getElementById('ov-membres') && (document.getElementById('ov-membres').textContent = _allMembres.length);
+      renderMembres(_allMembres);
+      return;
+    }
+  } catch(e) {}
+  // Fallback : table profiles si elle existe
+  await loadMembresPublic('membresContainer', false);
+}
+
+async function loadMembresPublic(targetId, compact) {
+  try {
+    const { data, error } = await sb.from('profiles').select('*').order('created_at', { ascending: false });
+    if (!error && data) {
+      _allMembres = data;
+      if (compact) {
+        document.getElementById(targetId).innerHTML = data.slice(0,5).map(u => `<div style="display:flex;align-items:center;gap:.8rem;padding:.6rem 0;border-bottom:1px solid var(--line);">
+          <div style="font-size:.85rem;">${esc(u.prenom||u.email||'Membre')}</div>
+          <div style="color:var(--ash-2);font-size:.75rem;margin-left:auto;">${u.created_at ? new Date(u.created_at).toLocaleDateString('fr-FR') : ''}</div>
+        </div>`).join('') || '<div class="empty">Aucun membre</div>';
+      } else {
+        renderMembresTable(data, targetId);
+      }
+    } else throw new Error();
+  } catch(e) {
+    document.getElementById(targetId).innerHTML = `<div class="empty"><div class="empty__icon">⚠️</div>
+      Impossible de charger les membres.<br>
+      <small style="color:var(--ash-2);">Vérifiez les permissions Supabase (RLS sur auth.users ou table profiles).</small>
+    </div>`;
+  }
+}
+
+function renderMembres(users) {
+  if (!users.length) { document.getElementById('membresContainer').innerHTML = '<div class="empty"><div class="empty__icon">👤</div>Aucun membre inscrit.</div>'; return; }
+  renderMembresTable(users, 'membresContainer');
+}
+
+function renderMembresTable(users, targetId) {
+  const html = `<div class="table-wrap"><table>
+    <thead><tr>
+      <th>Email</th><th>Prénom</th><th>Inscrit le</th><th>Dojo</th><th>Statut</th><th>Actions</th>
+    </tr></thead>
+    <tbody>
+    ${users.map((u,i) => {
+      const prenom = u.user_metadata?.prenom || u.prenom || '—';
+      const dojo   = u.user_metadata?.dojo   || u.dojo   || '—';
+      const actif  = !u.banned_until && !u.disabled;
+      const date   = u.created_at ? new Date(u.created_at).toLocaleDateString('fr-FR') : '—';
+      return `<tr data-uid="${esc(u.id||'')}">
+        <td>${esc(u.email||u.email_address||'—')}</td>
+        <td>${esc(prenom)}</td>
+        <td>${date}</td>
+        <td>${esc(dojo)}</td>
+        <td>${actif ? '<span class="badge badge--green">✓ Actif</span>' : '<span class="badge badge--red">✗ Désactivé</span>'}</td>
+        <td>
+          <div style="display:flex;gap:.4rem;">
+            ${actif
+              ? `<button class="btn btn--warn btn--sm" onclick="banMembre('${esc(u.id)}')">Désactiver</button>`
+              : `<button class="btn btn--success btn--sm" onclick="unbanMembre('${esc(u.id)}')">Réactiver</button>`}
+            <button class="btn btn--danger btn--sm" onclick="deleteMembre('${esc(u.id)}','${esc(u.email||'')}')">Supprimer</button>
+          </div>
+        </td>
+      </tr>`;
+    }).join('')}
+    </tbody>
+  </table></div>`;
+  document.getElementById(targetId).innerHTML = html;
+}
+
+function filterMembres() {
+  const q = document.getElementById('membreSearch').value.toLowerCase();
+  const filtered = _allMembres.filter(u =>
+    (u.email||'').toLowerCase().includes(q) ||
+    (u.user_metadata?.prenom||u.prenom||'').toLowerCase().includes(q)
+  );
+  renderMembresTable(filtered, 'membresContainer');
+}
+
+async function banMembre(uid) {
+  if (!confirm('Désactiver ce membre ? Il ne pourra plus se connecter.')) return;
+  try {
+    const { error } = await sb.auth.admin.updateUserById(uid, { ban_duration: '876600h' });
+    if (error) throw error;
+    toast('Membre désactivé.', 'ok');
+    loadMembres();
+  } catch(e) { toast('Erreur : ' + e.message, 'err'); }
+}
+async function unbanMembre(uid) {
+  try {
+    const { error } = await sb.auth.admin.updateUserById(uid, { ban_duration: 'none' });
+    if (error) throw error;
+    toast('Membre réactivé.', 'ok');
+    loadMembres();
+  } catch(e) { toast('Erreur : ' + e.message, 'err'); }
+}
+async function deleteMembre(uid, email) {
+  if (!confirm(`Supprimer définitivement le compte de ${email} ? Cette action est irréversible.`)) return;
+  try {
+    const { error } = await sb.auth.admin.deleteUser(uid);
+    if (error) throw error;
+    toast('Compte supprimé.', 'ok');
+    loadMembres();
+  } catch(e) { toast('Erreur : ' + e.message, 'err'); }
+}
+
+/* ════════════════════════════════════════
+   PLANNING
+════════════════════════════════════════ */
+let _plannings = [], _planDojoIdx = 0;
+async function loadPlanning() {
+  await initData();
+  _plannings = JSON.parse(JSON.stringify(getSection('plannings') || []));
+  const tabs = document.getElementById('planTabs');
+  tabs.innerHTML = _plannings.map((p,i) =>
+    `<button class="plan-tab${i===0?' active':''}" onclick="selectPlanDojo(${i})">${esc(p.dojo.replace(/^Dojo d[e']?\s*/i,''))}</button>`
+  ).join('');
+  renderPlanDojo(0);
+}
+function selectPlanDojo(i) {
+  _planDojoIdx = i;
+  document.querySelectorAll('.plan-tab').forEach((t,j) => t.classList.toggle('active', j===i));
+  renderPlanDojo(i);
+}
+function renderPlanDojo(i) {
+  const p = _plannings[i]; if (!p) return;
+  const cours = p.cours || [];
+  const content = document.getElementById('planContent');
+  content.innerHTML = `
+    <div class="card">
+      <div class="card__title">${esc(p.dojo)} — Cours</div>
+      <div class="cours-list" id="coursList-${i}">
+        ${cours.map((c,j) => coursRow(c, i, j)).join('')}
+      </div>
+      <button class="btn btn--primary" onclick="openAddCours(${i})">+ Ajouter un créneau</button>
+    </div>`;
+}
+function coursRow(c, di, ci) {
+  return `<div class="cours-row">
+    <div class="cours-row__belt" style="background:${esc(c.belt||'#555')}"></div>
+    <div class="cours-row__info">
+      <div class="cours-row__name">${esc(c.name)}</div>
+      <div class="cours-row__sub">${esc(c.age)} — ${esc(c.days)} · ${esc(c.time)}</div>
+    </div>
+    <div class="cours-row__actions">
+      <button class="btn btn--ghost btn--sm" onclick="editCours(${di},${ci})">✏️</button>
+      <button class="btn btn--danger btn--sm" onclick="deleteCours(${di},${ci})">✕</button>
+    </div>
+  </div>`;
+}
+function openAddCours(di) {
+  openModal('Ajouter un créneau', coursForm({}), `
+    <button class="btn btn--ghost" onclick="closeModal()">Annuler</button>
+    <button class="btn btn--primary" onclick="submitCours(${di}, -1)">Ajouter</button>`);
+}
+function editCours(di, ci) {
+  const c = _plannings[di].cours[ci];
+  openModal('Modifier le créneau', coursForm(c), `
+    <button class="btn btn--ghost" onclick="closeModal()">Annuler</button>
+    <button class="btn btn--primary" onclick="submitCours(${di},${ci})">Enregistrer</button>`);
+}
+function coursForm(c) {
+  return `<div style="display:flex;flex-direction:column;gap:.8rem;">
+    <div class="field"><label>Nom du cours</label><input id="cf-name" value="${esc(c.name||'')}"></div>
+    <div class="field"><label>Tranche d'âge</label><input id="cf-age" value="${esc(c.age||'')}"></div>
+    <div class="field"><label>Jours</label><input id="cf-days" value="${esc(c.days||'')}" placeholder="Lundi / Mercredi"></div>
+    <div class="field"><label>Horaire</label><input id="cf-time" value="${esc(c.time||'')}" placeholder="18h00 – 19h30"></div>
+    <div class="field"><label>Couleur de ceinture</label>
+      <select id="cf-belt">
+        <option value="#f3efe7" ${(c.belt||'')==='#f3efe7'?'selected':''}>Blanche</option>
+        <option value="#f5d020" ${(c.belt||'')==='#f5d020'?'selected':''}>Jaune</option>
+        <option value="#f0780a" ${(c.belt||'')==='#f0780a'?'selected':''}>Orange</option>
+        <option value="#2d8a4e" ${(c.belt||'')==='#2d8a4e'?'selected':''}>Verte</option>
+        <option value="#1a5fa8" ${(c.belt||'')==='#1a5fa8'?'selected':''}>Bleue</option>
+        <option value="#7b4f2e" ${(c.belt||'')==='#7b4f2e'?'selected':''}>Marron</option>
+        <option value="#16161a" ${(c.belt||'')==='#16161a'?'selected':''}>Noire</option>
+        <option value="#9a98a0" ${(c.belt||'')==='#9a98a0'?'selected':''}>Compétition</option>
+      </select>
+    </div>
+  </div>`;
+}
+function submitCours(di, ci) {
+  const c = {
+    name: document.getElementById('cf-name').value.trim(),
+    age:  document.getElementById('cf-age').value.trim(),
+    days: document.getElementById('cf-days').value.trim(),
+    time: document.getElementById('cf-time').value.trim(),
+    belt: document.getElementById('cf-belt').value
+  };
+  if (!c.name) { toast('Le nom du cours est obligatoire.', 'err'); return; }
+  if (ci === -1) _plannings[di].cours.push(c);
+  else _plannings[di].cours[ci] = c;
+  saveSection('plannings', _plannings);
+  closeModal();
+  toast('Planning mis à jour.', 'ok');
+  renderPlanDojo(di);
+}
+function deleteCours(di, ci) {
+  if (!confirm('Supprimer ce créneau ?')) return;
+  _plannings[di].cours.splice(ci, 1);
+  saveSection('plannings', _plannings);
+  toast('Créneau supprimé.', 'ok');
+  renderPlanDojo(di);
+}
+
+/* ════════════════════════════════════════
+   ACTUALITÉS
+════════════════════════════════════════ */
+let _actus = [];
+async function loadActus() {
+  await initData();
+  _actus = JSON.parse(JSON.stringify(getSection('actus') || []));
+  renderActus();
+}
+function renderActus() {
+  const c = document.getElementById('actusContainer');
+  if (!_actus.length) { c.innerHTML = '<div class="empty"><div class="empty__icon">📰</div>Aucune actualité.</div>'; return; }
+  c.innerHTML = `<div class="table-wrap"><table>
+    <thead><tr><th>Titre</th><th>Tag</th><th>Date</th><th>Type</th><th>Actions</th></tr></thead>
+    <tbody>
+    ${_actus.map((a,i) => `<tr>
+      <td>${esc(a.title)}</td>
+      <td><span class="badge badge--grey">${esc(a.tag||'')}</span></td>
+      <td>${esc(a.date||'')}</td>
+      <td><span class="badge badge--grey">${esc(a.type||'actu')}</span></td>
+      <td><div style="display:flex;gap:.4rem;">
+        <button class="btn btn--ghost btn--sm" onclick="editActu(${i})">✏️ Modifier</button>
+        <button class="btn btn--danger btn--sm" onclick="deleteActu(${i})">✕</button>
+      </div></td>
+    </tr>`).join('')}
+    </tbody>
+  </table></div>`;
+}
+function actuForm(a) {
+  return `<div style="display:flex;flex-direction:column;gap:.8rem;">
+    <div class="field"><label>Titre</label><input id="af-title" value="${esc(a.title||'')}"></div>
+    <div class="field"><label>Tag</label><input id="af-tag" value="${esc(a.tag||'')}" placeholder="Compétition / Stage…"></div>
+    <div class="field"><label>Date</label><input id="af-date" value="${esc(a.date||'')}" placeholder="Juin 2025"></div>
+    <div class="field"><label>Texte</label><textarea id="af-text">${esc(a.text||'')}</textarea></div>
+    <div class="field"><label>Image (URL)</label><input id="af-image" value="${esc(a.image||'')}" placeholder="https://…"></div>
+    <div class="field"><label>Lien (optionnel)</label><input id="af-lien" value="${esc(a.lien||'')}" placeholder="https://…"></div>
+    <div class="field"><label>Style</label>
+      <select id="af-type">
+        <option value="actu" ${(a.type||'')==='actu'?'selected':''}>Standard</option>
+        <option value="gold" ${(a.type||'')==='gold'?'selected':''}>Or (mis en avant)</option>
+        <option value="dark" ${(a.type||'')==='dark'?'selected':''}>Sombre</option>
+      </select>
+    </div>
+  </div>`;
+}
+function openActuModal() { openModal('Ajouter une actualité', actuForm({}), `<button class="btn btn--ghost" onclick="closeModal()">Annuler</button><button class="btn btn--primary" onclick="submitActu(-1)">Ajouter</button>`); }
+function editActu(i) { openModal('Modifier l\'actualité', actuForm(_actus[i]), `<button class="btn btn--ghost" onclick="closeModal()">Annuler</button><button class="btn btn--primary" onclick="submitActu(${i})">Enregistrer</button>`); }
+function submitActu(i) {
+  const a = {
+    id: i===-1 ? Date.now() : (_actus[i]?.id || Date.now()),
+    title: document.getElementById('af-title').value.trim(),
+    tag:   document.getElementById('af-tag').value.trim(),
+    date:  document.getElementById('af-date').value.trim(),
+    text:  document.getElementById('af-text').value.trim(),
+    image: document.getElementById('af-image').value.trim(),
+    lien:  document.getElementById('af-lien').value.trim(),
+    type:  document.getElementById('af-type').value,
+  };
+  if (!a.title) { toast('Le titre est obligatoire.', 'err'); return; }
+  if (i===-1) _actus.unshift(a);
+  else _actus[i] = a;
+  saveSection('actus', _actus);
+  closeModal();
+  toast('Actualité enregistrée.', 'ok');
+  renderActus();
+}
+function deleteActu(i) {
+  if (!confirm('Supprimer cette actualité ?')) return;
+  _actus.splice(i, 1);
+  saveSection('actus', _actus);
+  toast('Actualité supprimée.', 'ok');
+  renderActus();
+}
+
+/* ════════════════════════════════════════
+   DOJOS
+════════════════════════════════════════ */
+let _dojos = [];
+async function loadDojosMgr() {
+  await initData();
+  _dojos = JSON.parse(JSON.stringify(getSection('dojos') || []));
+  const c = document.getElementById('dojosMgrContent');
+  c.innerHTML = _dojos.map((d,i) => `
+    <div class="card" style="margin-bottom:1.4rem;">
+      <div class="card__title">${esc(d.name)}</div>
+      <div class="form-grid" style="margin-bottom:1rem;">
+        <div class="field"><label>Adresse</label><input id="d${i}-address" value="${esc(d.address||'')}"></div>
+        <div class="field"><label>Téléphone</label><input id="d${i}-phone" value="${esc(d.phone||'')}"></div>
+        <div class="field"><label>Accès</label><input id="d${i}-acces" value="${esc(d.acces||'')}"></div>
+        <div class="field"><label>Instructeur référent</label><input id="d${i}-instructeur" value="${esc(d.instructeur||'')}"></div>
+        <div class="field"><label>Lien Maps</label><input id="d${i}-mapLink" value="${esc(d.mapLink||'')}"></div>
+        <div class="field"><label>Embed Maps (iframe src)</label><input id="d${i}-mapEmbed" value="${esc(d.mapEmbed||'')}"></div>
+      </div>
+      <div style="font-family:var(--eyebrow);font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ash-2);margin-bottom:.7rem;">Bureau</div>
+      <div class="form-grid form-grid--3" style="margin-bottom:1rem;">
+        <div class="field"><label>Président</label><input id="d${i}-president" value="${esc(d.president||'')}"></div>
+        <div class="field"><label>Tél. président</label><input id="d${i}-presidentPhone" value="${esc(d.presidentPhone||'')}"></div>
+        <div class="field"><label>Email président</label><input id="d${i}-presidentEmail" value="${esc(d.presidentEmail||'')}"></div>
+        <div class="field"><label>Trésorier</label><input id="d${i}-tresorier" value="${esc(d.tresorier||'')}"></div>
+        <div class="field"><label>Tél. trésorier</label><input id="d${i}-tresorierPhone" value="${esc(d.tresorierPhone||'')}"></div>
+        <div class="field"><label>Email trésorier</label><input id="d${i}-tresorierEmail" value="${esc(d.tresorierEmail||'')}"></div>
+        <div class="field"><label>Secrétaire</label><input id="d${i}-secretaire" value="${esc(d.secretaire||'')}"></div>
+        <div class="field"><label>Tél. secrétaire</label><input id="d${i}-secretairePhone" value="${esc(d.secretairePhone||'')}"></div>
+        <div class="field"><label>Email secrétaire</label><input id="d${i}-secretaireEmail" value="${esc(d.secretaireEmail||'')}"></div>
+      </div>
+      <button class="btn btn--primary" onclick="saveDojo(${i})">Enregistrer ${esc(d.name.replace(/^Dojo d[e']?\s*/i,''))}</button>
+    </div>`).join('');
+}
+function saveDojo(i) {
+  const fields = ['address','phone','acces','instructeur','mapLink','mapEmbed','president','presidentPhone','presidentEmail','tresorier','tresorierPhone','tresorierEmail','secretaire','secretairePhone','secretaireEmail'];
+  fields.forEach(f => { const el = document.getElementById(`d${i}-${f}`); if(el) _dojos[i][f] = el.value.trim(); });
+  saveSection('dojos', _dojos);
+  toast('Dojo enregistré.', 'ok');
+}
+
+/* ════════════════════════════════════════
+   PARAMÈTRES
+════════════════════════════════════════ */
+async function loadParametres() {
+  await initData();
+  const club     = getData().club || {};
+  const settings = getSection('settings') || {};
+  const fields = ['name','shortName','email','phone','founded','facebook','instagram'];
+  fields.forEach(f => { const el = document.getElementById('p-'+f); if(el) el.value = club[f] || ''; });
+  document.getElementById('p-web3forms').value = settings.web3formsKey || '';
+}
+function saveClub() {
+  const club = JSON.parse(JSON.stringify(getData().club || {}));
+  ['name','shortName','email','phone','founded','facebook','instagram'].forEach(f => {
+    const el = document.getElementById('p-'+f); if(el) club[f] = f==='founded' ? parseInt(el.value)||club[f] : el.value.trim();
+  });
+  saveSection('club', club);
+  toast('Paramètres club enregistrés.', 'ok');
+}
+function saveSettings() {
+  const settings = JSON.parse(JSON.stringify(getSection('settings') || {}));
+  settings.web3formsKey = document.getElementById('p-web3forms').value.trim();
+  saveSection('settings', settings);
+  toast('Paramètres enregistrés.', 'ok');
+}
+
+/* ════════════════════════════════════════
+   MOT DE PASSE
+════════════════════════════════════════ */
+function changePassword() {
+  const cur  = document.getElementById('pwd-current').value;
+  const nw   = document.getElementById('pwd-new').value;
+  const conf = document.getElementById('pwd-confirm').value;
+  const d    = getData();
+  const stored = d.adminPassword || 'shindo2025';
+  if (cur !== stored)  { toast('Mot de passe actuel incorrect.', 'err'); return; }
+  if (nw !== conf)     { toast('Les mots de passe ne correspondent pas.', 'err'); return; }
+  if (nw.length < 6)   { toast('Minimum 6 caractères.', 'err'); return; }
+  d.adminPassword = nw;
+  saveData(d);
+  toast('Mot de passe admin changé.', 'ok');
+  document.getElementById('pwd-current').value = '';
+  document.getElementById('pwd-new').value = '';
+  document.getElementById('pwd-confirm').value = '';
+}
+function changePwdMembres() {
+  const nw = document.getElementById('pwd-membres').value.trim();
+  if (!nw) { toast('Entrez un nouveau mot de passe.', 'err'); return; }
+  const membres = JSON.parse(JSON.stringify(getSection('membres') || {}));
+  membres.password = nw;
+  saveSection('membres', membres);
+  toast('Mot de passe membres changé.', 'ok');
+  document.getElementById('pwd-membres').value = '';
+}
+
+/* ── Escape ── */
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+/* ── Init ── */
+initData().then(() => {
+  loadOverview();
+});
+</script>
+</body>
+</html>

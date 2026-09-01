@@ -57,6 +57,9 @@ function _abInjectDOM() {
       <button class="ab-tool" id="abBtnSettings" title="Réglages du site">
         <span class="ab-tool-icon">⚙</span><span class="ab-tool-label">Réglages</span>
       </button>
+      <a class="ab-tool" href="admin-dashboard.html" title="Tableau de bord" style="text-decoration:none;">
+        <span class="ab-tool-icon">📊</span><span class="ab-tool-label">Dashboard</span>
+      </a>
       <div class="ab-sep"></div>
       <button class="ab-tool ab-quit-btn" id="abQuit" title="Quitter le mode admin">
         <span class="ab-tool-icon">✕</span><span class="ab-tool-label">Quitter</span>

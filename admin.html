@@ -60,6 +60,7 @@ body { background: #0a0a0c; min-height: 100vh; display: flex; align-items: cente
   </div>
   <div class="al-err" id="adminErr">Mot de passe incorrect.</div>
   <button class="al-btn" id="adminBtn">Accéder au site</button>
+  <button class="al-btn" id="adminDashBtn" style="background:transparent;border:1px solid rgba(224,36,27,.4);color:var(--crimson-2);margin-top:-.8rem;">Tableau de bord admin</button>
   <div class="al-back"><a href="index.html">← Retour au site</a></div>
 </div>
 
@@ -70,6 +71,15 @@ initData().then(() => {
   const btn = document.getElementById('adminBtn');
   const pwd = document.getElementById('adminPwd');
   const err = document.getElementById('adminErr');
+
+  document.getElementById('adminDashBtn').addEventListener('click', () => {
+    const data = getData();
+    const correct = (data && data.adminPassword) ? data.adminPassword : 'shindo2025';
+    if (pwd.value === correct) {
+      try { sessionStorage.setItem('shindokai_admin', '1'); } catch(e) {}
+      window.location.href = 'admin-dashboard.html';
+    } else { err.style.display = 'block'; pwd.value = ''; pwd.focus(); }
+  });
 
   function tryLogin() {
     const data = getData();
