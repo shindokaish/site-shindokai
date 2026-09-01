@@ -492,7 +492,7 @@ td:first-child { color: var(--bone); font-family: var(--eyebrow); }
 .dojo-tab:hover { color: var(--bone); }
 .dojo-tab.is-active { color: var(--bone); border-bottom-color: var(--crimson-2); }
 .dojo-panel { display: none; }
-.dojo-panel.is-active { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap); align-items: start; }
+.dojo-panel.is-active { display: block; }
 .dojo-info { display: flex; flex-direction: column; gap: 0; }
 .dojo-item { display: flex; gap: 1rem; padding: 1rem 0; border-bottom: 1px solid var(--line); }
 .dojo-item:first-child { padding-top: 0; }
