@@ -19,44 +19,64 @@
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@400;500;600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 <style>
-.dojo-section-tabs {
-  display: flex; justify-content: center; gap: 0;
-  border-bottom: 1px solid var(--line); margin-bottom: 0;
+/* ── Bloc dojo défilant ── */
+.dojo-block {
+  border: 1px solid var(--line);
+  background: var(--char);
+  margin-bottom: 4rem;
 }
-.dojo-section-tab {
-  font-family: var(--eyebrow); font-size: .75rem; letter-spacing: .08em; text-transform: uppercase;
-  padding: .9rem 2.2rem; background: none; border: none; border-bottom: 2px solid transparent;
-  color: var(--ash); cursor: pointer; transition: color .2s, border-color .2s; margin-bottom: -1px;
+.dojo-block__header {
+  display: flex; align-items: center; gap: 1.2rem;
+  padding: 2rem 2.4rem;
+  border-bottom: 2px solid var(--crimson-2);
+  background: linear-gradient(135deg, var(--char-2), var(--void));
 }
-.dojo-section-tab.is-active { color: var(--bone); border-bottom-color: var(--crimson-2); }
-.dojo-section-panel { display: none; padding-top: 2.5rem; max-width: 900px; margin: 0 auto; }
-.dojo-section-panel.is-active { display: block; }
+.dojo-block__logo { width: 56px; height: 56px; object-fit: contain; flex-shrink: 0; }
+.dojo-block__name {
+  font-family: var(--display); font-size: 1.8rem; text-transform: uppercase;
+  color: var(--bone); letter-spacing: .04em;
+}
+.dojo-block__sub { font-family: var(--mono); font-size: .72rem; color: var(--ash-2); margin-top: .2rem; }
 
+/* ── Sous-sections ── */
+.dojo-subsection { padding: 2rem 2.4rem; border-top: 1px solid var(--line); }
+.dojo-subsection:first-of-type { border-top: none; }
+.dojo-subsection__title {
+  font-family: var(--eyebrow); font-size: .7rem; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--crimson-2); margin-bottom: 1.4rem;
+  display: flex; align-items: center; gap: .5rem;
+}
+.dojo-subsection__title::after {
+  content: ''; flex: 1; height: 1px; background: var(--line);
+}
+
+/* ── Bureau ── */
 .bureau-grid {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.2rem; margin-top: 1.5rem;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem;
 }
 .bureau-card {
-  background: var(--char); border: 1px solid var(--line); padding: 1.8rem; position: relative;
+  background: var(--void); border: 1px solid var(--line); padding: 1.4rem;
 }
 .bureau-card__role {
-  font-family: var(--eyebrow); font-size: .65rem; letter-spacing: .1em; text-transform: uppercase;
-  color: var(--crimson-2); margin-bottom: .5rem;
+  font-family: var(--eyebrow); font-size: .62rem; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--crimson-2); margin-bottom: .4rem;
 }
 .bureau-card__name {
-  font-family: var(--display); font-size: 1.2rem; text-transform: uppercase; color: var(--bone);
-  margin-bottom: 1rem;
+  font-family: var(--display); font-size: 1.05rem; text-transform: uppercase; color: var(--bone);
+  margin-bottom: .8rem;
 }
-.bureau-card__empty {
-  font-family: var(--mono); font-size: .75rem; color: var(--ash-2); font-style: italic;
-}
-.bureau-contact { display: flex; flex-direction: column; gap: .4rem; }
+.bureau-card__empty { font-family: var(--mono); font-size: .72rem; color: var(--ash-2); font-style: italic; }
+.bureau-contact { display: flex; flex-direction: column; gap: .35rem; }
 .bureau-contact a {
-  font-size: .82rem; color: var(--ash); text-decoration: none; display: flex; align-items: center; gap: .5rem;
-  transition: color .2s;
+  font-size: .8rem; color: var(--ash); text-decoration: none;
+  display: flex; align-items: center; gap: .45rem; transition: color .2s;
 }
 .bureau-contact a:hover { color: var(--gold); }
-.bureau-contact__icon { color: var(--crimson-2); flex-shrink: 0; }
 
+/* ── Infos dojo ── */
+.dojo-info-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: .8rem; margin-bottom: 1.6rem;
+}
 </style>
 </head>
 <body>
@@ -82,20 +102,17 @@
   </div>
 </section>
 
-<!-- ============ DOJOS TABS ============ -->
 <section class="section">
   <div class="wrap">
     <div class="section__head reveal">
       <span class="eyebrow-text">Nos sites</span>
-      <h2 class="section__title">Choisissez votre<br>dojo.</h2>
+      <h2 class="section__title">Trois dojos,<br>un seul esprit.</h2>
       <p class="section__lede">Mêmes coachs diplômés, même enseignement, même exigence sur les trois sites.</p>
     </div>
-    <div class="dojos-tabs reveal" id="dojosTabs"></div>
-    <div id="dojosPanels"></div>
+    <div id="dojosContainer"></div>
   </div>
 </section>
 
-<!-- ============ CTA ============ -->
 <section class="cta-band">
   <div class="wrap">
     <h2 class="cta-band__title reveal">Prêt à nous rejoindre ?</h2>
@@ -120,116 +137,84 @@ pageInit('dojos');
 
 const dojos    = getSection('dojos') || [];
 const plannings = getSection('plannings') || [];
-const dojosTabs   = document.getElementById('dojosTabs');
-const dojosPanels = document.getElementById('dojosPanels');
+const container = document.getElementById('dojosContainer');
+
+function bureauCard(role, icon, name, phone, email) {
+  return `<div class="bureau-card">
+    <div class="bureau-card__role">${icon} ${role}</div>
+    ${name
+      ? `<div class="bureau-card__name">${esc(name)}</div>`
+      : `<div class="bureau-card__name bureau-card__empty">À renseigner</div>`}
+    ${(phone || email) ? `<div class="bureau-contact">
+      ${phone ? `<a href="tel:${esc(phone)}">📞 ${esc(phone)}</a>` : ''}
+      ${email ? `<a href="mailto:${esc(email)}">✉️ ${esc(email)}</a>` : ''}
+    </div>` : ''}
+  </div>`;
+}
 
 dojos.forEach((d, i) => {
-  // ── Onglet dojo principal ──
-  const btn = document.createElement('button');
-  btn.className = 'dojo-tab' + (i === 0 ? ' is-active' : '');
-  btn.textContent = d.name.replace(/^Dojo d[e']?\s*/i, '');
-  btn.dataset.index = i;
-  dojosTabs.appendChild(btn);
+  const shortName = d.name.replace(/^Dojo d[e']?\s*/i, '');
 
-  // ── Planning de ce dojo ──
+  // ── Cours ──
   const planning = plannings.find(p => p.dojo === d.name) || plannings[i] || null;
-  const coursHTML = planning
-    ? (() => {
-        const cours = (planning.cours || []).filter(c => c.name !== 'Compétition');
-        if (!cours.length) return '<p style="color:var(--ash-2);font-size:.9rem;font-family:var(--mono);">Aucun cours renseigné pour ce dojo.</p>';
-        return '<div class="planning-grid">' + cours.map(c => `
-          <div class="planning-card">
-            <div class="planning-card__belt" style="background:${esc(c.belt)}"></div>
-            <div class="planning-card__age">${esc(c.age)}</div>
-            <div class="planning-card__name">${esc(c.name)}</div>
-            <div class="planning-card__days">${esc(c.days)}</div>
-            <div class="planning-card__time">${esc(c.time)}</div>
-          </div>`).join('') + '</div>';
-      })()
-    : '<p style="color:var(--ash-2);font-size:.9rem;font-family:var(--mono);">Planning non renseigné — à configurer dans l\'administration.</p>';
-
-  // ── Bureau ──
-  function bureauCard(role, icon, name, phone, email) {
-    const hasInfo = name || phone || email;
-    return `<div class="bureau-card">
-      <div class="bureau-card__role">${icon} ${role}</div>
-      ${name ? `<div class="bureau-card__name">${esc(name)}</div>` : `<div class="bureau-card__name bureau-card__empty">À renseigner</div>`}
-      ${hasInfo && (phone || email) ? `<div class="bureau-contact">
-        ${phone ? `<a href="tel:${esc(phone)}"><span class="bureau-contact__icon">📞</span>${esc(phone)}</a>` : ''}
-        ${email ? `<a href="mailto:${esc(email)}"><span class="bureau-contact__icon">✉️</span>${esc(email)}</a>` : ''}
-      </div>` : (!name ? '<p class="bureau-card__empty" style="margin-top:.5rem;">Coordonnées à renseigner dans l\'administration.</p>' : '')}
-    </div>`;
-  }
-
-  const bureauHTML = `<div class="bureau-grid">
-    ${bureauCard('Président', '👑', d.president, d.presidentPhone, d.presidentEmail)}
-    ${bureauCard('Trésorier', '💼', d.tresorier, d.tresorierPhone, d.tresorierEmail)}
-    ${bureauCard('Secrétaire', '📋', d.secretaire, d.secretairePhone, d.secretaireEmail)}
-  </div>`;
+  const cours = planning ? (planning.cours || []).filter(c => c.name !== 'Compétition') : [];
+  const coursHTML = cours.length
+    ? '<div class="planning-grid">' + cours.map(c => `
+        <div class="planning-card">
+          <div class="planning-card__belt" style="background:${esc(c.belt)}"></div>
+          <div class="planning-card__age">${esc(c.age)}</div>
+          <div class="planning-card__name">${esc(c.name)}</div>
+          <div class="planning-card__days">${esc(c.days)}</div>
+          <div class="planning-card__time">${esc(c.time)}</div>
+        </div>`).join('') + '</div>'
+    : '<p style="color:var(--ash-2);font-size:.9rem;font-family:var(--mono);">Planning à configurer dans l\'administration.</p>';
 
   // ── Map ──
   const mapContent = d.mapEmbed
-    ? `<iframe src="${esc(d.mapEmbed)}" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Plan ${esc(d.name)}"></iframe>`
-    : `<div class="dojo-map__placeholder">
-        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+    ? `<iframe src="${esc(d.mapEmbed)}" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Plan ${esc(d.name)}" style="width:100%;height:380px;border:none;display:block;"></iframe>`
+    : `<div class="dojo-map__placeholder" style="height:200px;">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
         <p>Carte à configurer dans l'administration</p>
         ${d.mapLink && d.mapLink !== '#' ? `<a href="${esc(d.mapLink)}" target="_blank" rel="noopener" class="btn btn--ghost" style="font-size:.72rem;padding:.6rem 1.2rem;">Ouvrir dans Maps</a>` : ''}
-       </div>`;
+      </div>`;
 
-  const dojoLogoHTML = d.logo
-    ? `<div style="display:flex;flex-direction:column;align-items:center;gap:.8rem;text-align:center;margin-bottom:1.5rem;">
-         <img src="${esc(d.logo)}" alt="Logo ${esc(d.name)}" style="width:64px;height:64px;object-fit:contain;">
-         <span style="font-family:var(--display);font-size:1.4rem;text-transform:uppercase;">${esc(d.name)}</span>
-       </div>`
-    : `<div style="text-align:center;font-family:var(--display);font-size:1.4rem;text-transform:uppercase;margin-bottom:1.5rem;">${esc(d.name)}</div>`;
-
-  const infoHTML = `
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:2rem;">
-      <div class="dojo-item"><span class="dojo-item__label">Adresse</span><span class="dojo-item__value">${esc(d.address)}</span></div>
-      ${d.phone ? `<div class="dojo-item"><span class="dojo-item__label">Téléphone</span><span class="dojo-item__value">${esc(d.phone)}</span></div>` : ''}
-      ${d.acces ? `<div class="dojo-item"><span class="dojo-item__label">Accès</span><span class="dojo-item__value">${esc(d.acces)}</span></div>` : ''}
-      ${d.instructeur ? `<div class="dojo-item"><span class="dojo-item__label">Instructeur référent</span><span class="dojo-item__value">${esc(d.instructeur)}</span></div>` : ''}
-      ${d.mapLink && d.mapLink !== '#' ? `<div class="dojo-item"><span class="dojo-item__label">&nbsp;</span><a href="${esc(d.mapLink)}" target="_blank" rel="noopener" class="btn btn--ghost" style="font-size:.72rem;padding:.6rem 1.2rem;">Itinéraire →</a></div>` : ''}
+  const block = document.createElement('div');
+  block.className = 'dojo-block reveal';
+  block.innerHTML = `
+    <div class="dojo-block__header">
+      ${d.logo ? `<img src="${esc(d.logo)}" alt="Logo ${esc(shortName)}" class="dojo-block__logo">` : ''}
+      <div>
+        <div class="dojo-block__name">${esc(shortName)}</div>
+        <div class="dojo-block__sub">${esc(d.address) || 'Adresse à renseigner'}</div>
+      </div>
+      ${d.mapLink && d.mapLink !== '#' ? `<a href="${esc(d.mapLink)}" target="_blank" rel="noopener" class="btn btn--ghost" style="margin-left:auto;font-size:.72rem;padding:.5rem 1rem;white-space:nowrap;">Itinéraire →</a>` : ''}
     </div>
-    <div class="dojo-map" style="height:420px;">${mapContent}</div>`;
 
-  // ── Panel principal ──
-  const panel = document.createElement('div');
-  panel.className = 'dojo-panel reveal' + (i === 0 ? ' is-active' : '');
-  panel.dataset.index = i;
-  panel.innerHTML = `
-    ${dojoLogoHTML}
-    <div class="dojo-section-tabs">
-      <button class="dojo-section-tab is-active" data-sub="info">🏯 Le Dojo</button>
-      <button class="dojo-section-tab" data-sub="cours">📅 Cours</button>
-      <button class="dojo-section-tab" data-sub="bureau">👥 Le Bureau</button>
+    <div class="dojo-subsection">
+      <div class="dojo-subsection__title">👥 Le Bureau</div>
+      <div class="bureau-grid">
+        ${bureauCard('Président',  '👑', d.president,  d.presidentPhone,  d.presidentEmail)}
+        ${bureauCard('Trésorier',  '💼', d.tresorier,  d.tresorierPhone,  d.tresorierEmail)}
+        ${bureauCard('Secrétaire', '📋', d.secretaire, d.secretairePhone, d.secretaireEmail)}
+      </div>
     </div>
-    <div class="dojo-section-panel is-active" data-sub="info">${infoHTML}</div>
-    <div class="dojo-section-panel" data-sub="cours">${coursHTML}</div>
-    <div class="dojo-section-panel" data-sub="bureau">${bureauHTML}</div>`;
 
-  // Navigation sous-onglets
-  panel.querySelectorAll('.dojo-section-tab').forEach(t => {
-    t.addEventListener('click', () => {
-      panel.querySelectorAll('.dojo-section-tab').forEach(x => x.classList.remove('is-active'));
-      panel.querySelectorAll('.dojo-section-panel').forEach(x => x.classList.remove('is-active'));
-      t.classList.add('is-active');
-      panel.querySelector(`.dojo-section-panel[data-sub="${t.dataset.sub}"]`).classList.add('is-active');
-    });
-  });
+    <div class="dojo-subsection">
+      <div class="dojo-subsection__title">🏯 Le Dojo</div>
+      <div class="dojo-info-grid">
+        ${d.phone ? `<div class="dojo-item"><span class="dojo-item__label">Téléphone</span><span class="dojo-item__value">${esc(d.phone)}</span></div>` : ''}
+        ${d.acces ? `<div class="dojo-item"><span class="dojo-item__label">Accès</span><span class="dojo-item__value">${esc(d.acces)}</span></div>` : ''}
+        ${d.instructeur ? `<div class="dojo-item"><span class="dojo-item__label">Instructeur référent</span><span class="dojo-item__value">${esc(d.instructeur)}</span></div>` : ''}
+      </div>
+      ${mapContent}
+    </div>
 
-  dojosPanels.appendChild(panel);
-});
+    <div class="dojo-subsection">
+      <div class="dojo-subsection__title">📅 Les Cours</div>
+      ${coursHTML}
+    </div>`;
 
-// Navigation onglets dojos
-dojosTabs.addEventListener('click', e => {
-  const btn = e.target.closest('.dojo-tab');
-  if (!btn) return;
-  const idx = btn.dataset.index;
-  dojosTabs.querySelectorAll('.dojo-tab').forEach(b => b.classList.remove('is-active'));
-  dojosPanels.querySelectorAll('.dojo-panel').forEach(p => p.classList.remove('is-active'));
-  btn.classList.add('is-active');
-  dojosPanels.querySelector(`[data-index="${idx}"]`).classList.add('is-active');
+  container.appendChild(block);
 });
 
 initScrollReveal();
