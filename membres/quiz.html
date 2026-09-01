@@ -208,9 +208,12 @@ body { background: #0d0d10; min-height: 100vh; }
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="../js/data.js"></script>
 <script>
+const _sb = supabase.createClient('https://jcfltkuobbjqicczpsjn.supabase.co','sb_publishable_15BDd64WYwMfW8VV9ZXDqg_Oa2ySvKc');
+const { data: _authData } = await _sb.auth.getSession();
+const _user = _authData.session ? _authData.session.user : null;
 initData().then(() => {
 /* ── AUTH ── */
-const sess = (() => { try { return JSON.parse(sessionStorage.getItem('shindokai_membre')); } catch(e) { return null; } })();
+const sess = _user ? { prenom: (_user.user_metadata.prenom || _user.email.split('@')[0]) } : null;
 if (!sess) { window.location.href = 'index.html'; throw 0; }
 const PRENOM = sess.prenom;
 const PROG_KEY = 'shindokai_progression_' + PRENOM.toLowerCase();
