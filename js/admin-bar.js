@@ -400,9 +400,11 @@ function _abActivateImages(pageKey) {
 }
 
 function _abWrapImg(img, key) {
+  if (!img) return;
+  // Si c'est déjà dans un ab-img-wrap, ne pas re-wrapper
+  if (img.closest('.ab-img-wrap')) return;
   const wrap = document.createElement('div');
   wrap.className = 'ab-img-wrap';
-  wrap.style.cssText = img.style.cssText || '';
   img.dataset.abImg = key;
   img.parentNode.insertBefore(wrap, img);
   wrap.appendChild(img);
@@ -544,8 +546,14 @@ function _abSaveImageKey(key, url) {
   const field   = parts[2];
 
   // Mettre à jour l'image dans le DOM immédiatement
-  const imgEl = document.querySelector(`[data-ab-img="${key}"]`);
-  if (imgEl) { imgEl.src = url; imgEl.style.display='block'; }
+  let imgEl = document.querySelector(`[data-ab-img="${key}"]`);
+  if (imgEl && imgEl.classList.contains('initials')) {
+    // Remplacer la div initiales par une vraie img
+    const newImg = document.createElement('img');
+    newImg.src = url; newImg.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;';
+    newImg.dataset.abImg = key;
+    imgEl.replaceWith(newImg); imgEl = newImg;
+  } else if (imgEl) { imgEl.src = url; imgEl.style.display='block'; }
 
   if (section === 'club') {
     const club = JSON.parse(JSON.stringify(getData().club||{}));
@@ -689,6 +697,9 @@ function _abDojos() {
         if(a.href.startsWith('tel:'))    _abMake(a,`dojos|${i}|${r}Phone`);
         if(a.href.startsWith('mailto:')) _abMake(a,`dojos|${i}|${r}Email`);
       });
+      // Photo du membre du bureau
+      const photoWrap=bc.querySelector('.bureau-card__photo');
+      if(photoWrap) _abWrapImg(photoWrap.querySelector('img,.initials'),`dojos|${i}|${r}Photo`,`dojos|${i}|${r}Initials`);
     });
     block.querySelectorAll('.dojo-item').forEach(item=>{
       const label=item.querySelector('.dojo-item__label');

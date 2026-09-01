@@ -56,6 +56,17 @@
 }
 .bureau-card {
   background: var(--void); border: 1px solid var(--line); padding: 1.4rem;
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+}
+.bureau-card__photo {
+  width: 90px; height: 90px; border-radius: 50%; overflow: hidden;
+  margin-bottom: 1rem; border: 2px solid var(--line); flex-shrink: 0;
+}
+.bureau-card__photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.bureau-card__photo .initials {
+  width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, var(--crimson), var(--char-2));
+  font-family: var(--display); font-size: 1.6rem; color: var(--bone); text-transform: uppercase;
 }
 .bureau-card__role {
   font-family: var(--eyebrow); font-size: .62rem; letter-spacing: .1em; text-transform: uppercase;
@@ -66,10 +77,10 @@
   margin-bottom: .8rem;
 }
 .bureau-card__empty { font-family: var(--mono); font-size: .72rem; color: var(--ash-2); font-style: italic; }
-.bureau-contact { display: flex; flex-direction: column; gap: .35rem; }
+.bureau-contact { display: flex; flex-direction: column; gap: .35rem; width: 100%; }
 .bureau-contact a {
   font-size: .8rem; color: var(--ash); text-decoration: none;
-  display: flex; align-items: center; gap: .45rem; transition: color .2s;
+  display: flex; align-items: center; justify-content: center; gap: .45rem; transition: color .2s;
 }
 .bureau-contact a:hover { color: var(--gold); }
 
@@ -142,8 +153,13 @@ const plannings = getSection('plannings') || [];
 const dojosTabs = document.getElementById('dojosTabs');
 const container = document.getElementById('dojosContainer');
 
-function bureauCard(role, icon, name, phone, email) {
+function bureauCard(role, icon, name, phone, email, photo, initials) {
+  const ini = initials || (name ? name.split(' ').map(w=>w[0]).join('').slice(0,2) : '?');
+  const photoHTML = photo
+    ? `<img src="${esc(photo)}" alt="${esc(name||role)}">`
+    : `<div class="initials">${esc(ini)}</div>`;
   return `<div class="bureau-card">
+    <div class="bureau-card__photo">${photoHTML}</div>
     <div class="bureau-card__role">${icon} ${role}</div>
     ${name
       ? `<div class="bureau-card__name">${esc(name)}</div>`
@@ -205,9 +221,9 @@ dojos.forEach((d, i) => {
     <div class="dojo-subsection">
       <div class="dojo-subsection__title">👥 Le Bureau</div>
       <div class="bureau-grid">
-        ${bureauCard('Président',  '👑', d.president,  d.presidentPhone,  d.presidentEmail)}
-        ${bureauCard('Trésorier',  '💼', d.tresorier,  d.tresorierPhone,  d.tresorierEmail)}
-        ${bureauCard('Secrétaire', '📋', d.secretaire, d.secretairePhone, d.secretaireEmail)}
+        ${bureauCard('Président',  '👑', d.president,  d.presidentPhone,  d.presidentEmail,  d.presidentPhoto,  d.presidentInitials)}
+        ${bureauCard('Trésorier',  '💼', d.tresorier,  d.tresorierPhone,  d.tresorierEmail,  d.tresorierPhoto,  d.tresorierInitials)}
+        ${bureauCard('Secrétaire', '📋', d.secretaire, d.secretairePhone, d.secretaireEmail, d.secretairePhoto, d.secretaireInitials)}
       </div>
     </div>
 
