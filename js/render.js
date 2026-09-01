@@ -321,6 +321,20 @@ async function initPushNotifications() {
   };
 }
 
+/* ── Applique les surcharges de texte admin (text_overrides) ── */
+function applyTextOverrides(pageKey) {
+  try {
+    const overrides = (typeof getSection === 'function') ? getSection('text_overrides') : null;
+    if (!overrides) return;
+    const prefix = pageKey + '|';
+    Object.entries(overrides).forEach(([k, v]) => {
+      if (!k.startsWith(prefix)) return;
+      const el = document.getElementById(k.slice(prefix.length));
+      if (el) el.textContent = v;
+    });
+  } catch(e) {}
+}
+
 function pageInit(activePage) {
   renderNav(activePage);
   renderFooter();
@@ -328,6 +342,8 @@ function pageInit(activePage) {
   initScrollReveal();
   initBackToTop();
   initPushNotifications();
+  // Applique les surcharges de texte sauvegardées par l'admin
+  if (typeof applyTextOverrides === 'function') applyTextOverrides(activePage);
 }
 
 /* ============ APPLY TEXTES ============ */
