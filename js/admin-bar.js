@@ -854,18 +854,41 @@ function _abSubmitAdd(type){
 /* ══════════════════════════════════════════════════════════════
    BLOCS DE TEXTE INSÉRABLES
 ══════════════════════════════════════════════════════════════ */
+let _abZoneIdx=0;
 function _abInjectSectionInserts(pageKey) {
+  _abZoneIdx=0;
   const main=document.querySelector('main');if(!main)return;
-  const sections=Array.from(main.children).filter(el=>el.tagName==='SECTION'||el.tagName==='DIV');
-  if(sections[0])sections[0].before(_abInsertZone(pageKey,-1));
-  sections.forEach((sec,i)=>sec.after(_abInsertZone(pageKey,i)));
+  const SKIP=new Set(['SCRIPT','STYLE','NOSCRIPT']);
+
+  function injectAround(container){
+    const children=Array.from(container.children).filter(el=>
+      !SKIP.has(el.tagName)&&
+      !el.classList.contains('ab-insert-zone')&&
+      !el.closest('#adminBar,#abPanel,#abModal,#abImgOverlay,.ab-add-btn,.custom-block__del,.ab-del-btn')
+    );
+    if(!children.length)return;
+    children[0].before(_abInsertZone(pageKey, _abAnchorId(children[0], 'before')));
+    children.forEach(child=>{
+      child.after(_abInsertZone(pageKey, _abAnchorId(child, 'after')));
+      // Descendre dans les wrappers (wrap, section__content, etc.) mais pas trop profond
+      if(child.tagName==='SECTION'||child.tagName==='DIV'){
+        const wrap=child.querySelector('.wrap,.section__inner,.section__content');
+        if(wrap) injectAround(wrap);
+      }
+    });
+  }
+  injectAround(main);
 }
-function _abInsertZone(pageKey,afterIdx){
+function _abAnchorId(el, pos){
+  if(!el.id) el.id='_abz_'+(++_abZoneIdx);
+  return (pos==='before'?'before:':'')+el.id;
+}
+function _abInsertZone(pageKey, anchorId){
   const z=document.createElement('div');
   z.className='ab-insert-zone';
   z.innerHTML=`<span class="ab-insert-line"></span><button class="ab-insert-btn">＋ Texte</button><button class="ab-insert-btn ab-insert-btn--img">🖼 Image</button><span class="ab-insert-line"></span>`;
-  z.querySelectorAll('.ab-insert-btn')[0].onclick=()=>_abOpenBlockForm(pageKey,afterIdx);
-  z.querySelectorAll('.ab-insert-btn')[1].onclick=()=>_abOpenImageForm(pageKey,afterIdx);
+  z.querySelectorAll('.ab-insert-btn')[0].onclick=()=>_abOpenBlockForm(pageKey, anchorId);
+  z.querySelectorAll('.ab-insert-btn')[1].onclick=()=>_abOpenImageForm(pageKey, anchorId);
   return z;
 }
 function _abOpenBlockForm(pageKey,afterIdx){
@@ -894,13 +917,13 @@ function _abOpenBlockForm(pageKey,afterIdx){
   typeEl.dispatchEvent(new Event('change'));
   document.getElementById('abModal').classList.remove('ab-hidden');
 }
-function _abSubmitBlock(pageKey,afterIdx){
+function _abSubmitBlock(pageKey,anchorId){
   const type=(document.getElementById('abBlockType').value);
   const title=(document.getElementById('abBlockTitle').value||'').trim();
   const content=(document.getElementById('abBlockContent').value||'').trim();
   const eyebrow=(document.getElementById('abBlockEyebrow').value||'').trim();
   if(!content&&!title){alert('Ajoutez au moins un titre ou un texte.');return;}
-  const block={id:Date.now().toString(36),page:pageKey,after:afterIdx,type,title,content,eyebrow,order:Date.now()};
+  const block={id:Date.now().toString(36),page:pageKey,anchorId,type,title,content,eyebrow,order:Date.now()};
   const blocks=JSON.parse(JSON.stringify(getSection('custom_blocks')||[]));
   blocks.push(block);saveSection('custom_blocks',blocks);
   _abCloseModal();setTimeout(()=>location.reload(),1000);
@@ -909,13 +932,24 @@ function _abSubmitBlock(pageKey,afterIdx){
 /* Rendu et suppression des blocs (appelé depuis render.js) */
 function renderCustomBlocks(pageKey){
   const blocks=(typeof getSection==='function')?(getSection('custom_blocks')||[]):[];
-  const forPage=blocks.filter(b=>b.page===pageKey).sort((a,b)=>b.after-a.after||b.order-a.order);
+  const forPage=blocks.filter(b=>b.page===pageKey).sort((a,b)=>(a.order||0)-(b.order||0));
   const main=document.querySelector('main');if(!main||!forPage.length)return;
-  const sections=Array.from(main.children).filter(el=>el.tagName==='SECTION'||(el.tagName==='DIV'&&!el.classList.contains('ab-insert-zone')));
   forPage.forEach(block=>{
     const el=_abBuildBlock(block);
-    const ref=sections[block.after];
-    if(ref)ref.after(el);else if(sections[0])sections[0].before(el);else main.appendChild(el);
+    let placed=false;
+    if(block.anchorId){
+      const isBefore=block.anchorId.startsWith('before:');
+      const refId=isBefore?block.anchorId.slice(7):block.anchorId;
+      const ref=document.getElementById(refId);
+      if(ref&&isBefore){ref.before(el);placed=true;}
+      else if(ref){ref.after(el);placed=true;}
+    }
+    if(!placed){
+      // fallback: ancien système par index section
+      const sections=Array.from(main.children).filter(el=>el.tagName==='SECTION'||(el.tagName==='DIV'&&!el.classList.contains('ab-insert-zone')));
+      const ref=sections[block.after];
+      if(ref)ref.after(el);else main.appendChild(el);
+    }
   });
 }
 function _abBuildBlock(block){
@@ -984,7 +1018,7 @@ function _abOpenImageForm(pageKey,afterIdx){
   });
   document.getElementById('abModal').classList.remove('ab-hidden');
 }
-async function _abSubmitImage(pageKey,afterIdx){
+async function _abSubmitImage(pageKey,anchorId){
   const btn=document.getElementById('abImgOk');
   btn.disabled=true;btn.textContent='…';
   const urlEl=document.getElementById('abImgUrl');
@@ -1010,7 +1044,7 @@ async function _abSubmitImage(pageKey,afterIdx){
   }
 
   if(!src){alert('Ajoutez une image (URL ou fichier).');btn.disabled=false;btn.textContent='Insérer';return;}
-  const block={id:Date.now().toString(36),page:pageKey,after:afterIdx,type:'image',src,caption,size,align,order:Date.now()};
+  const block={id:Date.now().toString(36),page:pageKey,anchorId,type:'image',src,caption,size,align,order:Date.now()};
   const blocks=JSON.parse(JSON.stringify(getSection('custom_blocks')||[]));
   blocks.push(block);saveSection('custom_blocks',blocks);
   _abCloseModal();setTimeout(()=>location.reload(),1000);
