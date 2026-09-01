@@ -146,23 +146,18 @@ coaches.forEach(c => coachGrid.appendChild(buildCoachCard(c, true)));
 
 // ── Section ceintures noires & marrons ──
 const ceintures = (getSection('ceintures_noires') || []).concat(getSection('praticiens') || []);
-const dojoNames = ['Dojo de Santes', 'Dojo de Wambrechies', 'Dojo de Halluin'];
 const gradesDojos = document.getElementById('gradesDojos');
 
-dojoNames.forEach(dojoName => {
-  const members = ceintures.filter(p => p.dojo === dojoName && p.name);
-  if (!members.length) return;
-  const shortName = dojoName.replace(/^Dojo d[e']?\s*/i, '');
-  const section = document.createElement('div');
-  section.style.cssText = 'margin-bottom:3.5rem;';
-  section.innerHTML = `<div style="font-family:var(--eyebrow);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--crimson-2);margin-bottom:1.5rem;padding-bottom:.6rem;border-bottom:1px solid var(--line);">${esc(shortName)}</div>`;
+if (ceintures.length) {
   const grid = document.createElement('div');
   grid.className = 'coach-grid';
-  members.forEach(p => {
+  ceintures.forEach(p => {
+    const initials = p.initials && p.initials !== '?' ? p.initials
+      : (p.name ? p.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase() : '?');
     const card = buildCoachCard({
-      name: p.name,
+      name: p.name || 'À renseigner',
       photo: p.photo || '',
-      initials: p.initials || (p.name ? p.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase() : '?'),
+      initials: initials,
       grade: p.grade || '',
       role: p.dojo || '',
       bio: '',
@@ -170,9 +165,8 @@ dojoNames.forEach(dojoName => {
     }, false);
     grid.appendChild(card);
   });
-  section.appendChild(grid);
-  gradesDojos.appendChild(section);
-});
+  gradesDojos.appendChild(grid);
+}
 
 // Textes dynamiques
 const tx = applyPageTextes('coachs');
