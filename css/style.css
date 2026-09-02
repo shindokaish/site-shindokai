@@ -140,6 +140,11 @@ h1, h2, h3 { font-family: var(--display); font-weight: 400; text-transform: uppe
   overflow: hidden;
   padding-top: 84px;
 }
+.hero-mini::after {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+  height: 160px; pointer-events: none; z-index: 2;
+  background: linear-gradient(to bottom, transparent, #0a0a0c);
+}
 .hero-mini__bg {
   position: absolute; inset: 0; z-index: 0; pointer-events: none;
   background: radial-gradient(900px circle at 30% 60%, rgba(224, 36, 27, .14), transparent 55%);
@@ -175,6 +180,11 @@ h1, h2, h3 { font-family: var(--display); font-weight: 400; text-transform: uppe
   display: flex; align-items: center;
   overflow: hidden;
   padding-top: 90px;
+}
+.hero::after {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+  height: 220px; pointer-events: none; z-index: 2;
+  background: linear-gradient(to bottom, transparent, #0a0a0c);
 }
 .hero__glow {
   position: absolute; inset: 0; z-index: 0; pointer-events: none;
