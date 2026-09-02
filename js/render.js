@@ -19,6 +19,7 @@ function renderNav(activePage) {
     { href: 'encadrement.html', label: "L'encadrement", key: 'encadrement' },
     { href: 'dojos.html',       label: 'Les Dojos',     key: 'dojos' },
     { href: 'actus.html',       label: 'Actualités',    key: 'actus' },
+    { href: 'galerie.html',     label: 'Galerie',       key: 'galerie' },
     { href: 'contact.html',     label: 'Contact',       key: 'contact' }
   ];
 

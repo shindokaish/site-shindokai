@@ -4,162 +4,148 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Galerie — EKSN</title>
-<meta name="description" content="Galerie photos et vidéos du club EKSN — compétitions, stages, passages de grades.">
+<meta name="description" content="Galerie photos EKSN — Stages, compétitions et vie du club.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://site-shindokai.vercel.app/galerie.html">
 <meta property="og:title" content="Galerie — EKSN">
-<meta property="og:description" content="Galerie photos et vidéos du club EKSN — compétitions, stages, passages de grades.">
 <meta property="og:image" content="https://site-shindokai.vercel.app/shinodkai.png">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Galerie — EKSN">
-<meta name="twitter:description" content="Galerie photos et vidéos du club EKSN — compétitions, stages, passages de grades.">
-<meta name="twitter:image" content="https://site-shindokai.vercel.app/shinodkai.png">
 <link rel="icon" href="shinodkai.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@400;500;600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
+<style>
+#nav-placeholder { position: fixed; top: 0; left: 0; right: 0; z-index: 100; }
+
+.album { margin-bottom: 3rem; }
+.album__header { display: flex; align-items: baseline; gap: 1rem; margin-bottom: 1.2rem; }
+.album__title { font-family: var(--display); font-size: clamp(1.2rem,2.5vw,1.8rem); text-transform: uppercase; letter-spacing: .04em; }
+.album__date { font-size: .8rem; color: var(--ash-2); }
+.album__count { font-size: .78rem; color: var(--ash-2); }
+
+.photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: .5rem; }
+.photo-thumb { aspect-ratio: 1; overflow: hidden; border-radius: 4px; cursor: pointer; position: relative; }
+.photo-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform .3s; display: block; }
+.photo-thumb:hover img { transform: scale(1.05); }
+.photo-thumb__caption { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,.7); color: #fff; font-size: .68rem; padding: .3rem .5rem; opacity: 0; transition: opacity .2s; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.photo-thumb:hover .photo-thumb__caption { opacity: 1; }
+
+/* Lightbox */
+#lightbox { position: fixed; inset: 0; background: rgba(0,0,0,.92); z-index: 9999; display: none; align-items: center; justify-content: center; }
+#lightbox.open { display: flex; }
+#lightbox img { max-width: 92vw; max-height: 88vh; object-fit: contain; border-radius: 4px; }
+#lb-prev, #lb-next { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,.1); border: none; color: #fff; font-size: 2rem; width: 50px; height: 80px; cursor: pointer; border-radius: 4px; display: flex; align-items: center; justify-content: center; }
+#lb-prev { left: 1rem; }
+#lb-next { right: 1rem; }
+#lb-close { position: absolute; top: 1rem; right: 1rem; background: none; border: none; color: #fff; font-size: 2rem; cursor: pointer; line-height: 1; }
+#lb-caption { position: absolute; bottom: 1rem; left: 50%; transform: translateX(-50%); color: rgba(255,255,255,.7); font-size: .85rem; text-align: center; }
+#lb-counter { position: absolute; top: 1rem; left: 50%; transform: translateX(-50%); color: rgba(255,255,255,.5); font-size: .8rem; }
+</style>
 </head>
 <body>
 
 <div id="nav-placeholder"></div>
+<div id="admin-trigger-placeholder"></div>
 
-<main>
+<main style="padding-top:90px;">
 
-<section class="hero-mini">
-  <div class="hero-mini__bg"></div>
-  <img class="hero-mini__logo-bg" src="shinodkai.png" alt="" aria-hidden="true">
-  <svg class="hero-mini__strike" viewBox="0 0 400 1000" preserveAspectRatio="none" fill="none">
-    <path d="M380 0 L20 1000" stroke="#e0241b" stroke-width="2" opacity="0.4"/>
-  </svg>
-  <div class="wrap">
-    <div class="hero-mini__content">
-      <span class="eyebrow-text hero-mini__eyebrow" id="ga-hero-eyebrow">Galerie</span>
-      <h1 class="hero-mini__title">
-        <span class="line" id="ga-hero-l1"><span>Photos</span></span>
-        <span class="line" id="ga-hero-l2"><span>& vidéos.</span></span>
-      </h1>
+  <section class="hero-mini" id="top">
+    <div class="wrap">
+      <h1 class="hero-mini__title">Galerie</h1>
+      <p class="hero-mini__sub">Vie du club — stages, compétitions, événements</p>
     </div>
-  </div>
-</section>
+  </section>
 
-<section class="section">
-  <div class="wrap">
-    <div class="section__head reveal">
-      <span class="eyebrow-text" id="ga-s1-eyebrow">Galerie</span>
-      <h2 class="section__title" id="ga-s1-titre">Le Shindokai<br>en images.</h2>
-      <p class="section__lede" id="ga-s1-lede">Compétitions, stages, entraînements, passages de grades — les moments forts du club en images.</p>
-    </div>
-    <div id="galerieContainer"></div>
+  <div class="wrap" style="padding:3rem 0 5rem;" id="galerie-wrap">
+    <div class="loader" id="galerie-loader"></div>
+    <div id="galerie-content"></div>
   </div>
-</section>
-
-<!-- Lightbox -->
-<div class="lightbox" id="lightbox">
-  <button class="lightbox__close" id="lightboxClose" aria-label="Fermer">✕</button>
-  <img src="" alt="" id="lightboxImg">
-  <div class="lightbox__caption" id="lightboxCaption"></div>
-</div>
-
-<!-- CTA -->
-<section class="cta-band">
-  <div class="wrap">
-    <h2 class="cta-band__title reveal" id="ga-cta-titre">Venez vivre l'expérience.</h2>
-    <p class="cta-band__sub reveal" id="ga-cta-sub">Les photos ne font que refléter l'intensité des entraînements. Rejoignez-nous pour le vivre.</p>
-    <div class="cta-band__btns reveal">
-      <a href="inscription.html" class="btn btn--primary">Essai gratuit</a>
-      <a href="actus.html" class="btn btn--ghost">Nos actualités</a>
-    </div>
-  </div>
-</section>
 
 </main>
 
-<div id="footer-placeholder"></div>
+<!-- Lightbox -->
+<div id="lightbox">
+  <button id="lb-close" onclick="closeLb()">✕</button>
+  <button id="lb-prev" onclick="moveLb(-1)">‹</button>
+  <img id="lb-img" src="" alt="">
+  <button id="lb-next" onclick="moveLb(1)">›</button>
+  <div id="lb-caption"></div>
+  <div id="lb-counter"></div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="js/data.js"></script>
 <script src="js/render.js"></script>
+<script src="js/admin-bar.js"></script>
 <script>
-initData().then(() => {
-pageInit('galerie');
-const galerie = getSection('galerie');
-const container = document.getElementById('galerieContainer');
+let _lbPhotos = [], _lbIdx = 0;
 
-if (!galerie || !galerie.length) {
-  container.innerHTML = `
-    <div class="galerie-empty">
-      <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
-        <rect x="2" y="2" width="20" height="20" rx="4"/>
-        <circle cx="8.5" cy="8.5" r="2.5"/>
-        <path d="M21 15l-5-5L5 21"/>
-      </svg>
-      <p>Photos à venir</p>
-      <p style="margin-top:.5rem;font-size:.75rem;">Les photos seront ajoutées prochainement depuis le panneau d'administration.</p>
-    </div>`;
-} else {
-  const grid = document.createElement('div');
-  grid.className = 'galerie-grid';
-  galerie.forEach((img, i) => {
-    const item = document.createElement('div');
-    item.className = 'galerie-item reveal';
-    item.dataset.i = i;
-    item.innerHTML = `
-      <img src="${esc(img.url)}" alt="${esc(img.caption || 'EKSN')}" loading="lazy">
-      <div class="galerie-item__overlay"><span class="galerie-item__caption">${esc(img.caption || '')}</span></div>`;
-    item.addEventListener('click', () => openLightbox(img, i));
-    grid.appendChild(item);
-  });
-  container.appendChild(grid);
+function openLb(photos, idx) {
+  _lbPhotos = photos; _lbIdx = idx;
+  showLb();
+  document.getElementById('lightbox').classList.add('open');
 }
-
-// Lightbox
-const lightbox = document.getElementById('lightbox');
-const lightboxImg = document.getElementById('lightboxImg');
-const lightboxCaption = document.getElementById('lightboxCaption');
-const lightboxClose = document.getElementById('lightboxClose');
-let currentIndex = 0;
-
-function openLightbox(img, i) {
-  currentIndex = i;
-  lightboxImg.src = img.url;
-  lightboxImg.alt = img.caption || '';
-  lightboxCaption.textContent = img.caption || '';
-  lightbox.classList.add('is-open');
-  document.body.style.overflow = 'hidden';
+function showLb() {
+  const p = _lbPhotos[_lbIdx];
+  document.getElementById('lb-img').src = p.url;
+  document.getElementById('lb-caption').textContent = p.caption || '';
+  document.getElementById('lb-counter').textContent = (_lbIdx+1) + ' / ' + _lbPhotos.length;
 }
-
-function closeLightbox() {
-  lightbox.classList.remove('is-open');
-  document.body.style.overflow = '';
+function moveLb(dir) {
+  _lbIdx = (_lbIdx + dir + _lbPhotos.length) % _lbPhotos.length;
+  showLb();
 }
-
-lightboxClose.addEventListener('click', closeLightbox);
-lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
+function closeLb() {
+  document.getElementById('lightbox').classList.remove('open');
+}
+document.getElementById('lightbox').addEventListener('click', e => { if (e.target === document.getElementById('lightbox')) closeLb(); });
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') closeLightbox();
-  if (e.key === 'ArrowRight' && galerie.length > 1) {
-    currentIndex = (currentIndex + 1) % galerie.length;
-    const img = galerie[currentIndex];
-    lightboxImg.src = img.url;
-    lightboxCaption.textContent = img.caption || '';
-  }
-  if (e.key === 'ArrowLeft' && galerie.length > 1) {
-    currentIndex = (currentIndex - 1 + galerie.length) % galerie.length;
-    const img = galerie[currentIndex];
-    lightboxImg.src = img.url;
-    lightboxCaption.textContent = img.caption || '';
-  }
+  if (!document.getElementById('lightbox').classList.contains('open')) return;
+  if (e.key === 'ArrowRight') moveLb(1);
+  if (e.key === 'ArrowLeft') moveLb(-1);
+  if (e.key === 'Escape') closeLb();
 });
 
+initData().then(async () => {
+  pageInit('galerie');
 
-// Textes dynamiques
-const tx = applyPageTextes('galerie');
-setT('ga-hero-eyebrow', tx.heroEyebrow);
-setLines('ga-hero-l', tx.heroTitre);
-setT('ga-s1-eyebrow', tx.s1Eyebrow); setH('ga-s1-titre', tx.s1Titre); setT('ga-s1-lede', tx.s1Lede);
-setT('ga-cta-titre', tx.ctaTitre); setT('ga-cta-sub', tx.ctaSub);
-initScrollReveal();
-}); // fin initData
+  const { createClient } = window.supabase;
+  const SB = createClient('https://jcfltkuobbjqicczpsjn.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impjdmx0a3VvYmJqcWljY3pwc2puIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI2NzQ5NTIsImV4cCI6MjA2ODI1MDk1Mn0.nHnGFqC99RjseBxdwQNPzOkiOlCDhJeNdJkdQBuvMME');
+  const { data } = await SB.from('data_store').select('value').eq('key','galerie').single();
+  const albums = data?.value || [];
+
+  document.getElementById('galerie-loader').style.display = 'none';
+  const gc = document.getElementById('galerie-content');
+
+  if (!albums.length) {
+    gc.innerHTML = '<div style="text-align:center;padding:4rem 0;color:var(--ash-2);">Aucune photo pour l\'instant.</div>';
+    initAdminBar('galerie');
+    return;
+  }
+
+  gc.innerHTML = albums.map(album => {
+    const photos = album.photos || [];
+    if (!photos.length) return '';
+    return `<div class="album">
+      <div class="album__header">
+        <span class="album__title">${album.nom}</span>
+        ${album.date ? `<span class="album__date">${album.date}</span>` : ''}
+        <span class="album__count">${photos.length} photo(s)</span>
+      </div>
+      <div class="photo-grid" id="album-${album.id}">
+        ${photos.map((p, pi) => `
+          <div class="photo-thumb" onclick="openLb(window._albumPhotos['${album.id}'], ${pi})">
+            <img src="${p.url}" alt="${p.caption||''}" loading="lazy">
+            ${p.caption ? `<div class="photo-thumb__caption">${p.caption}</div>` : ''}
+          </div>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+
+  window._albumPhotos = {};
+  albums.forEach(a => { window._albumPhotos[a.id] = a.photos || []; });
+
+  initAdminBar('galerie');
+});
 </script>
 </body>
 </html>

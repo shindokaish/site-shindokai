@@ -196,10 +196,12 @@ tr:hover td{background:rgba(255,255,255,.02);}
     <div class="sidebar__section" style="margin-top:.8rem;">Contenu</div>
     <div class="nav-item" onclick="showSection('planning')"><span class="nav-item__icon">📅</span>Planning</div>
     <div class="nav-item" onclick="showSection('actus')"><span class="nav-item__icon">📰</span>Actualités</div>
+    <div class="nav-item" onclick="showSection('galerie')"><span class="nav-item__icon">🖼️</span>Galerie</div>
     <div class="nav-item" onclick="showSection('dojos-mgr')"><span class="nav-item__icon">🏯</span>Dojos</div>
 
     <div class="sidebar__section" style="margin-top:.8rem;">Espace membres</div>
     <div class="nav-item" onclick="showSection('cours')"><span class="nav-item__icon">📚</span>Cours</div>
+    <div class="nav-item" onclick="showSection('documents')"><span class="nav-item__icon">📄</span>Documents</div>
 
     <div class="sidebar__section" style="margin-top:.8rem;">Club</div>
     <div class="nav-item" onclick="showSection('coachs')"><span class="nav-item__icon">🥋</span>Coachs</div>
@@ -462,6 +464,24 @@ tr:hover td{background:rgba(255,255,255,.02);}
       <div id="coursMgrContent"></div>
     </div>
 
+    <!-- ══════════ GALERIE ══════════ -->
+    <div class="section" id="sec-galerie">
+      <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
+        <div><h1>Galerie photos</h1><p>Albums publiés sur le site</p></div>
+        <button class="btn btn--primary" onclick="openAlbumModal()">+ Nouvel album</button>
+      </div>
+      <div id="galerieContainer"></div>
+    </div>
+
+    <!-- ══════════ DOCUMENTS ══════════ -->
+    <div class="section" id="sec-documents">
+      <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
+        <div><h1>Documents membres</h1><p>PDFs et fichiers accessibles dans l'espace membres</p></div>
+        <button class="btn btn--primary" onclick="openDocModal()">+ Ajouter un document</button>
+      </div>
+      <div id="documentsContainer"></div>
+    </div>
+
     <!-- ══════════ PDF INSCRIPTION ══════════ -->
     <div class="section" id="sec-pdf">
       <div class="page-header"><h1>PDF Inscription</h1><p>Dossier d'inscription téléchargeable sur le site</p></div>
@@ -541,6 +561,8 @@ function showSection(id) {
   if (id === 'stats')        loadStats();
   if (id === 'pdf')          loadPdf();
   if (id === 'cours')        loadCoursMgr();
+  if (id === 'galerie')      loadGalerie();
+  if (id === 'documents')    loadDocuments();
   if (id === 'apparence')    loadApparence();
 }
 
@@ -640,27 +662,104 @@ async function loadMembres() {
 }
 
 function renderMembresTable(users) {
-  document.getElementById('membresContainer').innerHTML = `<div class="table-wrap"><table>
-    <thead><tr><th>Email</th><th>Prénom</th><th>Inscrit le</th><th>Statut</th><th>Actions</th></tr></thead>
+  document.getElementById('membresContainer').innerHTML = `
+  <div style="display:flex;justify-content:flex-end;margin-bottom:.8rem;">
+    <button class="btn btn--primary" onclick="openMembreModal()">+ Ajouter un membre</button>
+  </div>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Nom / Prénom</th><th>Email</th><th>Dojo</th><th>Ceinture</th><th>Cotisation</th><th>Statut</th><th>Actions</th></tr></thead>
     <tbody>
-    ${users.map(u => {
+    ${users.map((u,i) => {
       const actif = !_disabledMembers.includes(u.id);
-      const date  = u.created_at ? new Date(u.created_at).toLocaleDateString('fr-FR') : '—';
+      const cotisation = u.cotisation || 'nc';
+      const cotBadge = cotisation === 'ok'
+        ? '<span class="badge badge--green">✓ À jour</span>'
+        : cotisation === 'retard'
+        ? '<span class="badge badge--red">⚠ En retard</span>'
+        : '<span class="badge badge--grey">—</span>';
       return `<tr>
-        <td>${esc(u.email||'—')}</td>
-        <td>${esc(u.prenom||'—')}</td>
-        <td>${date}</td>
-        <td>${actif ? '<span class="badge badge--green">✓ Actif</span>' : '<span class="badge badge--red">✗ Désactivé</span>'}</td>
-        <td><div style="display:flex;gap:.4rem;">
+        <td><strong>${esc(u.nom||'')} ${esc(u.prenom||'')}</strong></td>
+        <td style="font-size:.8rem;color:var(--ash);">${esc(u.email||'—')}</td>
+        <td>${esc(u.dojo||'—')}</td>
+        <td>${esc(u.ceinture||'—')}</td>
+        <td>${cotBadge}</td>
+        <td>${actif ? '<span class="badge badge--green">Actif</span>' : '<span class="badge badge--red">Désactivé</span>'}</td>
+        <td><div style="display:flex;gap:.4rem;flex-wrap:wrap;">
+          <button class="btn btn--ghost btn--sm" onclick="editMembreModal(${i})">✏️</button>
           ${actif
             ? `<button class="btn btn--warn btn--sm" onclick="banMembre('${esc(u.id)}')">Désactiver</button>`
             : `<button class="btn btn--success btn--sm" onclick="unbanMembre('${esc(u.id)}')">Réactiver</button>`}
-          <button class="btn btn--danger btn--sm" onclick="deleteMembre('${esc(u.id)}','${esc(u.email||'')}')">Supprimer</button>
+          <button class="btn btn--danger btn--sm" onclick="deleteMembre('${esc(u.id)}','${esc(u.email||'')}')">✕</button>
         </div></td>
       </tr>`;
     }).join('')}
     </tbody>
   </table></div>`;
+}
+
+function membreForm(m) {
+  return `<div style="display:flex;flex-direction:column;gap:.8rem;">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem;">
+      <div class="field"><label>Nom</label><input id="mf-nom" value="${esc(m.nom||'')}"></div>
+      <div class="field"><label>Prénom</label><input id="mf-prenom" value="${esc(m.prenom||'')}"></div>
+    </div>
+    <div class="field"><label>Email</label><input id="mf-email" value="${esc(m.email||'')}" type="email"></div>
+    <div class="field"><label>Téléphone</label><input id="mf-tel" value="${esc(m.tel||'')}"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem;">
+      <div class="field"><label>Dojo</label>
+        <select id="mf-dojo">
+          <option value="">—</option>
+          <option value="Dojo de Roubaix" ${(m.dojo||'')==='Dojo de Roubaix'?'selected':''}>Roubaix</option>
+          <option value="Dojo de Tourcoing" ${(m.dojo||'')==='Dojo de Tourcoing'?'selected':''}>Tourcoing</option>
+          <option value="Dojo de Villeneuve-d'Ascq" ${(m.dojo||'')==="Dojo de Villeneuve-d'Ascq"?'selected':''}>Villeneuve-d'Ascq</option>
+        </select>
+      </div>
+      <div class="field"><label>Ceinture</label>
+        <select id="mf-ceinture">
+          ${['Blanche','Jaune','Orange','Verte','Bleue','Marron','Noire 1er dan','Noire 2e dan','Noire 3e dan'].map(c =>
+            `<option value="${c}" ${(m.ceinture||'')=== c?'selected':''}>${c}</option>`).join('')}
+        </select>
+      </div>
+    </div>
+    <div class="field"><label>Statut cotisation</label>
+      <select id="mf-cotisation">
+        <option value="nc" ${(m.cotisation||'nc')==='nc'?'selected':''}>Non renseigné</option>
+        <option value="ok" ${(m.cotisation||'')==='ok'?'selected':''}>À jour</option>
+        <option value="retard" ${(m.cotisation||'')==='retard'?'selected':''}>En retard</option>
+      </select>
+    </div>
+    <div class="field"><label>Notes</label><textarea id="mf-notes">${esc(m.notes||'')}</textarea></div>
+  </div>`;
+}
+
+function openMembreModal() {
+  openModal('Ajouter un membre', membreForm({}),
+    `<button class="btn btn--ghost" onclick="closeModal()">Annuler</button><button class="btn btn--primary" onclick="submitMembre(-1)">Ajouter</button>`);
+}
+function editMembreModal(i) {
+  openModal('Modifier le membre', membreForm(_allMembres[i]),
+    `<button class="btn btn--ghost" onclick="closeModal()">Annuler</button><button class="btn btn--primary" onclick="submitMembre(${i})">Enregistrer</button>`);
+}
+async function submitMembre(i) {
+  const m = {
+    id: i===-1 ? 'manual-'+Date.now() : (_allMembres[i]?.id || 'manual-'+Date.now()),
+    nom:        document.getElementById('mf-nom').value.trim(),
+    prenom:     document.getElementById('mf-prenom').value.trim(),
+    email:      document.getElementById('mf-email').value.trim(),
+    tel:        document.getElementById('mf-tel').value.trim(),
+    dojo:       document.getElementById('mf-dojo').value,
+    ceinture:   document.getElementById('mf-ceinture').value,
+    cotisation: document.getElementById('mf-cotisation').value,
+    notes:      document.getElementById('mf-notes').value.trim(),
+    created_at: i===-1 ? new Date().toISOString() : (_allMembres[i]?.created_at || new Date().toISOString()),
+  };
+  if (!m.nom && !m.email) { toast('Nom ou email requis.', 'err'); return; }
+  if (i===-1) _allMembres.push(m);
+  else _allMembres[i] = m;
+  await dsSet('member_profiles', _allMembres);
+  closeModal();
+  toast('Membre enregistré.', 'ok');
+  renderMembresTable(_allMembres);
 }
 
 function filterMembres() {
@@ -893,7 +992,11 @@ function actuForm(a) {
     <div class="field"><label>Tag</label><input id="af-tag" value="${esc(a.tag||'')}" placeholder="Compétition / Stage…"></div>
     <div class="field"><label>Date</label><input id="af-date" value="${esc(a.date||'')}" placeholder="Juin 2025"></div>
     <div class="field"><label>Texte</label><textarea id="af-text">${esc(a.text||'')}</textarea></div>
-    <div class="field"><label>Image (URL)</label><input id="af-image" value="${esc(a.image||'')}" placeholder="https://…"></div>
+    <div class="field"><label>Image</label>
+      ${a.image ? `<img src="${esc(a.image)}" style="width:100%;height:120px;object-fit:cover;border-radius:4px;margin-bottom:.4rem;">` : ''}
+      <input type="file" accept="image/*" id="af-image-file" style="background:var(--char-2);border:1px solid var(--line);color:var(--bone);padding:.5rem;">
+      <input id="af-image" value="${esc(a.image||'')}" placeholder="ou coller une URL" style="margin-top:.4rem;">
+    </div>
     <div class="field"><label>Lien (optionnel)</label><input id="af-lien" value="${esc(a.lien||'')}" placeholder="https://…"></div>
     <div class="field"><label>Style</label>
       <select id="af-type">
@@ -907,13 +1010,19 @@ function actuForm(a) {
 function openActuModal() { openModal('Ajouter une actualité', actuForm({}), `<button class="btn btn--ghost" onclick="closeModal()">Annuler</button><button class="btn btn--primary" onclick="submitActu(-1)">Ajouter</button>`); }
 function editActu(i) { openModal('Modifier l\'actualité', actuForm(_actus[i]), `<button class="btn btn--ghost" onclick="closeModal()">Annuler</button><button class="btn btn--primary" onclick="submitActu(${i})">Enregistrer</button>`); }
 async function submitActu(i) {
+  let imageUrl = document.getElementById('af-image').value.trim();
+  const imgFile = document.getElementById('af-image-file')?.files?.[0];
+  if (imgFile) {
+    try { imageUrl = await uploadImage(imgFile, `actus/actu-${Date.now()}.${imgFile.name.split('.').pop()}`); }
+    catch(e) { toast('Erreur upload image: ' + e.message, 'err'); return; }
+  }
   const a = {
     id: i===-1 ? Date.now() : (_actus[i]?.id || Date.now()),
     title: document.getElementById('af-title').value.trim(),
     tag:   document.getElementById('af-tag').value.trim(),
     date:  document.getElementById('af-date').value.trim(),
     text:  document.getElementById('af-text').value.trim(),
-    image: document.getElementById('af-image').value.trim(),
+    image: imageUrl,
     lien:  document.getElementById('af-lien').value.trim(),
     type:  document.getElementById('af-type').value,
   };
@@ -1469,6 +1578,199 @@ async function deleteCours(idx) {
   _cours.splice(idx, 1);
   await dsSet('cours', _cours);
   toast('Cours supprimé.','ok'); renderCoursMgr();
+}
+
+/* ════════════════════════════════════════
+   APPARENCE
+════════════════════════════════════════ */
+/* ════════════════════════════════════════
+   GALERIE
+════════════════════════════════════════ */
+let _galerie = [];
+async function loadGalerie() {
+  const raw = await dsGet('galerie');
+  _galerie = JSON.parse(JSON.stringify(raw || []));
+  renderGalerie();
+}
+function renderGalerie() {
+  const c = document.getElementById('galerieContainer');
+  if (!_galerie.length) {
+    c.innerHTML = '<div class="empty"><div class="empty__icon">🖼️</div>Aucun album. Créez le premier.</div>';
+    return;
+  }
+  c.innerHTML = _galerie.map((album, ai) => `
+    <div class="card" style="margin-bottom:1.5rem;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+        <div>
+          <div class="card__title">${esc(album.nom)}</div>
+          <div style="font-size:.78rem;color:var(--ash);">${esc(album.date||'')} — ${(album.photos||[]).length} photo(s)</div>
+        </div>
+        <div style="display:flex;gap:.5rem;">
+          <button class="btn btn--ghost btn--sm" onclick="renameAlbum(${ai})">✏️ Renommer</button>
+          <button class="btn btn--danger btn--sm" onclick="deleteAlbum(${ai})">Supprimer l'album</button>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:.5rem;margin-bottom:1rem;">
+        ${(album.photos||[]).map((p,pi) => `
+          <div style="position:relative;">
+            <img src="${esc(p.url)}" style="width:100%;height:90px;object-fit:cover;border-radius:4px;">
+            <button onclick="deletePhoto(${ai},${pi})" style="position:absolute;top:2px;right:2px;background:rgba(0,0,0,.7);border:none;color:#fff;border-radius:50%;width:20px;height:20px;cursor:pointer;font-size:.7rem;line-height:1;">✕</button>
+            <div style="font-size:.65rem;color:var(--ash);margin-top:.2rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(p.caption||'')}</div>
+          </div>`).join('')}
+      </div>
+      <div style="display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;">
+        <input type="file" accept="image/*" multiple id="photo-input-${ai}" style="background:var(--char-2);border:1px solid var(--line);color:var(--bone);padding:.4rem;font-size:.78rem;">
+        <button class="btn btn--primary btn--sm" onclick="uploadPhotos(${ai})">⬆ Ajouter les photos</button>
+        <span id="photo-progress-${ai}" style="font-size:.75rem;color:var(--gold);"></span>
+      </div>
+    </div>`).join('');
+}
+
+function openAlbumModal() {
+  openModal('Nouvel album', `<div style="display:flex;flex-direction:column;gap:.8rem;">
+    <div class="field"><label>Nom de l'album</label><input id="al-nom" placeholder="Stage d'été 2025"></div>
+    <div class="field"><label>Date / période</label><input id="al-date" placeholder="Juillet 2025"></div>
+  </div>`,
+  `<button class="btn btn--ghost" onclick="closeModal()">Annuler</button><button class="btn btn--primary" onclick="submitAlbum()">Créer</button>`);
+}
+async function submitAlbum() {
+  const nom = document.getElementById('al-nom').value.trim();
+  if (!nom) { toast('Nom requis.', 'err'); return; }
+  _galerie.push({ id: Date.now(), nom, date: document.getElementById('al-date').value.trim(), photos: [] });
+  await dsSet('galerie', _galerie);
+  closeModal();
+  toast('Album créé.', 'ok');
+  renderGalerie();
+}
+async function renameAlbum(ai) {
+  const nom = prompt('Nouveau nom :', _galerie[ai].nom);
+  if (!nom) return;
+  _galerie[ai].nom = nom;
+  await dsSet('galerie', _galerie);
+  toast('Album renommé.', 'ok');
+  renderGalerie();
+}
+async function deleteAlbum(ai) {
+  if (!confirm(`Supprimer l'album "${_galerie[ai].nom}" et toutes ses photos ?`)) return;
+  _galerie.splice(ai, 1);
+  await dsSet('galerie', _galerie);
+  toast('Album supprimé.', 'ok');
+  renderGalerie();
+}
+async function uploadPhotos(ai) {
+  const input = document.getElementById(`photo-input-${ai}`);
+  const files = Array.from(input.files);
+  if (!files.length) { toast('Sélectionnez des photos.', 'err'); return; }
+  const prog = document.getElementById(`photo-progress-${ai}`);
+  prog.textContent = '0/' + files.length;
+  if (!_galerie[ai].photos) _galerie[ai].photos = [];
+  let done = 0;
+  for (const f of files) {
+    try {
+      const url = await uploadImage(f, `galerie/album-${_galerie[ai].id}/${Date.now()}-${f.name.replace(/[^a-z0-9.]/gi,'_')}`);
+      _galerie[ai].photos.push({ url, caption: f.name.replace(/\.[^.]+$/, '') });
+      done++;
+      prog.textContent = done + '/' + files.length;
+    } catch(e) { toast('Erreur: ' + f.name, 'err'); }
+  }
+  await dsSet('galerie', _galerie);
+  toast(done + ' photo(s) ajoutée(s).', 'ok');
+  renderGalerie();
+}
+async function deletePhoto(ai, pi) {
+  _galerie[ai].photos.splice(pi, 1);
+  await dsSet('galerie', _galerie);
+  toast('Photo supprimée.', 'ok');
+  renderGalerie();
+}
+
+/* ════════════════════════════════════════
+   DOCUMENTS
+════════════════════════════════════════ */
+let _documents = [];
+async function loadDocuments() {
+  const raw = await dsGet('documents');
+  _documents = JSON.parse(JSON.stringify(raw || []));
+  renderDocuments();
+}
+function renderDocuments() {
+  const c = document.getElementById('documentsContainer');
+  if (!_documents.length) {
+    c.innerHTML = '<div class="empty"><div class="empty__icon">📄</div>Aucun document. Ajoutez le premier.</div>';
+    return;
+  }
+  c.innerHTML = `<div class="table-wrap"><table>
+    <thead><tr><th>Nom</th><th>Catégorie</th><th>Lien</th><th>Actions</th></tr></thead>
+    <tbody>
+    ${_documents.map((d,i) => `<tr>
+      <td><strong>${esc(d.nom)}</strong><br><small style="color:var(--ash);font-size:.75rem;">${esc(d.desc||'')}</small></td>
+      <td><span class="badge badge--grey">${esc(d.categorie||'Autre')}</span></td>
+      <td><a href="${esc(d.url)}" target="_blank" style="color:var(--crimson-2);font-size:.8rem;">Ouvrir ↗</a></td>
+      <td><div style="display:flex;gap:.4rem;">
+        <button class="btn btn--ghost btn--sm" onclick="editDocModal(${i})">✏️</button>
+        <button class="btn btn--danger btn--sm" onclick="deleteDoc(${i})">✕</button>
+      </div></td>
+    </tr>`).join('')}
+    </tbody>
+  </table></div>`;
+}
+
+function docForm(d) {
+  return `<div style="display:flex;flex-direction:column;gap:.8rem;">
+    <div class="field"><label>Nom du document</label><input id="df-nom" value="${esc(d.nom||'')}"></div>
+    <div class="field"><label>Description courte</label><input id="df-desc" value="${esc(d.desc||'')}"></div>
+    <div class="field"><label>Catégorie</label>
+      <select id="df-categorie">
+        <option value="Licence & assurance" ${(d.categorie||'')==='Licence & assurance'?'selected':''}>Licence & assurance</option>
+        <option value="Règlement" ${(d.categorie||'')==='Règlement'?'selected':''}>Règlement</option>
+        <option value="Compétition" ${(d.categorie||'')==='Compétition'?'selected':''}>Compétition</option>
+        <option value="Stage" ${(d.categorie||'')==='Stage'?'selected':''}>Stage</option>
+        <option value="Autre" ${(d.categorie||'Autre')==='Autre'?'selected':''}>Autre</option>
+      </select>
+    </div>
+    <div class="field"><label>Fichier PDF / image</label>
+      <input type="file" accept=".pdf,image/*" id="df-file" style="background:var(--char-2);border:1px solid var(--line);color:var(--bone);padding:.5rem;">
+    </div>
+    <div class="field"><label>ou URL directe</label><input id="df-url" value="${esc(d.url||'')}" placeholder="https://…"></div>
+  </div>`;
+}
+
+function openDocModal() {
+  openModal('Ajouter un document', docForm({}),
+    `<button class="btn btn--ghost" onclick="closeModal()">Annuler</button><button class="btn btn--primary" onclick="submitDoc(-1)">Ajouter</button>`);
+}
+function editDocModal(i) {
+  openModal('Modifier le document', docForm(_documents[i]),
+    `<button class="btn btn--ghost" onclick="closeModal()">Annuler</button><button class="btn btn--primary" onclick="submitDoc(${i})">Enregistrer</button>`);
+}
+async function submitDoc(i) {
+  let url = document.getElementById('df-url').value.trim();
+  const file = document.getElementById('df-file')?.files?.[0];
+  if (file) {
+    try { url = await uploadImage(file, `documents/${Date.now()}-${file.name.replace(/[^a-z0-9.]/gi,'_')}`); }
+    catch(e) { toast('Erreur upload: ' + e.message, 'err'); return; }
+  }
+  if (!url) { toast('Fichier ou URL requis.', 'err'); return; }
+  const d = {
+    id: i===-1 ? Date.now() : (_documents[i]?.id || Date.now()),
+    nom:       document.getElementById('df-nom').value.trim() || file?.name || 'Document',
+    desc:      document.getElementById('df-desc').value.trim(),
+    categorie: document.getElementById('df-categorie').value,
+    url,
+  };
+  if (i===-1) _documents.push(d);
+  else _documents[i] = d;
+  await dsSet('documents', _documents);
+  closeModal();
+  toast('Document enregistré.', 'ok');
+  renderDocuments();
+}
+async function deleteDoc(i) {
+  if (!confirm('Supprimer ce document ?')) return;
+  _documents.splice(i, 1);
+  await dsSet('documents', _documents);
+  toast('Document supprimé.', 'ok');
+  renderDocuments();
 }
 
 /* ════════════════════════════════════════

@@ -780,9 +780,26 @@ footer { border-top: 1px solid var(--line); background: var(--char); }
 }
 
 @media (max-width: 1080px) {
+  /* Nav */
   .nav__links { display: none; }
   .nav__burger { display: flex; }
   .nav__logo-img { height: 48px; }
+  /* Cacher icône membre et bouton S'inscrire — accès via menu burger */
+  .nav__right > a { display: none !important; }
+  .nav__right > .btn { display: none !important; }
+
+  /* Hero accueil : hauteur naturelle sur mobile */
+  .hero { padding-top: 80px; align-items: flex-start; min-height: 0 !important; height: fit-content !important; overflow: visible; }
+  .hero__glow { display: none; }
+  .hero::after { height: 60px; }
+  .hero__content { padding-top: 2rem; padding-bottom: 3.5rem; }
+  /* Hero mini pages intérieures */
+  .hero-mini { padding-top: 70px; }
+  .hero-mini::after { height: 60px; }
+  /* Cacher les éléments flottants parasites sur mobile */
+  .admin-trigger { display: none !important; }
+  #pushBanner { display: none !important; }
+
   .club__grid { grid-template-columns: 1fr; }
   .contact-grid { grid-template-columns: 1fr; }
   .form__row { grid-template-columns: 1fr; }
@@ -825,7 +842,7 @@ footer { border-top: 1px solid var(--line); background: var(--char); }
   /* Hero mini pages intérieures */
   .hero-mini__content { margin-left: 0; }
   .hero-mini__logo-bg { display: none; }
-  .hero-mini { height: auto; padding: 7rem 0 2.5rem; }
+  .hero-mini { height: auto; padding: 5rem 0 2.5rem; }
 
   /* Sections */
   .section { padding: 4rem 0; }

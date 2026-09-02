@@ -56,6 +56,11 @@
   </div>
 </section>
 
+<!-- ============ ACTUALITÉS ============ -->
+<section class="wrap" id="actus" style="padding:5rem 0 4rem;">
+  <div id="actus-container"></div>
+</section>
+
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
@@ -76,6 +81,33 @@ initData().then(() => {
   setEl('idx-heroSub',         club.heroSub);
 
   initAdminBar('index');
+
+  // Actualités
+  (async () => {
+    const { createClient } = window.supabase;
+    const SB = createClient('https://jcfltkuobbjqicczpsjn.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impjdmx0a3VvYmJqcWljY3pwc2puIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI2NzQ5NTIsImV4cCI6MjA2ODI1MDk1Mn0.nHnGFqC99RjseBxdwQNPzOkiOlCDhJeNdJkdQBuvMME');
+    const { data } = await SB.from('data_store').select('value').eq('key','actus').single();
+    const actus = (data?.value || []).slice(0, 6);
+    const c = document.getElementById('actus-container');
+    if (!actus.length) { c.style.display='none'; return; }
+    c.innerHTML = `
+      <h2 style="font-family:var(--display);font-size:clamp(1.8rem,3.5vw,2.8rem);margin-bottom:2rem;text-transform:uppercase;letter-spacing:.04em;">Actualités</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.5rem;">
+      ${actus.map(a => `
+        <article style="background:var(--char-2);border:1px solid var(--line);border-radius:8px;overflow:hidden;display:flex;flex-direction:column;">
+          ${a.image ? `<img src="${a.image}" alt="${a.title}" style="width:100%;height:160px;object-fit:cover;">` : ''}
+          <div style="padding:1.2rem 1.4rem;flex:1;display:flex;flex-direction:column;">
+            ${a.tag ? `<span style="font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--crimson-2);margin-bottom:.4rem;">${a.tag}</span>` : ''}
+            <h3 style="font-family:var(--display);font-size:1.1rem;margin:0 0 .6rem;line-height:1.3;">${a.title}</h3>
+            ${a.text ? `<p style="font-size:.85rem;color:var(--ash);flex:1;overflow:hidden;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;">${a.text}</p>` : ''}
+            <div style="margin-top:.8rem;display:flex;justify-content:space-between;align-items:center;">
+              <span style="font-size:.75rem;color:var(--ash-2);">${a.date||''}</span>
+              ${a.lien ? `<a href="${a.lien}" target="_blank" style="font-size:.8rem;color:var(--crimson-2);">Lire →</a>` : ''}
+            </div>
+          </div>
+        </article>`).join('')}
+      </div>`;
+  })();
 });
 </script>
 </body>
