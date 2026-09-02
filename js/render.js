@@ -32,21 +32,17 @@ function renderNav(activePage) {
 
   const html = `
 <nav class="navbar" id="navbar">
-  <div class="wrap nav__wrap--stacked">
-    <div class="nav__top-row">
-      <a href="index.html" class="nav__logo">
-        <img src="img/logo-shindokai-nord.png" alt="École de Karaté Shindokai du Nord" class="nav__logo-img">
+  <div class="wrap">
+    <a href="index.html" class="nav__logo">
+      <img src="img/logo-shindokai-nord.png" alt="École de Karaté Shindokai du Nord" class="nav__logo-img">
+    </a>
+    <ul class="nav__links">${linksHtml}</ul>
+    <div class="nav__right">
+      <a href="membres/index.html" title="Espace Membres" style="display:flex;align-items:center;justify-content:center;width:36px;height:36px;border:1px solid var(--line);border-radius:50%;color:var(--ash);transition:color .2s,border-color .2s;flex-shrink:0;" onmouseover="this.style.color='var(--gold)';this.style.borderColor='var(--gold)';" onmouseout="this.style.color='var(--ash)';this.style.borderColor='var(--line)';">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
       </a>
+      <a href="inscription.html" class="btn btn--primary" style="padding:.55rem 1.1rem;font-size:.72rem;white-space:nowrap;flex-shrink:0;">S'inscrire</a>
       <button class="nav__burger" id="burger" aria-label="Menu"><span></span><span></span><span></span></button>
-    </div>
-    <div class="nav__bottom-row">
-      <ul class="nav__links">${linksHtml}</ul>
-      <div class="nav__right-inline">
-        <a href="membres/index.html" title="Espace Membres" style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;border:1px solid var(--line);border-radius:50%;color:var(--ash);transition:color .2s,border-color .2s;" onmouseover="this.style.color='var(--gold)';this.style.borderColor='var(--gold)';" onmouseout="this.style.color='var(--ash)';this.style.borderColor='var(--line)';">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
-        </a>
-        <a href="inscription.html" class="btn btn--primary" style="padding:.45rem .95rem;font-size:.68rem;white-space:nowrap;">S'inscrire</a>
-      </div>
     </div>
   </div>
 </nav>
