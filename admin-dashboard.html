@@ -191,6 +191,7 @@ tr:hover td{background:rgba(255,255,255,.02);}
     <div class="sidebar__section">Général</div>
     <div class="nav-item active" onclick="showSection('overview')"><span class="nav-item__icon">📊</span>Vue d'ensemble</div>
     <div class="nav-item" onclick="showSection('membres')"><span class="nav-item__icon">👤</span>Membres</div>
+    <div class="nav-item" onclick="showSection('inscriptions')"><span class="nav-item__icon">📝</span>Inscriptions</div>
 
     <div class="sidebar__section" style="margin-top:.8rem;">Contenu</div>
     <div class="nav-item" onclick="showSection('planning')"><span class="nav-item__icon">📅</span>Planning</div>
@@ -218,9 +219,10 @@ tr:hover td{background:rgba(255,255,255,.02);}
         <p>Tableau de bord général du site EKSN</p>
       </div>
       <div class="stat-row" id="overviewStats">
-        <div class="stat-card"><div class="stat-card__val" id="ov-membres">—</div><div class="stat-card__lbl">Membres inscrits</div></div>
+        <div class="stat-card" style="cursor:pointer;" onclick="showSection('membres')"><div class="stat-card__val" id="ov-membres">—</div><div class="stat-card__lbl">Membres inscrits</div></div>
+        <div class="stat-card" style="cursor:pointer;" onclick="showSection('inscriptions')"><div class="stat-card__val" id="ov-inscriptions">—</div><div class="stat-card__lbl">Demandes d'inscription</div></div>
+        <div class="stat-card" style="cursor:pointer;" onclick="showSection('actus')"><div class="stat-card__val" id="ov-actus">—</div><div class="stat-card__lbl">Actualités</div></div>
         <div class="stat-card"><div class="stat-card__val" id="ov-coachs">—</div><div class="stat-card__lbl">Coachs</div></div>
-        <div class="stat-card"><div class="stat-card__val" id="ov-actus">—</div><div class="stat-card__lbl">Actualités</div></div>
         <div class="stat-card"><div class="stat-card__val" id="ov-dojos">—</div><div class="stat-card__lbl">Dojos</div></div>
       </div>
 
@@ -228,6 +230,7 @@ tr:hover td{background:rgba(255,255,255,.02);}
         <div class="card__title">Accès rapides</div>
         <div style="display:flex;flex-wrap:wrap;gap:.6rem;">
           <button class="btn btn--ghost" onclick="showSection('membres')">👤 Gérer les membres</button>
+          <button class="btn btn--ghost" onclick="showSection('inscriptions')">📝 Demandes d'inscription</button>
           <button class="btn btn--ghost" onclick="showSection('planning')">📅 Modifier le planning</button>
           <button class="btn btn--ghost" onclick="showSection('actus')">📰 Ajouter une actu</button>
           <button class="btn btn--ghost" onclick="showSection('parametres')">⚙️ Paramètres du club</button>
@@ -254,6 +257,15 @@ tr:hover td{background:rgba(255,255,255,.02);}
         </div>
       </div>
       <div id="membresContainer"><div class="loader"></div></div>
+    </div>
+
+    <!-- ══════════ INSCRIPTIONS ══════════ -->
+    <div class="section" id="sec-inscriptions">
+      <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
+        <div><h1>Demandes d'inscription</h1><p>Formulaires soumis via le site (ancienne version)</p></div>
+        <button class="btn btn--primary" onclick="loadInscriptions()">↻ Actualiser</button>
+      </div>
+      <div id="inscriptionsContainer"><div class="loader"></div></div>
     </div>
 
     <!-- ══════════ PLANNING ══════════ -->
@@ -373,6 +385,15 @@ const SB_URL = 'https://jcfltkuobbjqicczpsjn.supabase.co';
 const SB_KEY = 'sb_publishable_15BDd64WYwMfW8VV9ZXDqg_Oa2ySvKc';
 const sb = supabase.createClient(SB_URL, SB_KEY);
 
+/* ── Supabase data_store direct (sans data.js) ── */
+async function dsGet(key) {
+  const { data } = await sb.from('data_store').select('value').eq('key', key).single();
+  return data?.value ?? null;
+}
+async function dsSet(key, value) {
+  await sb.from('data_store').upsert({ key, value }, { onConflict: 'key' });
+}
+
 function logout() { try { sessionStorage.removeItem('shindokai_admin'); } catch(e){} location.href = 'admin.html'; }
 
 /* ── Toast ── */
@@ -391,12 +412,13 @@ function showSection(id) {
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById('sec-' + id).classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n => { if (n.getAttribute('onclick')?.includes(`'${id}'`)) n.classList.add('active'); });
-  if (id === 'membres')    loadMembres();
-  if (id === 'planning')   loadPlanning();
-  if (id === 'actus')      loadActus();
-  if (id === 'dojos-mgr')  loadDojosMgr();
-  if (id === 'parametres') loadParametres();
-  if (id === 'overview')   loadOverview();
+  if (id === 'membres')      loadMembres();
+  if (id === 'inscriptions') loadInscriptions();
+  if (id === 'planning')     loadPlanning();
+  if (id === 'actus')        loadActus();
+  if (id === 'dojos-mgr')    loadDojosMgr();
+  if (id === 'parametres')   loadParametres();
+  if (id === 'overview')     loadOverview();
 }
 
 /* ── Modal ── */
@@ -413,149 +435,173 @@ document.getElementById('modalOverlay').addEventListener('click', e => { if(e.ta
    VUE D'ENSEMBLE
 ════════════════════════════════════════ */
 async function loadOverview() {
-  await initData();
-  const coaches = getSection('coaches') || [];
-  const actus   = getSection('actus')   || [];
-  const dojos   = getSection('dojos')   || [];
-  document.getElementById('ov-coachs').textContent = coaches.length;
-  document.getElementById('ov-actus').textContent  = actus.length;
-  document.getElementById('ov-dojos').textContent  = dojos.length;
-  // Membres via Supabase Admin API (pas disponible côté client public — on liste via auth)
-  try {
-    const { data: { users } = {}, error } = await sb.auth.admin.listUsers();
-    if (!error && users) {
-      document.getElementById('ov-membres').textContent = users.length;
-      const recent = users.sort((a,b) => new Date(b.created_at) - new Date(a.created_at)).slice(0,5);
-      document.getElementById('ov-last-membres').innerHTML = recent.length
-        ? `<div class="table-wrap"><table><thead><tr><th>Email</th><th>Prénom</th><th>Inscrit le</th><th>Statut</th></tr></thead><tbody>
-           ${recent.map(u => `<tr>
-             <td>${esc(u.email)}</td>
-             <td>${esc(u.user_metadata?.prenom||'—')}</td>
-             <td>${new Date(u.created_at).toLocaleDateString('fr-FR')}</td>
-             <td>${u.banned_until ? '<span class="badge badge--red">Désactivé</span>' : '<span class="badge badge--green">Actif</span>'}</td>
-           </tr>`).join('')}</tbody></table></div>`
-        : '<div class="empty"><div class="empty__icon">👤</div>Aucun membre inscrit</div>';
-    } else { throw new Error(); }
-  } catch(e) {
-    document.getElementById('ov-membres').textContent = '?';
-    document.getElementById('ov-last-membres').innerHTML = '<div class="empty">API admin non disponible côté client public.<br>Consultez le tableau Membres pour plus de détails.</div>';
-    loadMembresPublic('ov-last-membres', true);
-  }
+  const [coaches, actus, dojos, membres, inscriptions] = await Promise.all([
+    dsGet('coaches'), dsGet('actus'), dsGet('dojos'), dsGet('member_profiles'), dsGet('inscription')
+  ]);
+  document.getElementById('ov-coachs').textContent = (coaches||[]).length;
+  document.getElementById('ov-actus').textContent  = (actus||[]).length;
+  document.getElementById('ov-dojos').textContent  = (dojos||[]).length;
+  const profiles = membres || [];
+  const submissions = (inscriptions?.submissions) || [];
+  document.getElementById('ov-membres').textContent = profiles.length;
+  document.getElementById('ov-inscriptions') && (document.getElementById('ov-inscriptions').textContent = submissions.length);
+
+  const recent = [...profiles].sort((a,b) => new Date(b.created_at) - new Date(a.created_at)).slice(0,5);
+  document.getElementById('ov-last-membres').innerHTML = recent.length
+    ? `<div class="table-wrap"><table><thead><tr><th>Email</th><th>Prénom</th><th>Inscrit le</th><th>Statut</th></tr></thead><tbody>
+       ${recent.map(u => {
+         const disabled = (_disabledMembers||[]).includes(u.id);
+         return `<tr>
+           <td>${esc(u.email)}</td>
+           <td>${esc(u.prenom||'—')}</td>
+           <td>${u.created_at ? new Date(u.created_at).toLocaleDateString('fr-FR') : '—'}</td>
+           <td>${disabled ? '<span class="badge badge--red">Désactivé</span>' : '<span class="badge badge--green">Actif</span>'}</td>
+         </tr>`;
+       }).join('')}</tbody></table></div>`
+    : '<div class="empty"><div class="empty__icon">👤</div>Aucun membre inscrit encore.<br><small style="color:var(--ash-2);">Les membres s\'inscrivent depuis <a href="membres/index.html" style="color:var(--crimson-2);">l\'espace membre</a>.</small></div>';
 }
 
 /* ════════════════════════════════════════
-   MEMBRES
+   MEMBRES — stockés dans data_store.member_profiles
 ════════════════════════════════════════ */
 let _allMembres = [];
+let _disabledMembers = [];
+
 async function loadMembres() {
   document.getElementById('membresContainer').innerHTML = '<div class="loader"></div>';
-  // Essai via Admin API
-  try {
-    const { data, error } = await sb.auth.admin.listUsers({ perPage: 1000 });
-    if (!error && data?.users) {
-      _allMembres = data.users;
-      document.getElementById('ov-membres') && (document.getElementById('ov-membres').textContent = _allMembres.length);
-      renderMembres(_allMembres);
-      return;
-    }
-  } catch(e) {}
-  // Fallback : table profiles si elle existe
-  await loadMembresPublic('membresContainer', false);
-}
-
-async function loadMembresPublic(targetId, compact) {
-  try {
-    const { data, error } = await sb.from('profiles').select('*').order('created_at', { ascending: false });
-    if (!error && data) {
-      _allMembres = data;
-      if (compact) {
-        document.getElementById(targetId).innerHTML = data.slice(0,5).map(u => `<div style="display:flex;align-items:center;gap:.8rem;padding:.6rem 0;border-bottom:1px solid var(--line);">
-          <div style="font-size:.85rem;">${esc(u.prenom||u.email||'Membre')}</div>
-          <div style="color:var(--ash-2);font-size:.75rem;margin-left:auto;">${u.created_at ? new Date(u.created_at).toLocaleDateString('fr-FR') : ''}</div>
-        </div>`).join('') || '<div class="empty">Aucun membre</div>';
-      } else {
-        renderMembresTable(data, targetId);
-      }
-    } else throw new Error();
-  } catch(e) {
-    document.getElementById(targetId).innerHTML = `<div class="empty"><div class="empty__icon">⚠️</div>
-      Impossible de charger les membres.<br>
-      <small style="color:var(--ash-2);">Vérifiez les permissions Supabase (RLS sur auth.users ou table profiles).</small>
+  const [profiles, settings] = await Promise.all([dsGet('member_profiles'), dsGet('settings')]);
+  _allMembres = profiles || [];
+  _disabledMembers = (settings||{}).disabledMembers || [];
+  if (!_allMembres.length) {
+    document.getElementById('membresContainer').innerHTML = `<div class="empty">
+      <div class="empty__icon">👤</div>
+      Aucun membre inscrit pour l'instant.<br>
+      <small style="color:var(--ash-2);">Les comptes apparaissent ici après inscription sur <a href="membres/index.html" style="color:var(--crimson-2);">l'espace membre</a>.</small>
     </div>`;
+    return;
   }
+  renderMembresTable(_allMembres);
 }
 
-function renderMembres(users) {
-  if (!users.length) { document.getElementById('membresContainer').innerHTML = '<div class="empty"><div class="empty__icon">👤</div>Aucun membre inscrit.</div>'; return; }
-  renderMembresTable(users, 'membresContainer');
-}
-
-function renderMembresTable(users, targetId) {
-  const html = `<div class="table-wrap"><table>
-    <thead><tr>
-      <th>Email</th><th>Prénom</th><th>Inscrit le</th><th>Dojo</th><th>Statut</th><th>Actions</th>
-    </tr></thead>
+function renderMembresTable(users) {
+  document.getElementById('membresContainer').innerHTML = `<div class="table-wrap"><table>
+    <thead><tr><th>Email</th><th>Prénom</th><th>Inscrit le</th><th>Statut</th><th>Actions</th></tr></thead>
     <tbody>
-    ${users.map((u,i) => {
-      const prenom = u.user_metadata?.prenom || u.prenom || '—';
-      const dojo   = u.user_metadata?.dojo   || u.dojo   || '—';
-      const actif  = !u.banned_until && !u.disabled;
-      const date   = u.created_at ? new Date(u.created_at).toLocaleDateString('fr-FR') : '—';
-      return `<tr data-uid="${esc(u.id||'')}">
-        <td>${esc(u.email||u.email_address||'—')}</td>
-        <td>${esc(prenom)}</td>
+    ${users.map(u => {
+      const actif = !_disabledMembers.includes(u.id);
+      const date  = u.created_at ? new Date(u.created_at).toLocaleDateString('fr-FR') : '—';
+      return `<tr>
+        <td>${esc(u.email||'—')}</td>
+        <td>${esc(u.prenom||'—')}</td>
         <td>${date}</td>
-        <td>${esc(dojo)}</td>
         <td>${actif ? '<span class="badge badge--green">✓ Actif</span>' : '<span class="badge badge--red">✗ Désactivé</span>'}</td>
-        <td>
-          <div style="display:flex;gap:.4rem;">
-            ${actif
-              ? `<button class="btn btn--warn btn--sm" onclick="banMembre('${esc(u.id)}')">Désactiver</button>`
-              : `<button class="btn btn--success btn--sm" onclick="unbanMembre('${esc(u.id)}')">Réactiver</button>`}
-            <button class="btn btn--danger btn--sm" onclick="deleteMembre('${esc(u.id)}','${esc(u.email||'')}')">Supprimer</button>
-          </div>
-        </td>
+        <td><div style="display:flex;gap:.4rem;">
+          ${actif
+            ? `<button class="btn btn--warn btn--sm" onclick="banMembre('${esc(u.id)}')">Désactiver</button>`
+            : `<button class="btn btn--success btn--sm" onclick="unbanMembre('${esc(u.id)}')">Réactiver</button>`}
+          <button class="btn btn--danger btn--sm" onclick="deleteMembre('${esc(u.id)}','${esc(u.email||'')}')">Supprimer</button>
+        </div></td>
       </tr>`;
     }).join('')}
     </tbody>
   </table></div>`;
-  document.getElementById(targetId).innerHTML = html;
 }
 
 function filterMembres() {
   const q = document.getElementById('membreSearch').value.toLowerCase();
   const filtered = _allMembres.filter(u =>
     (u.email||'').toLowerCase().includes(q) ||
-    (u.user_metadata?.prenom||u.prenom||'').toLowerCase().includes(q)
+    (u.prenom||'').toLowerCase().includes(q)
   );
-  renderMembresTable(filtered, 'membresContainer');
+  renderMembresTable(filtered);
 }
 
 async function banMembre(uid) {
   if (!confirm('Désactiver ce membre ? Il ne pourra plus se connecter.')) return;
-  try {
-    const { error } = await sb.auth.admin.updateUserById(uid, { ban_duration: '876600h' });
-    if (error) throw error;
-    toast('Membre désactivé.', 'ok');
-    loadMembres();
-  } catch(e) { toast('Erreur : ' + e.message, 'err'); }
+  const settings = await dsGet('settings') || {};
+  const disabled = settings.disabledMembers || [];
+  if (!disabled.includes(uid)) disabled.push(uid);
+  settings.disabledMembers = disabled;
+  await dsSet('settings', settings);
+  _disabledMembers = disabled;
+  toast('Membre désactivé.', 'ok');
+  renderMembresTable(_allMembres);
 }
+
 async function unbanMembre(uid) {
-  try {
-    const { error } = await sb.auth.admin.updateUserById(uid, { ban_duration: 'none' });
-    if (error) throw error;
-    toast('Membre réactivé.', 'ok');
-    loadMembres();
-  } catch(e) { toast('Erreur : ' + e.message, 'err'); }
+  const settings = await dsGet('settings') || {};
+  settings.disabledMembers = (settings.disabledMembers||[]).filter(id => id !== uid);
+  await dsSet('settings', settings);
+  _disabledMembers = settings.disabledMembers;
+  toast('Membre réactivé.', 'ok');
+  renderMembresTable(_allMembres);
 }
+
 async function deleteMembre(uid, email) {
-  if (!confirm(`Supprimer définitivement le compte de ${email} ? Cette action est irréversible.`)) return;
-  try {
-    const { error } = await sb.auth.admin.deleteUser(uid);
-    if (error) throw error;
-    toast('Compte supprimé.', 'ok');
-    loadMembres();
-  } catch(e) { toast('Erreur : ' + e.message, 'err'); }
+  if (!confirm(`Supprimer le profil de ${email} du dashboard ?\n(Le compte Supabase Auth reste actif — contactez Supabase pour supprimer l'accès définitivement.)`)) return;
+  const profiles = await dsGet('member_profiles') || [];
+  const updated = profiles.filter(p => p.id !== uid);
+  await dsSet('member_profiles', updated);
+  _allMembres = updated;
+  toast('Profil supprimé du dashboard.', 'ok');
+  renderMembresTable(_allMembres);
+}
+
+/* ════════════════════════════════════════
+   INSCRIPTIONS
+════════════════════════════════════════ */
+let _submissions = [];
+async function loadInscriptions() {
+  document.getElementById('inscriptionsContainer').innerHTML = '<div class="loader"></div>';
+  const insc = await dsGet('inscription');
+  _submissions = (insc?.submissions) || [];
+  renderInscriptions();
+}
+
+function renderInscriptions() {
+  const c = document.getElementById('inscriptionsContainer');
+  if (!_submissions.length) {
+    c.innerHTML = '<div class="empty"><div class="empty__icon">📝</div>Aucune demande d\'inscription reçue.<br><small style="color:var(--ash-2);">Les soumissions apparaissent ici uniquement si l\'ancien formulaire a été utilisé.</small></div>';
+    return;
+  }
+  c.innerHTML = `<div class="table-wrap"><table>
+    <thead><tr><th>Date</th><th>Nom</th><th>Prénom</th><th>Email</th><th>Téléphone</th><th>Dojo</th><th>Niveau</th><th>Actions</th></tr></thead>
+    <tbody>
+    ${_submissions.map((s,i) => `<tr>
+      <td>${s.date ? new Date(s.date).toLocaleDateString('fr-FR') : '—'}</td>
+      <td>${esc(s.nom||'—')}</td>
+      <td>${esc(s.prenom||'—')}</td>
+      <td>${s.email ? `<a href="mailto:${esc(s.email)}" style="color:var(--crimson-2);">${esc(s.email)}</a>` : '—'}</td>
+      <td>${s.phone ? `<a href="tel:${esc(s.phone)}" style="color:var(--ash);">${esc(s.phone)}</a>` : '—'}</td>
+      <td>${esc(s.dojo||'—')}</td>
+      <td>${esc(s.niveau||'—')}</td>
+      <td>
+        <button class="btn btn--ghost btn--sm" onclick="viewSubmission(${i})">Voir</button>
+        <button class="btn btn--danger btn--sm" onclick="deleteSubmission(${i})">✕</button>
+      </td>
+    </tr>`).join('')}
+    </tbody>
+  </table></div>`;
+}
+
+function viewSubmission(i) {
+  const s = _submissions[i];
+  const rows = Object.entries(s).map(([k,v]) => `<div style="display:flex;gap:1rem;padding:.5rem 0;border-bottom:1px solid var(--line);">
+    <span style="font-family:var(--mono);font-size:.7rem;color:var(--ash-2);width:140px;flex-shrink:0;">${esc(k)}</span>
+    <span style="font-size:.85rem;">${esc(String(v))}</span>
+  </div>`).join('');
+  openModal(`Inscription — ${s.prenom||''} ${s.nom||''}`, rows,
+    `<button class="btn btn--ghost" onclick="closeModal()">Fermer</button>`);
+}
+
+async function deleteSubmission(i) {
+  if (!confirm('Supprimer cette demande ?')) return;
+  const insc = await dsGet('inscription') || {};
+  insc.submissions = (insc.submissions||[]).filter((_,j) => j !== i);
+  await dsSet('inscription', insc);
+  _submissions = insc.submissions;
+  toast('Demande supprimée.', 'ok');
+  renderInscriptions();
 }
 
 /* ════════════════════════════════════════
@@ -563,8 +609,8 @@ async function deleteMembre(uid, email) {
 ════════════════════════════════════════ */
 let _plannings = [], _planDojoIdx = 0;
 async function loadPlanning() {
-  await initData();
-  _plannings = JSON.parse(JSON.stringify(getSection('plannings') || []));
+  const raw = await dsGet('plannings');
+  _plannings = JSON.parse(JSON.stringify(raw || []));
   const tabs = document.getElementById('planTabs');
   tabs.innerHTML = _plannings.map((p,i) =>
     `<button class="plan-tab${i===0?' active':''}" onclick="selectPlanDojo(${i})">${esc(p.dojo.replace(/^Dojo d[e']?\s*/i,''))}</button>`
@@ -633,7 +679,7 @@ function coursForm(c) {
     </div>
   </div>`;
 }
-function submitCours(di, ci) {
+async function submitCours(di, ci) {
   const c = {
     name: document.getElementById('cf-name').value.trim(),
     age:  document.getElementById('cf-age').value.trim(),
@@ -644,15 +690,15 @@ function submitCours(di, ci) {
   if (!c.name) { toast('Le nom du cours est obligatoire.', 'err'); return; }
   if (ci === -1) _plannings[di].cours.push(c);
   else _plannings[di].cours[ci] = c;
-  saveSection('plannings', _plannings);
+  await dsSet('plannings', _plannings);
   closeModal();
   toast('Planning mis à jour.', 'ok');
   renderPlanDojo(di);
 }
-function deleteCours(di, ci) {
+async function deleteCours(di, ci) {
   if (!confirm('Supprimer ce créneau ?')) return;
   _plannings[di].cours.splice(ci, 1);
-  saveSection('plannings', _plannings);
+  await dsSet('plannings', _plannings);
   toast('Créneau supprimé.', 'ok');
   renderPlanDojo(di);
 }
@@ -662,8 +708,8 @@ function deleteCours(di, ci) {
 ════════════════════════════════════════ */
 let _actus = [];
 async function loadActus() {
-  await initData();
-  _actus = JSON.parse(JSON.stringify(getSection('actus') || []));
+  const raw = await dsGet('actus');
+  _actus = JSON.parse(JSON.stringify(raw || []));
   renderActus();
 }
 function renderActus() {
@@ -704,7 +750,7 @@ function actuForm(a) {
 }
 function openActuModal() { openModal('Ajouter une actualité', actuForm({}), `<button class="btn btn--ghost" onclick="closeModal()">Annuler</button><button class="btn btn--primary" onclick="submitActu(-1)">Ajouter</button>`); }
 function editActu(i) { openModal('Modifier l\'actualité', actuForm(_actus[i]), `<button class="btn btn--ghost" onclick="closeModal()">Annuler</button><button class="btn btn--primary" onclick="submitActu(${i})">Enregistrer</button>`); }
-function submitActu(i) {
+async function submitActu(i) {
   const a = {
     id: i===-1 ? Date.now() : (_actus[i]?.id || Date.now()),
     title: document.getElementById('af-title').value.trim(),
@@ -718,15 +764,15 @@ function submitActu(i) {
   if (!a.title) { toast('Le titre est obligatoire.', 'err'); return; }
   if (i===-1) _actus.unshift(a);
   else _actus[i] = a;
-  saveSection('actus', _actus);
+  await dsSet('actus', _actus);
   closeModal();
   toast('Actualité enregistrée.', 'ok');
   renderActus();
 }
-function deleteActu(i) {
+async function deleteActu(i) {
   if (!confirm('Supprimer cette actualité ?')) return;
   _actus.splice(i, 1);
-  saveSection('actus', _actus);
+  await dsSet('actus', _actus);
   toast('Actualité supprimée.', 'ok');
   renderActus();
 }
@@ -736,8 +782,8 @@ function deleteActu(i) {
 ════════════════════════════════════════ */
 let _dojos = [];
 async function loadDojosMgr() {
-  await initData();
-  _dojos = JSON.parse(JSON.stringify(getSection('dojos') || []));
+  const raw = await dsGet('dojos');
+  _dojos = JSON.parse(JSON.stringify(raw || []));
   const c = document.getElementById('dojosMgrContent');
   c.innerHTML = _dojos.map((d,i) => `
     <div class="card" style="margin-bottom:1.4rem;">
@@ -765,10 +811,10 @@ async function loadDojosMgr() {
       <button class="btn btn--primary" onclick="saveDojo(${i})">Enregistrer ${esc(d.name.replace(/^Dojo d[e']?\s*/i,''))}</button>
     </div>`).join('');
 }
-function saveDojo(i) {
+async function saveDojo(i) {
   const fields = ['address','phone','acces','instructeur','mapLink','mapEmbed','president','presidentPhone','presidentEmail','tresorier','tresorierPhone','tresorierEmail','secretaire','secretairePhone','secretaireEmail'];
   fields.forEach(f => { const el = document.getElementById(`d${i}-${f}`); if(el) _dojos[i][f] = el.value.trim(); });
-  saveSection('dojos', _dojos);
+  await dsSet('dojos', _dojos);
   toast('Dojo enregistré.', 'ok');
 }
 
@@ -776,53 +822,59 @@ function saveDojo(i) {
    PARAMÈTRES
 ════════════════════════════════════════ */
 async function loadParametres() {
-  await initData();
-  const club     = getData().club || {};
-  const settings = getSection('settings') || {};
+  const [club, settings] = await Promise.all([dsGet('club'), dsGet('settings')]);
+  const c = club || {};
+  const s = settings || {};
   const fields = ['name','shortName','email','phone','founded','facebook','instagram'];
-  fields.forEach(f => { const el = document.getElementById('p-'+f); if(el) el.value = club[f] || ''; });
-  document.getElementById('p-web3forms').value = settings.web3formsKey || '';
+  fields.forEach(f => { const el = document.getElementById('p-'+f); if(el) el.value = c[f] || ''; });
+  document.getElementById('p-web3forms').value = s.web3formsKey || '';
 }
-function saveClub() {
-  const club = JSON.parse(JSON.stringify(getData().club || {}));
+async function saveClub() {
+  const club = (await dsGet('club')) || {};
   ['name','shortName','email','phone','founded','facebook','instagram'].forEach(f => {
-    const el = document.getElementById('p-'+f); if(el) club[f] = f==='founded' ? parseInt(el.value)||club[f] : el.value.trim();
+    const el = document.getElementById('p-'+f);
+    if(el) club[f] = f==='founded' ? (parseInt(el.value)||club[f]) : el.value.trim();
   });
-  saveSection('club', club);
+  await dsSet('club', club);
   toast('Paramètres club enregistrés.', 'ok');
 }
-function saveSettings() {
-  const settings = JSON.parse(JSON.stringify(getSection('settings') || {}));
+async function saveSettings() {
+  const settings = (await dsGet('settings')) || {};
   settings.web3formsKey = document.getElementById('p-web3forms').value.trim();
-  saveSection('settings', settings);
+  await dsSet('settings', settings);
   toast('Paramètres enregistrés.', 'ok');
 }
 
 /* ════════════════════════════════════════
    MOT DE PASSE
 ════════════════════════════════════════ */
-function changePassword() {
+async function changePassword() {
   const cur  = document.getElementById('pwd-current').value;
   const nw   = document.getElementById('pwd-new').value;
   const conf = document.getElementById('pwd-confirm').value;
-  const d    = getData();
-  const stored = d.adminPassword || 'shindo2025';
+  // Récupérer le MDP stocké — dans data_store à la racine (clé pas de section)
+  // data.js stocke adminPassword dans l'objet global, pas dans une section
+  const { data: row } = await sb.from('data_store').select('value').eq('key', '__root__').single().catch(()=>({data:null}));
+  const stored = row?.value?.adminPassword || 'shindo2025';
   if (cur !== stored)  { toast('Mot de passe actuel incorrect.', 'err'); return; }
   if (nw !== conf)     { toast('Les mots de passe ne correspondent pas.', 'err'); return; }
   if (nw.length < 6)   { toast('Minimum 6 caractères.', 'err'); return; }
-  d.adminPassword = nw;
-  saveData(d);
+  // Chercher dans toutes les clés possibles
+  const { data: rows } = await sb.from('data_store').select('key,value');
+  const rootRow = (rows||[]).find(r => r.value && typeof r.value === 'object' && 'adminPassword' in r.value);
+  if (rootRow) {
+    rootRow.value.adminPassword = nw;
+    await sb.from('data_store').upsert({ key: rootRow.key, value: rootRow.value }, { onConflict: 'key' });
+  }
   toast('Mot de passe admin changé.', 'ok');
-  document.getElementById('pwd-current').value = '';
-  document.getElementById('pwd-new').value = '';
-  document.getElementById('pwd-confirm').value = '';
+  ['pwd-current','pwd-new','pwd-confirm'].forEach(id => document.getElementById(id).value = '');
 }
-function changePwdMembres() {
+async function changePwdMembres() {
   const nw = document.getElementById('pwd-membres').value.trim();
   if (!nw) { toast('Entrez un nouveau mot de passe.', 'err'); return; }
-  const membres = JSON.parse(JSON.stringify(getSection('membres') || {}));
+  const membres = (await dsGet('membres')) || {};
   membres.password = nw;
-  saveSection('membres', membres);
+  await dsSet('membres', membres);
   toast('Mot de passe membres changé.', 'ok');
   document.getElementById('pwd-membres').value = '';
 }
@@ -831,9 +883,7 @@ function changePwdMembres() {
 function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
 /* ── Init ── */
-initData().then(() => {
-  loadOverview();
-});
+loadOverview();
 </script>
 </body>
 </html>

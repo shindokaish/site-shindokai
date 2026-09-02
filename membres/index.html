@@ -154,6 +154,16 @@ const SUPABASE_URL = 'https://jcfltkuobbjqicczpsjn.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_15BDd64WYwMfW8VV9ZXDqg_Oa2ySvKc';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+async function _dsGet(key) {
+  try {
+    const { data } = await sb.from('data_store').select('value').eq('key', key).single();
+    return data?.value ?? null;
+  } catch(e) { return null; }
+}
+async function _dsSet(key, value) {
+  await sb.from('data_store').upsert({ key, value }, { onConflict: 'key' });
+}
+
 // Vérifier si déjà connecté
 sb.auth.getSession().then(({ data }) => {
   if (data.session) window.location.href = 'espace.html';
@@ -179,13 +189,23 @@ document.getElementById('loginBtn').addEventListener('click', async () => {
   err.style.display = 'none'; ok.style.display = 'none';
   if (!email || !pwd) { err.textContent = 'Remplis tous les champs.'; err.style.display = 'block'; return; }
   btn.disabled = true; btn.textContent = 'Connexion…';
-  const { error } = await sb.auth.signInWithPassword({ email, password: pwd });
+  const { data: authData, error } = await sb.auth.signInWithPassword({ email, password: pwd });
   if (error) {
     err.textContent = error.message.includes('Invalid') ? 'Email ou mot de passe incorrect.' : error.message;
     err.style.display = 'block';
     btn.disabled = false; btn.textContent = 'Entrer dans le dojo';
   } else {
-    window.location.href = 'espace.html';
+    // Vérifier si le compte est désactivé par l'admin
+    const settings = await _dsGet('settings') || {};
+    const disabled = settings.disabledMembers || [];
+    if (disabled.includes(authData.user.id)) {
+      await sb.auth.signOut();
+      err.textContent = 'Ce compte a été désactivé. Contactez l\'administration.';
+      err.style.display = 'block';
+      btn.disabled = false; btn.textContent = 'Entrer dans le dojo';
+    } else {
+      window.location.href = 'espace.html';
+    }
   }
 });
 
@@ -212,11 +232,20 @@ document.getElementById('signupBtn').addEventListener('click', async () => {
   if (!prenom || !email || !pwd) { err.textContent = 'Remplis tous les champs.'; err.style.display = 'block'; return; }
   if (pwd.length < 8) { err.textContent = 'Le mot de passe doit faire au moins 8 caractères.'; err.style.display = 'block'; return; }
   btn.disabled = true; btn.textContent = 'Création…';
-  const { error } = await sb.auth.signUp({ email, password: pwd, options: { data: { prenom } } });
+  const { data: signUpData, error } = await sb.auth.signUp({ email, password: pwd, options: { data: { prenom } } });
   if (error) {
     err.textContent = error.message; err.style.display = 'block';
     btn.disabled = false; btn.textContent = 'Créer mon compte';
   } else {
+    // Enregistrer le profil dans data_store pour l'admin dashboard
+    try {
+      const profiles = await _dsGet('member_profiles') || [];
+      const uid = signUpData?.user?.id;
+      if (uid && !profiles.find(p => p.id === uid)) {
+        profiles.push({ id: uid, prenom, email, created_at: new Date().toISOString() });
+        await _dsSet('member_profiles', profiles);
+      }
+    } catch(e) { /* non bloquant */ }
     ok.textContent = 'Compte créé ! Vérifie ton email pour confirmer, puis connecte-toi.';
     ok.style.display = 'block';
     btn.disabled = false; btn.textContent = 'Créer mon compte';
