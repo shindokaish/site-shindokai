@@ -97,15 +97,12 @@ h1, h2, h3 { font-family: var(--display); font-weight: 400; text-transform: uppe
 }
 .navbar .wrap { display: flex; align-items: center; justify-content: space-between; }
 .nav__logo {
-  display: flex; align-items: center; gap: .6rem;
-  font-family: var(--display); font-size: 1.3rem; letter-spacing: .03em;
+  display: flex; align-items: center;
 }
-.nav__logo .kanji {
-  width: 44px; height: 44px; border-radius: 50%; overflow: hidden;
-  display: flex; align-items: center; justify-content: center;
-  border: 2px solid var(--crimson-2); flex-shrink: 0;
+.nav__logo-img {
+  height: 48px; width: auto; display: block;
+  object-fit: contain;
 }
-.nav__logo .kanji img { width: 100%; height: 100%; object-fit: cover; }
 .nav__links {
   display: flex; gap: 1.1rem;
   font-family: var(--eyebrow); font-size: .76rem; letter-spacing: .05em; text-transform: uppercase;
@@ -778,8 +775,7 @@ footer { border-top: 1px solid var(--line); background: var(--char); }
 @media (max-width: 1080px) {
   .nav__links { display: none; }
   .nav__burger { display: flex; }
-  /* Cacher le texte du logo, garder uniquement l'image ronde */
-  .nav__logo span:not(.kanji) { display: none; }
+  .nav__logo-img { height: 38px; }
   .club__grid { grid-template-columns: 1fr; }
   .contact-grid { grid-template-columns: 1fr; }
   .form__row { grid-template-columns: 1fr; }

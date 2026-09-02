@@ -34,8 +34,7 @@ function renderNav(activePage) {
 <nav class="navbar" id="navbar">
   <div class="wrap">
     <a href="index.html" class="nav__logo">
-      <span class="kanji"><img src="shinodkai.png" alt="Logo Shindokai-Kan" onerror="this.parentNode.innerHTML='SDK'"></span>
-      <span>${esc(club.shortName)}</span>
+      <img src="img/ChatGPT Image 2 sept. 2026, 09_31_58.png" alt="École de Karaté Shindokai du Nord" class="nav__logo-img">
     </a>
     <ul class="nav__links">${linksHtml}</ul>
     <div class="nav__right">
