@@ -267,18 +267,6 @@ body { background: #0d0d10; min-height: 100vh; margin: 0; }
           <div class="home-card__title">Cours</div>
           <div class="home-card__desc">Kihon, kata, kumite, lexique japonais — toutes les ressources pour apprendre et réviser.</div>
         </div>
-        <div class="home-card" style="opacity:.5;cursor:default;">
-          <div class="home-card__icon">🗓</div>
-          <div class="home-card__label">Bientôt</div>
-          <div class="home-card__title">Planning</div>
-          <div class="home-card__desc">Consulte les horaires et les séances à venir dans ton dojo.</div>
-        </div>
-        <div class="home-card" style="opacity:.5;cursor:default;">
-          <div class="home-card__icon">🏆</div>
-          <div class="home-card__label">Bientôt</div>
-          <div class="home-card__title">Ma progression</div>
-          <div class="home-card__desc">Suis ton parcours et tes résultats aux examens.</div>
-        </div>
       </div>
     </div>
   </section>
@@ -289,15 +277,6 @@ body { background: #0d0d10; min-height: 100vh; margin: 0; }
       <div class="cours-header">
         <h2>Cours &amp; Ressources</h2>
         <p>Explore les techniques, révise les katas et enrichis ton vocabulaire japonais.</p>
-      </div>
-
-      <div class="cours-filters">
-        <button class="filter-btn active" data-cat="tout">Tout</button>
-        <button class="filter-btn" data-cat="kihon">🥋 Kihon</button>
-        <button class="filter-btn" data-cat="kata">🌀 Kata</button>
-        <button class="filter-btn" data-cat="kumite">⚡ Kumite</button>
-        <button class="filter-btn" data-cat="lexique">🇯🇵 Lexique</button>
-        <button class="filter-btn" data-cat="autre">Autre</button>
       </div>
 
       <div class="cours-grid" id="coursGrid">
@@ -357,7 +336,7 @@ async function dsGet(key) {
 }
 
 /* ── Cours ── */
-let _cours = [], _activeCat = 'tout';
+let _cours = [];
 
 const CAT_LABELS  = { kihon:'Kihon', kata:'Kata', kumite:'Kumite', lexique:'Lexique', autre:'Autre' };
 const NIV_LABELS  = { debutant:'Débutant', orange:'Ceinture orange', vert:'Ceinture verte', bleu:'Ceinture bleue', marron:'Ceinture marron', noir:'Ceinture noire' };
@@ -374,13 +353,12 @@ async function loadCours() {
 
 function renderCours() {
   const grid = document.getElementById('coursGrid');
-  const filtered = _activeCat === 'tout' ? _cours : _cours.filter(c => c.categorie === _activeCat);
-  if (!filtered.length) {
-    grid.innerHTML = `<div class="cours-empty"><span>${_activeCat === 'tout' ? '📚' : CAT_ICONS[_activeCat] || '📄'}</span>Aucun cours disponible pour le moment.</div>`;
+  if (!_cours.length) {
+    grid.innerHTML = `<div class="cours-empty"><span>📚</span>Aucun cours disponible pour le moment.</div>`;
     return;
   }
-  grid.innerHTML = filtered.map((c, i) => {
-    const realIdx = _cours.indexOf(c);
+  grid.innerHTML = _cours.map((c, i) => {
+    const realIdx = i;
     const cat = c.categorie || 'autre';
     const niv = c.niveau || 'debutant';
     const dateStr = c.date ? new Date(c.date).toLocaleDateString('fr-FR', { day:'numeric', month:'long', year:'numeric' }) : '';
@@ -406,16 +384,6 @@ function renderCours() {
     </div>`;
   }).join('');
 }
-
-/* Filtres */
-document.querySelectorAll('.filter-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    _activeCat = btn.dataset.cat;
-    renderCours();
-  });
-});
 
 /* ── Modal ── */
 function openModal(idx) {
