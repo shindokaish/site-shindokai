@@ -9,92 +9,462 @@
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@400;500;600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../css/style.css">
 <style>
-body { background: #0d0d10; min-height: 100vh; }
+/* ─── BASE ─── */
+*, *::before, *::after { box-sizing: border-box; }
+body { background: #0d0d10; min-height: 100vh; margin: 0; }
+
+/* ─── HEADER ─── */
 .m-header {
-  background: var(--char); border-bottom: 1px solid rgba(201,162,39,.2);
-  padding: 1rem 0; position: sticky; top: 0; z-index: 50;
+  background: rgba(13,13,16,.95); backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(201,162,39,.18);
+  padding: .85rem 0; position: sticky; top: 0; z-index: 100;
 }
 .m-header .wrap { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
-.m-header__logo { display: flex; align-items: center; gap: .6rem; }
-.m-header__logo img { width: 36px; height: 36px; border-radius: 50%; border: 1px solid rgba(201,162,39,.3); }
-.m-header__logo span { font-family: var(--display); font-size: 1.1rem; color: var(--gold); text-transform: uppercase; }
-.m-hello { font-family: var(--eyebrow); font-size: .85rem; color: var(--ash); }
+.m-header__logo { display: flex; align-items: center; gap: .7rem; text-decoration: none; }
+.m-header__logo img { width: 34px; height: 34px; border-radius: 50%; border: 1px solid rgba(201,162,39,.35); }
+.m-header__logo span { font-family: var(--display); font-size: 1.05rem; color: var(--gold); text-transform: uppercase; letter-spacing: .04em; }
+.m-header__right { display: flex; align-items: center; gap: 1.2rem; }
+.m-hello { font-family: var(--mono); font-size: .75rem; color: var(--ash); }
 .m-hello strong { color: var(--bone); }
 .btn-deconnect {
-  font-family: var(--mono); font-size: .7rem; color: var(--ash-2);
-  border: 1px solid var(--line); padding: .4rem .8rem;
+  font-family: var(--mono); font-size: .68rem; letter-spacing: .06em;
+  color: var(--ash-2); border: 1px solid var(--line); padding: .38rem .75rem;
   background: none; cursor: pointer; transition: color .2s, border-color .2s;
 }
 .btn-deconnect:hover { color: var(--crimson-2); border-color: var(--crimson-2); }
 
-.m-welcome {
-  text-align: center; padding: 6rem 2rem;
+/* ─── NAV TABS ─── */
+.m-nav {
+  background: rgba(13,13,16,.7); border-bottom: 1px solid var(--line);
+  padding: 0; overflow-x: auto; scrollbar-width: none;
 }
-.m-welcome__logo {
-  width: 90px; height: 90px; border-radius: 50%;
-  border: 2px solid rgba(201,162,39,.3); padding: 6px; margin: 0 auto 2rem;
+.m-nav::-webkit-scrollbar { display: none; }
+.m-nav .wrap { display: flex; gap: 0; }
+.m-nav__btn {
+  flex-shrink: 0; padding: .9rem 1.4rem; background: none; border: none;
+  border-bottom: 2px solid transparent; margin-bottom: -1px;
+  font-family: var(--eyebrow); font-size: .72rem; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--ash-2); cursor: pointer;
+  transition: color .2s, border-color .2s; white-space: nowrap;
+}
+.m-nav__btn:hover { color: var(--ash); }
+.m-nav__btn.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+/* ─── SECTIONS ─── */
+.m-section { display: none; padding: 3rem 0 5rem; }
+.m-section.active { display: block; }
+
+/* ─── ACCUEIL ─── */
+.welcome-hero {
+  display: flex; flex-direction: column; align-items: center;
+  text-align: center; padding: 4rem 1rem 3rem;
+}
+.welcome-logo {
+  width: 84px; height: 84px; border-radius: 50%;
+  border: 2px solid rgba(201,162,39,.3); padding: 6px; margin-bottom: 2rem;
   animation: spinSlow 20s linear infinite;
 }
-@keyframes spinSlow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-.m-welcome__logo img { width: 100%; border-radius: 50%; }
-.m-welcome__title {
-  font-family: var(--display); font-size: 2.4rem; text-transform: uppercase;
+@keyframes spinSlow { to { transform: rotate(360deg); } }
+.welcome-logo img { width: 100%; border-radius: 50%; }
+.welcome-title {
+  font-family: var(--display); font-size: 2.8rem; text-transform: uppercase;
   background: linear-gradient(135deg, #e8c050, var(--gold));
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  margin-bottom: .8rem;
+  line-height: 1; margin-bottom: .9rem;
 }
-.m-welcome__sub { font-family: var(--mono); font-size: .85rem; color: var(--ash); line-height: 1.7; }
-.m-coming {
-  display: inline-block; margin-top: 2.5rem;
-  font-family: var(--eyebrow); font-size: .7rem; letter-spacing: .12em; text-transform: uppercase;
-  color: var(--ash-2); border: 1px solid var(--line); padding: .6rem 1.4rem;
+.welcome-sub { font-family: var(--mono); font-size: .85rem; color: var(--ash); line-height: 1.8; max-width: 480px; }
+.home-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.2rem; margin-top: 3rem; }
+.home-card {
+  background: var(--char); border: 1px solid var(--line); padding: 1.6rem;
+  cursor: pointer; transition: border-color .25s, transform .25s;
+  display: flex; flex-direction: column; gap: .8rem;
+}
+.home-card:hover { border-color: rgba(201,162,39,.4); transform: translateY(-3px); }
+.home-card__icon { font-size: 1.8rem; }
+.home-card__label {
+  font-family: var(--eyebrow); font-size: .68rem; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--gold);
+}
+.home-card__title { font-family: var(--display); font-size: 1.2rem; text-transform: uppercase; color: var(--bone); }
+.home-card__desc { font-family: var(--mono); font-size: .75rem; color: var(--ash); line-height: 1.6; }
+
+/* ─── COURS ─── */
+.cours-header { margin-bottom: 2.4rem; }
+.cours-header h2 {
+  font-family: var(--display); font-size: 2rem; text-transform: uppercase;
+  color: var(--bone); margin: 0 0 .4rem;
+}
+.cours-header p { font-family: var(--mono); font-size: .8rem; color: var(--ash); margin: 0; }
+
+/* Filtres */
+.cours-filters { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 2rem; }
+.filter-btn {
+  font-family: var(--eyebrow); font-size: .65rem; letter-spacing: .1em;
+  text-transform: uppercase; padding: .42rem .95rem;
+  background: none; border: 1px solid var(--line); color: var(--ash-2);
+  cursor: pointer; transition: color .2s, border-color .2s, background .2s;
+}
+.filter-btn:hover { color: var(--bone); border-color: var(--ash); }
+.filter-btn.active { background: var(--gold); color: #111; border-color: var(--gold); }
+
+/* Grille cours */
+.cours-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.4rem; }
+.cours-card {
+  background: var(--char); border: 1px solid var(--line);
+  display: flex; flex-direction: column; cursor: pointer;
+  transition: border-color .25s, box-shadow .25s, transform .25s;
+  overflow: hidden;
+}
+.cours-card:hover {
+  border-color: rgba(201,162,39,.4);
+  box-shadow: 0 8px 32px -8px rgba(0,0,0,.5);
+  transform: translateY(-2px);
+}
+.cours-card__img {
+  height: 160px; overflow: hidden; position: relative;
+  background: var(--char-2);
+}
+.cours-card__img img { width: 100%; height: 100%; object-fit: cover; }
+.cours-card__img-placeholder {
+  width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+  font-size: 3rem; opacity: .3;
+}
+.cours-card__cat {
+  position: absolute; top: .7rem; left: .7rem;
+  font-family: var(--eyebrow); font-size: .58rem; letter-spacing: .12em;
+  text-transform: uppercase; padding: .28rem .65rem;
+}
+.cours-card__body { padding: 1.3rem; flex: 1; display: flex; flex-direction: column; gap: .7rem; }
+.cours-card__niveau { display: flex; align-items: center; gap: .5rem; }
+.niveau-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.cours-card__title { font-family: var(--display); font-size: 1.1rem; text-transform: uppercase; color: var(--bone); line-height: 1.2; }
+.cours-card__desc { font-family: var(--mono); font-size: .75rem; color: var(--ash); line-height: 1.6; flex: 1; }
+.cours-card__footer {
+  padding: .8rem 1.3rem; border-top: 1px solid var(--line);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.cours-card__date { font-family: var(--mono); font-size: .65rem; color: var(--ash-2); }
+.cours-card__cta {
+  font-family: var(--eyebrow); font-size: .62rem; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--gold);
+  display: flex; align-items: center; gap: .3rem;
+}
+
+/* Empty state */
+.cours-empty {
+  grid-column: 1/-1; text-align: center; padding: 4rem 1rem;
+  font-family: var(--mono); font-size: .85rem; color: var(--ash-2);
+}
+.cours-empty span { display: block; font-size: 2.5rem; margin-bottom: 1rem; opacity: .3; }
+
+/* ─── MODAL ─── */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,.85);
+  z-index: 200; display: flex; align-items: flex-start; justify-content: center;
+  padding: 2rem 1rem; overflow-y: auto; opacity: 0; pointer-events: none;
+  transition: opacity .25s;
+}
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+.modal {
+  background: var(--char); border: 1px solid rgba(201,162,39,.25);
+  width: 100%; max-width: 720px; min-height: 200px;
+  box-shadow: 0 24px 80px -16px rgba(0,0,0,.7);
+  transform: translateY(20px); transition: transform .3s;
+  position: relative;
+}
+.modal-overlay.open .modal { transform: translateY(0); }
+.modal__img { height: 260px; overflow: hidden; position: relative; background: var(--char-2); }
+.modal__img img { width: 100%; height: 100%; object-fit: cover; }
+.modal__img-placeholder { width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:5rem;opacity:.15; }
+.modal__close {
+  position: absolute; top: 1rem; right: 1rem; z-index: 10;
+  width: 36px; height: 36px; background: rgba(0,0,0,.7); border: 1px solid rgba(255,255,255,.15);
+  color: var(--bone); font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: background .2s;
+}
+.modal__close:hover { background: var(--crimson-2); }
+.modal__body { padding: 2rem 2.2rem 2.5rem; }
+.modal__meta { display: flex; align-items: center; gap: .8rem; flex-wrap: wrap; margin-bottom: 1.2rem; }
+.modal__cat { font-family: var(--eyebrow); font-size: .62rem; letter-spacing: .1em; text-transform: uppercase; padding: .3rem .75rem; }
+.modal__niveau { display: flex; align-items: center; gap: .4rem; font-family: var(--mono); font-size: .7rem; color: var(--ash); }
+.modal__title { font-family: var(--display); font-size: 1.9rem; text-transform: uppercase; color: var(--bone); line-height: 1.1; margin-bottom: 1.2rem; }
+.modal__contenu {
+  font-family: var(--body); font-size: .9rem; color: var(--ash); line-height: 1.85;
+}
+.modal__contenu h3 { font-family: var(--display); text-transform: uppercase; color: var(--bone); font-size: 1rem; margin: 1.5rem 0 .5rem; }
+.modal__contenu ul { padding-left: 1.2rem; margin: .6rem 0; }
+.modal__contenu li { margin-bottom: .35rem; }
+.modal__contenu strong { color: var(--bone); }
+.modal__contenu em { color: var(--gold); font-style: normal; }
+
+/* Couleurs catégories */
+.cat--kihon   { background: rgba(201,162,39,.15); color: var(--gold); border: 1px solid rgba(201,162,39,.3); }
+.cat--kata     { background: rgba(99,102,241,.15); color: #a5b4fc; border: 1px solid rgba(99,102,241,.3); }
+.cat--kumite   { background: rgba(224,36,27,.15); color: var(--crimson-2); border: 1px solid rgba(224,36,27,.3); }
+.cat--lexique  { background: rgba(34,197,94,.12); color: #6ee7b7; border: 1px solid rgba(34,197,94,.25); }
+.cat--autre    { background: rgba(255,255,255,.07); color: var(--ash); border: 1px solid var(--line); }
+
+/* Couleurs niveaux */
+.niv--debutant  { background: #fff; }
+.niv--orange    { background: #f97316; }
+.niv--vert      { background: #22c55e; }
+.niv--bleu      { background: #3b82f6; }
+.niv--marron    { background: #92400e; }
+.niv--noir      { background: #111; border: 1px solid rgba(255,255,255,.3); }
+
+/* Loader */
+.cours-loader { grid-column:1/-1; text-align:center; padding: 4rem; }
+.spinner { width: 32px; height: 32px; border: 2px solid var(--line); border-top-color: var(--gold); border-radius: 50%; animation: spin .7s linear infinite; margin: 0 auto 1rem; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 600px) {
+  .cours-grid { grid-template-columns: 1fr; }
+  .modal__body { padding: 1.4rem 1.2rem 2rem; }
+  .welcome-title { font-size: 2rem; }
 }
 </style>
 </head>
 <body>
 
+<!-- HEADER -->
 <header class="m-header">
   <div class="wrap">
-    <div class="m-header__logo">
+    <a class="m-header__logo" href="../index.html">
       <img src="../shinodkai.png" alt="EKSN">
       <span>Espace Membres</span>
-    </div>
-    <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
+    </a>
+    <div class="m-header__right">
       <span class="m-hello">Bienvenue, <strong id="prenomDisplay">—</strong></span>
-      <button class="btn-deconnect" id="deconnectBtn">Se déconnecter</button>
+      <button class="btn-deconnect" id="deconnectBtn">Déconnexion</button>
     </div>
   </div>
 </header>
 
-<main>
-  <div class="m-welcome">
-    <div class="m-welcome__logo">
-      <img src="../shinodkai.png" alt="Logo EKSN">
-    </div>
-    <div class="m-welcome__title">Dojo numérique</div>
-    <p class="m-welcome__sub">
-      Ton espace membres est en cours de construction.<br>
-      Des contenus exclusifs arrivent bientôt — quiz, ressources, actualités privées.
-    </p>
-    <div class="m-coming">Contenu à venir</div>
+<!-- NAV TABS -->
+<nav class="m-nav">
+  <div class="wrap">
+    <button class="m-nav__btn active" data-section="accueil">🏠 Accueil</button>
+    <button class="m-nav__btn" data-section="cours">📚 Cours</button>
   </div>
+</nav>
+
+<main>
+
+  <!-- ══ ACCUEIL ══ -->
+  <section class="m-section active" id="sec-accueil">
+    <div class="wrap">
+      <div class="welcome-hero">
+        <div class="welcome-logo">
+          <img src="../shinodkai.png" alt="Logo EKSN">
+        </div>
+        <div class="welcome-title">Dojo numérique</div>
+        <p class="welcome-sub">Bienvenue dans ton espace exclusif. Retrouve ici les ressources pédagogiques, les cours, les techniques et tout le contenu pour progresser en karaté.</p>
+      </div>
+      <div class="home-cards">
+        <div class="home-card" onclick="goSection('cours')">
+          <div class="home-card__icon">📚</div>
+          <div class="home-card__label">Apprentissage</div>
+          <div class="home-card__title">Cours</div>
+          <div class="home-card__desc">Kihon, kata, kumite, lexique japonais — toutes les ressources pour apprendre et réviser.</div>
+        </div>
+        <div class="home-card" style="opacity:.5;cursor:default;">
+          <div class="home-card__icon">🗓</div>
+          <div class="home-card__label">Bientôt</div>
+          <div class="home-card__title">Planning</div>
+          <div class="home-card__desc">Consulte les horaires et les séances à venir dans ton dojo.</div>
+        </div>
+        <div class="home-card" style="opacity:.5;cursor:default;">
+          <div class="home-card__icon">🏆</div>
+          <div class="home-card__label">Bientôt</div>
+          <div class="home-card__title">Ma progression</div>
+          <div class="home-card__desc">Suis ton parcours et tes résultats aux examens.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ COURS ══ -->
+  <section class="m-section" id="sec-cours">
+    <div class="wrap">
+      <div class="cours-header">
+        <h2>Cours &amp; Ressources</h2>
+        <p>Explore les techniques, révise les katas et enrichis ton vocabulaire japonais.</p>
+      </div>
+
+      <div class="cours-filters">
+        <button class="filter-btn active" data-cat="tout">Tout</button>
+        <button class="filter-btn" data-cat="kihon">🥋 Kihon</button>
+        <button class="filter-btn" data-cat="kata">🌀 Kata</button>
+        <button class="filter-btn" data-cat="kumite">⚡ Kumite</button>
+        <button class="filter-btn" data-cat="lexique">🇯🇵 Lexique</button>
+        <button class="filter-btn" data-cat="autre">Autre</button>
+      </div>
+
+      <div class="cours-grid" id="coursGrid">
+        <div class="cours-loader"><div class="spinner"></div><div style="font-family:var(--mono);font-size:.75rem;color:var(--ash-2);">Chargement…</div></div>
+      </div>
+    </div>
+  </section>
+
 </main>
+
+<!-- ══ MODAL COURS ══ -->
+<div class="modal-overlay" id="coursModal">
+  <div class="modal">
+    <button class="modal__close" id="modalClose">✕</button>
+    <div class="modal__img" id="modalImg"></div>
+    <div class="modal__body">
+      <div class="modal__meta">
+        <span class="modal__cat" id="modalCat"></span>
+        <span class="modal__niveau" id="modalNiveau"></span>
+      </div>
+      <div class="modal__title" id="modalTitle"></div>
+      <div class="modal__contenu" id="modalContenu"></div>
+    </div>
+  </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
 const _sb = supabase.createClient('https://jcfltkuobbjqicczpsjn.supabase.co','sb_publishable_15BDd64WYwMfW8VV9ZXDqg_Oa2ySvKc');
 
+/* ── Auth guard ── */
 _sb.auth.getSession().then(({ data }) => {
   if (!data.session) { window.location.href = 'index.html'; return; }
   const user = data.session.user;
-  const prenom = user.user_metadata.prenom || user.email.split('@')[0];
-  document.getElementById('prenomDisplay').textContent = prenom;
+  document.getElementById('prenomDisplay').textContent = user.user_metadata?.prenom || user.email.split('@')[0];
 });
 
 document.getElementById('deconnectBtn').addEventListener('click', async () => {
   await _sb.auth.signOut();
   window.location.href = 'index.html';
 });
+
+/* ── Navigation sections ── */
+function goSection(name) {
+  document.querySelectorAll('.m-nav__btn').forEach(b => b.classList.toggle('active', b.dataset.section === name));
+  document.querySelectorAll('.m-section').forEach(s => s.classList.toggle('active', s.id === 'sec-' + name));
+  if (name === 'cours') loadCours();
+}
+document.querySelectorAll('.m-nav__btn').forEach(btn => {
+  btn.addEventListener('click', () => goSection(btn.dataset.section));
+});
+
+/* ── Données ── */
+async function dsGet(key) {
+  const { data } = await _sb.from('data_store').select('value').eq('key', key).single();
+  return data?.value ?? null;
+}
+
+/* ── Cours ── */
+let _cours = [], _activeCat = 'tout';
+
+const CAT_LABELS  = { kihon:'Kihon', kata:'Kata', kumite:'Kumite', lexique:'Lexique', autre:'Autre' };
+const NIV_LABELS  = { debutant:'Débutant', orange:'Ceinture orange', vert:'Ceinture verte', bleu:'Ceinture bleue', marron:'Ceinture marron', noir:'Ceinture noire' };
+const NIV_CLASS   = { debutant:'niv--debutant', orange:'niv--orange', vert:'niv--vert', bleu:'niv--bleu', marron:'niv--marron', noir:'niv--noir' };
+const CAT_ICONS   = { kihon:'🥋', kata:'🌀', kumite:'⚡', lexique:'🇯🇵', autre:'📄' };
+const CAT_CLASS   = { kihon:'cat--kihon', kata:'cat--kata', kumite:'cat--kumite', lexique:'cat--lexique', autre:'cat--autre' };
+
+async function loadCours() {
+  const grid = document.getElementById('coursGrid');
+  grid.innerHTML = '<div class="cours-loader"><div class="spinner"></div><div style="font-family:var(--mono);font-size:.75rem;color:var(--ash-2);">Chargement…</div></div>';
+  _cours = await dsGet('cours') || [];
+  renderCours();
+}
+
+function renderCours() {
+  const grid = document.getElementById('coursGrid');
+  const filtered = _activeCat === 'tout' ? _cours : _cours.filter(c => c.categorie === _activeCat);
+  if (!filtered.length) {
+    grid.innerHTML = `<div class="cours-empty"><span>${_activeCat === 'tout' ? '📚' : CAT_ICONS[_activeCat] || '📄'}</span>Aucun cours disponible pour le moment.</div>`;
+    return;
+  }
+  grid.innerHTML = filtered.map((c, i) => {
+    const realIdx = _cours.indexOf(c);
+    const cat = c.categorie || 'autre';
+    const niv = c.niveau || 'debutant';
+    const dateStr = c.date ? new Date(c.date).toLocaleDateString('fr-FR', { day:'numeric', month:'long', year:'numeric' }) : '';
+    return `<div class="cours-card" onclick="openModal(${realIdx})">
+      <div class="cours-card__img">
+        ${c.image
+          ? `<img src="${esc(c.image)}" alt="${esc(c.titre)}" loading="lazy">`
+          : `<div class="cours-card__img-placeholder">${CAT_ICONS[cat] || '📄'}</div>`}
+        <span class="cours-card__cat ${CAT_CLASS[cat]}">${CAT_LABELS[cat] || cat}</span>
+      </div>
+      <div class="cours-card__body">
+        <div class="cours-card__niveau">
+          <span class="niveau-dot ${NIV_CLASS[niv]}"></span>
+          <span style="font-family:var(--mono);font-size:.68rem;color:var(--ash-2);">${NIV_LABELS[niv] || niv}</span>
+        </div>
+        <div class="cours-card__title">${esc(c.titre)}</div>
+        <div class="cours-card__desc">${esc(c.description || '')}</div>
+      </div>
+      <div class="cours-card__footer">
+        <span class="cours-card__date">${dateStr}</span>
+        <span class="cours-card__cta">Lire →</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* Filtres */
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    _activeCat = btn.dataset.cat;
+    renderCours();
+  });
+});
+
+/* ── Modal ── */
+function openModal(idx) {
+  const c = _cours[idx];
+  if (!c) return;
+  const cat = c.categorie || 'autre';
+  const niv = c.niveau || 'debutant';
+
+  // Image
+  const imgEl = document.getElementById('modalImg');
+  imgEl.innerHTML = c.image
+    ? `<img src="${esc(c.image)}" alt="${esc(c.titre)}">`
+    : `<div class="modal__img-placeholder">${CAT_ICONS[cat] || '📄'}</div>`;
+
+  document.getElementById('modalCat').textContent = CAT_LABELS[cat] || cat;
+  document.getElementById('modalCat').className = `modal__cat ${CAT_CLASS[cat]}`;
+  document.getElementById('modalNiveau').innerHTML = `<span class="niveau-dot ${NIV_CLASS[niv]}" style="width:10px;height:10px;"></span> ${NIV_LABELS[niv] || niv}`;
+  document.getElementById('modalTitle').textContent = c.titre;
+  document.getElementById('modalContenu').innerHTML = renderContenu(c.contenu || c.description || '');
+
+  const overlay = document.getElementById('coursModal');
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('coursModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.getElementById('modalClose').addEventListener('click', closeModal);
+document.getElementById('coursModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+/* Rendu contenu : markdown basique */
+function renderContenu(text) {
+  return text
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g,'<em>$1</em>')
+    .replace(/^### (.+)$/gm,'<h3>$1</h3>')
+    .replace(/^## (.+)$/gm,'<h3>$1</h3>')
+    .replace(/^- (.+)$/gm,'<li>$1</li>')
+    .replace(/(<li>.*<\/li>)/s, m => '<ul>' + m + '</ul>')
+    .replace(/\n{2,}/g,'</p><p>')
+    .replace(/^(?!<[hul])/,'<p>') + '</p>';
+}
+
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 </script>
 </body>
 </html>
