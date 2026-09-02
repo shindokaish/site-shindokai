@@ -904,37 +904,72 @@ async function loadDojosMgr() {
   const raw = await dsGet('dojos');
   _dojos = JSON.parse(JSON.stringify(raw || []));
   const c = document.getElementById('dojosMgrContent');
-  c.innerHTML = _dojos.map((d,i) => `
-    <div class="card" style="margin-bottom:1.4rem;">
+  c.innerHTML = _dojos.map((d,i) => {
+    const short = d.name.replace(/^Dojo d[e']?\s*/i,'');
+    return `<div class="card" style="margin-bottom:1.4rem;">
       <div class="card__title">${esc(d.name)}</div>
-      <div class="form-grid" style="margin-bottom:1rem;">
+
+      <div style="font-family:var(--eyebrow);font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ash-2);margin-bottom:.7rem;">Informations</div>
+      <div class="form-grid" style="margin-bottom:1.2rem;">
         <div class="field"><label>Adresse</label><input id="d${i}-address" value="${esc(d.address||'')}"></div>
         <div class="field"><label>Téléphone</label><input id="d${i}-phone" value="${esc(d.phone||'')}"></div>
-        <div class="field"><label>Accès</label><input id="d${i}-acces" value="${esc(d.acces||'')}"></div>
+        <div class="field"><label>Accès (transports)</label><input id="d${i}-acces" value="${esc(d.acces||'')}"></div>
         <div class="field"><label>Instructeur référent</label><input id="d${i}-instructeur" value="${esc(d.instructeur||'')}"></div>
-        <div class="field"><label>Lien Maps</label><input id="d${i}-mapLink" value="${esc(d.mapLink||'')}"></div>
+        <div class="field"><label>Lien Google Maps</label><input id="d${i}-mapLink" value="${esc(d.mapLink||'')}"></div>
         <div class="field"><label>Embed Maps (iframe src)</label><input id="d${i}-mapEmbed" value="${esc(d.mapEmbed||'')}"></div>
       </div>
-      <div style="font-family:var(--eyebrow);font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ash-2);margin-bottom:.7rem;">Bureau</div>
-      <div class="form-grid form-grid--3" style="margin-bottom:1rem;">
-        <div class="field"><label>Président</label><input id="d${i}-president" value="${esc(d.president||'')}"></div>
-        <div class="field"><label>Tél. président</label><input id="d${i}-presidentPhone" value="${esc(d.presidentPhone||'')}"></div>
-        <div class="field"><label>Email président</label><input id="d${i}-presidentEmail" value="${esc(d.presidentEmail||'')}"></div>
-        <div class="field"><label>Trésorier</label><input id="d${i}-tresorier" value="${esc(d.tresorier||'')}"></div>
-        <div class="field"><label>Tél. trésorier</label><input id="d${i}-tresorierPhone" value="${esc(d.tresorierPhone||'')}"></div>
-        <div class="field"><label>Email trésorier</label><input id="d${i}-tresorierEmail" value="${esc(d.tresorierEmail||'')}"></div>
-        <div class="field"><label>Secrétaire</label><input id="d${i}-secretaire" value="${esc(d.secretaire||'')}"></div>
-        <div class="field"><label>Tél. secrétaire</label><input id="d${i}-secretairePhone" value="${esc(d.secretairePhone||'')}"></div>
-        <div class="field"><label>Email secrétaire</label><input id="d${i}-secretaireEmail" value="${esc(d.secretaireEmail||'')}"></div>
+
+      <div style="font-family:var(--eyebrow);font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ash-2);margin-bottom:.7rem;">Logo du dojo</div>
+      <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.2rem;">
+        ${d.logo ? `<img src="${esc(d.logo)}" style="width:56px;height:56px;object-fit:contain;border:1px solid var(--line);padding:4px;">` : '<div style="width:56px;height:56px;background:var(--char-2);border:1px solid var(--line);"></div>'}
+        <div class="field" style="margin:0;flex:1;"><label>Nouveau logo (fichier)</label><input type="file" accept="image/*" id="d${i}-logo-file" style="background:var(--char-2);border:1px solid var(--line);color:var(--bone);padding:.4rem;"></div>
       </div>
-      <button class="btn btn--primary" onclick="saveDojo(${i})">Enregistrer ${esc(d.name.replace(/^Dojo d[e']?\s*/i,''))}</button>
-    </div>`).join('');
+
+      <div style="font-family:var(--eyebrow);font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ash-2);margin-bottom:.7rem;">Bureau</div>
+      ${['president','tresorier','secretaire'].map((role,ri) => {
+        const cap = role === 'president' ? 'Président' : role === 'tresorier' ? 'Trésorier' : 'Secrétaire';
+        const photoKey = role + 'Photo';
+        return `<div style="background:var(--char-2);border:1px solid var(--line);padding:1rem;margin-bottom:.8rem;">
+          <div style="font-size:.72rem;color:var(--crimson-2);font-family:var(--eyebrow);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.7rem;">${cap}</div>
+          <div class="form-grid form-grid--3">
+            <div class="field"><label>Nom</label><input id="d${i}-${role}" value="${esc(d[role]||'')}"></div>
+            <div class="field"><label>Téléphone</label><input id="d${i}-${role}Phone" value="${esc(d[role+'Phone']||'')}"></div>
+            <div class="field"><label>Email</label><input id="d${i}-${role}Email" value="${esc(d[role+'Email']||'')}"></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:1rem;margin-top:.7rem;">
+            ${d[photoKey] ? `<img src="${esc(d[photoKey])}" style="width:44px;height:44px;object-fit:cover;border-radius:50%;border:1px solid var(--line);">` : '<div style="width:44px;height:44px;border-radius:50%;background:var(--char);border:1px solid var(--line);"></div>'}
+            <div class="field" style="margin:0;flex:1;"><label>Photo ${cap}</label><input type="file" accept="image/*" id="d${i}-${role}-photo" style="background:var(--char);border:1px solid var(--line);color:var(--bone);padding:.35rem;"></div>
+          </div>
+        </div>`;
+      }).join('')}
+
+      <button class="btn btn--primary" onclick="saveDojo(${i})">💾 Enregistrer ${esc(short)}</button>
+    </div>`;
+  }).join('');
 }
 async function saveDojo(i) {
-  const fields = ['address','phone','acces','instructeur','mapLink','mapEmbed','president','presidentPhone','presidentEmail','tresorier','tresorierPhone','tresorierEmail','secretaire','secretairePhone','secretaireEmail'];
-  fields.forEach(f => { const el = document.getElementById(`d${i}-${f}`); if(el) _dojos[i][f] = el.value.trim(); });
+  const btn = document.querySelectorAll(`[onclick="saveDojo(${i})"]`)[0];
+  if(btn){btn.disabled=true;btn.textContent='Enregistrement…';}
+  const textFields = ['address','phone','acces','instructeur','mapLink','mapEmbed','president','presidentPhone','presidentEmail','tresorier','tresorierPhone','tresorierEmail','secretaire','secretairePhone','secretaireEmail'];
+  textFields.forEach(f => { const el = document.getElementById(`d${i}-${f}`); if(el) _dojos[i][f] = el.value.trim(); });
+  // Logo upload
+  const logoFile = document.getElementById(`d${i}-logo-file`)?.files[0];
+  if (logoFile) {
+    try { _dojos[i].logo = await uploadImage(logoFile, `dojos/dojo-${i}-logo-${Date.now()}.${logoFile.name.split('.').pop()}`); }
+    catch(e) { toast('Erreur logo : '+e.message,'err'); }
+  }
+  // Photos bureau
+  for (const role of ['president','tresorier','secretaire']) {
+    const pf = document.getElementById(`d${i}-${role}-photo`)?.files[0];
+    if (pf) {
+      try { _dojos[i][role+'Photo'] = await uploadImage(pf, `dojos/dojo-${i}-${role}-${Date.now()}.${pf.name.split('.').pop()}`); }
+      catch(e) { toast(`Erreur photo ${role} : `+e.message,'err'); }
+    }
+  }
   await dsSet('dojos', _dojos);
+  if(btn){btn.disabled=false;btn.textContent='💾 Enregistrer';}
   toast('Dojo enregistré.', 'ok');
+  loadDojosMgr();
 }
 
 /* ════════════════════════════════════════
