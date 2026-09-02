@@ -198,6 +198,13 @@ tr:hover td{background:rgba(255,255,255,.02);}
     <div class="nav-item" onclick="showSection('actus')"><span class="nav-item__icon">📰</span>Actualités</div>
     <div class="nav-item" onclick="showSection('dojos-mgr')"><span class="nav-item__icon">🏯</span>Dojos</div>
 
+    <div class="sidebar__section" style="margin-top:.8rem;">Club</div>
+    <div class="nav-item" onclick="showSection('coachs')"><span class="nav-item__icon">🥋</span>Coachs</div>
+    <div class="nav-item" onclick="showSection('ceintures')"><span class="nav-item__icon">🥇</span>Ceintures noires</div>
+    <div class="nav-item" onclick="showSection('tarifs')"><span class="nav-item__icon">💰</span>Tarifs</div>
+    <div class="nav-item" onclick="showSection('stats')"><span class="nav-item__icon">📈</span>Compteurs</div>
+    <div class="nav-item" onclick="showSection('pdf')"><span class="nav-item__icon">📄</span>PDF Inscription</div>
+
     <div class="sidebar__section" style="margin-top:.8rem;">Administration</div>
     <div class="nav-item" onclick="showSection('parametres')"><span class="nav-item__icon">⚙️</span>Paramètres</div>
     <div class="nav-item" onclick="showSection('motdepasse')"><span class="nav-item__icon">🔑</span>Mot de passe</div>
@@ -387,6 +394,53 @@ tr:hover td{background:rgba(255,255,255,.02);}
       </div>
     </div>
 
+    <!-- ══════════ COACHS ══════════ -->
+    <div class="section" id="sec-coachs">
+      <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
+        <div><h1>Coachs</h1><p>Gérez l'équipe d'encadrement</p></div>
+        <button class="btn btn--primary" onclick="openCoachModal(-1)">+ Ajouter un coach</button>
+      </div>
+      <div id="coachsContainer"></div>
+    </div>
+
+    <!-- ══════════ CEINTURES NOIRES ══════════ -->
+    <div class="section" id="sec-ceintures">
+      <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
+        <div><h1>Ceintures noires & marrons</h1><p>Pratiquants gradés affichés sur la page encadrement</p></div>
+        <button class="btn btn--primary" onclick="openCeintureModal(-1)">+ Ajouter</button>
+      </div>
+      <div id="ceintureshContainer"></div>
+    </div>
+
+    <!-- ══════════ TARIFS ══════════ -->
+    <div class="section" id="sec-tarifs">
+      <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
+        <div><h1>Tarifs</h1><p>Formules d'adhésion affichées sur le site</p></div>
+        <button class="btn btn--primary" onclick="openTarifModal(-1)">+ Ajouter une formule</button>
+      </div>
+      <div id="tarifsContainer"></div>
+    </div>
+
+    <!-- ══════════ COMPTEURS ══════════ -->
+    <div class="section" id="sec-stats">
+      <div class="page-header"><h1>Compteurs</h1><p>Les 4 chiffres clés affichés sur la page d'accueil</p></div>
+      <div id="statsContainer"></div>
+    </div>
+
+    <!-- ══════════ PDF INSCRIPTION ══════════ -->
+    <div class="section" id="sec-pdf">
+      <div class="page-header"><h1>PDF Inscription</h1><p>Dossier d'inscription téléchargeable sur le site</p></div>
+      <div class="card" style="max-width:520px;">
+        <div class="card__title">Dossier actuel</div>
+        <div id="pdfCurrentUrl" style="font-family:var(--mono);font-size:.78rem;color:var(--ash);margin-bottom:1rem;word-break:break-all;"></div>
+        <div style="display:flex;flex-direction:column;gap:.8rem;">
+          <div class="field"><label>Nouveau fichier PDF</label><input type="file" accept="application/pdf" id="pdfDashInput" style="background:var(--char-2);border:1px solid var(--line);color:var(--bone);padding:.6rem;"></div>
+          <button class="btn btn--primary" onclick="uploadPdfDash()">⬆ Uploader & remplacer</button>
+          <div id="pdfDashMsg" style="font-family:var(--mono);font-size:.78rem;color:var(--gold);"></div>
+        </div>
+      </div>
+    </div>
+
   </main>
 </div>
 
@@ -446,6 +500,11 @@ function showSection(id) {
   if (id === 'dojos-mgr')    loadDojosMgr();
   if (id === 'parametres')   loadParametres();
   if (id === 'overview')     loadOverview();
+  if (id === 'coachs')       loadCoachs();
+  if (id === 'ceintures')    loadCeintures();
+  if (id === 'tarifs')       loadTarifs();
+  if (id === 'stats')        loadStats();
+  if (id === 'pdf')          loadPdf();
 }
 
 /* ── Modal ── */
@@ -946,6 +1005,297 @@ async function changePwdMembres() {
   await dsSet('membres', membres);
   toast('Mot de passe membres changé.', 'ok');
   document.getElementById('pwd-membres').value = '';
+}
+
+/* ════════════════════════════════════════
+   UPLOAD IMAGE SUPABASE STORAGE
+════════════════════════════════════════ */
+async function uploadImage(file, path) {
+  const { error } = await sb.storage.from('site-images').upload(path, file, { upsert: true, contentType: file.type });
+  if (error) throw error;
+  const { data: { publicUrl } } = sb.storage.from('site-images').getPublicUrl(path);
+  return publicUrl + '?t=' + Date.now();
+}
+
+/* ════════════════════════════════════════
+   COACHS
+════════════════════════════════════════ */
+let _coachs = [];
+async function loadCoachs() {
+  const raw = await dsGet('coaches');
+  _coachs = JSON.parse(JSON.stringify(raw || []));
+  renderCoachs();
+}
+function renderCoachs() {
+  const c = document.getElementById('coachsContainer');
+  if (!_coachs.length) { c.innerHTML = '<div class="empty"><div class="empty__icon">🥋</div>Aucun coach.</div>'; return; }
+  c.innerHTML = `<div class="table-wrap"><table>
+    <thead><tr><th>Photo</th><th>Nom</th><th>Grade</th><th>Rôle</th><th>Dojo</th><th>Actions</th></tr></thead>
+    <tbody>${_coachs.map((co,i) => `<tr>
+      <td>${co.photo ? `<img src="${esc(co.photo)}" style="width:40px;height:40px;object-fit:cover;border-radius:50%;border:1px solid var(--line);">` : `<div style="width:40px;height:40px;border-radius:50%;background:var(--char-2);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:.75rem;">${esc(co.initials||'?')}</div>`}</td>
+      <td><strong>${esc(co.name)}</strong></td>
+      <td style="color:var(--ash);font-size:.82rem;">${esc(co.grade||'—')}</td>
+      <td style="color:var(--ash);font-size:.82rem;">${esc(co.role||'—')}</td>
+      <td style="color:var(--ash);font-size:.82rem;">${esc(co.dojo||'—')}</td>
+      <td><div style="display:flex;gap:.4rem;">
+        <button class="btn btn--ghost btn--sm" onclick="openCoachModal(${i})">✏️</button>
+        <button class="btn btn--danger btn--sm" onclick="deleteCoach(${i})">✕</button>
+      </div></td>
+    </tr>`).join('')}</tbody>
+  </table></div>`;
+}
+function coachForm(co) {
+  return `<div style="display:flex;flex-direction:column;gap:.8rem;">
+    <div class="field"><label>Nom</label><input id="cf2-name" value="${esc(co.name||'')}"></div>
+    <div class="field"><label>Initiales (si pas de photo)</label><input id="cf2-initials" value="${esc(co.initials||'')}" maxlength="2" placeholder="DA"></div>
+    <div class="field"><label>Grade</label><input id="cf2-grade" value="${esc(co.grade||'')}" placeholder="5e Dan Shindokai"></div>
+    <div class="field"><label>Rôle</label><input id="cf2-role" value="${esc(co.role||'')}" placeholder="Instructeur Fédéral"></div>
+    <div class="field"><label>Bio</label><textarea id="cf2-bio">${esc(co.bio||'')}</textarea></div>
+    <div class="field"><label>Dojo</label><input id="cf2-dojo" value="${esc(co.dojo||'')}"></div>
+    <div class="field"><label>Photo (fichier)</label><input type="file" accept="image/*" id="cf2-photo-file" style="background:var(--char-2);border:1px solid var(--line);color:var(--bone);padding:.5rem;"></div>
+    ${co.photo ? `<img src="${esc(co.photo)}" style="width:80px;height:80px;object-fit:cover;border-radius:4px;border:1px solid var(--line);">` : ''}
+  </div>`;
+}
+function openCoachModal(i) {
+  const co = i === -1 ? {} : _coachs[i];
+  openModal(i === -1 ? 'Ajouter un coach' : 'Modifier le coach', coachForm(co),
+    `<button class="btn btn--ghost" onclick="closeModal()">Annuler</button>
+     <button class="btn btn--primary" onclick="submitCoach(${i})">Enregistrer</button>`);
+}
+async function submitCoach(i) {
+  const btn = document.querySelector('#modalBtns .btn--primary');
+  btn.disabled = true; btn.textContent = 'Enregistrement…';
+  const co = i === -1 ? {} : {..._coachs[i]};
+  co.name     = document.getElementById('cf2-name').value.trim();
+  co.initials = document.getElementById('cf2-initials').value.trim().toUpperCase();
+  co.grade    = document.getElementById('cf2-grade').value.trim();
+  co.role     = document.getElementById('cf2-role').value.trim();
+  co.bio      = document.getElementById('cf2-bio').value.trim();
+  co.dojo     = document.getElementById('cf2-dojo').value.trim();
+  if (!co.name) { toast('Le nom est obligatoire.', 'err'); btn.disabled=false; btn.textContent='Enregistrer'; return; }
+  const fileInput = document.getElementById('cf2-photo-file');
+  if (fileInput.files[0]) {
+    try {
+      const slug = co.name.toLowerCase().replace(/\s+/g,'-');
+      co.photo = await uploadImage(fileInput.files[0], `coaches/coach-${slug}-${Date.now()}.${fileInput.files[0].name.split('.').pop()}`);
+    } catch(e) { toast('Erreur upload photo : ' + e.message, 'err'); btn.disabled=false; btn.textContent='Enregistrer'; return; }
+  }
+  if (i === -1) _coachs.push(co); else _coachs[i] = co;
+  await dsSet('coaches', _coachs);
+  closeModal(); toast('Coach enregistré.', 'ok'); renderCoachs();
+}
+async function deleteCoach(i) {
+  if (!confirm(`Supprimer ${_coachs[i].name} ?`)) return;
+  _coachs.splice(i, 1);
+  await dsSet('coaches', _coachs);
+  toast('Coach supprimé.', 'ok'); renderCoachs();
+}
+
+/* ════════════════════════════════════════
+   CEINTURES NOIRES & PRATICIENS
+════════════════════════════════════════ */
+let _ceintures = [];
+async function loadCeintures() {
+  const [cn, pr] = await Promise.all([dsGet('ceintures_noires'), dsGet('praticiens')]);
+  _ceintures = [...(cn||[]).map(c=>({...c,_src:'ceintures_noires'})), ...(pr||[]).map(c=>({...c,_src:'praticiens'}))];
+  renderCeintures();
+}
+function renderCeintures() {
+  const c = document.getElementById('ceintureshContainer');
+  if (!_ceintures.length) { c.innerHTML = '<div class="empty"><div class="empty__icon">🥇</div>Aucun pratiquant gradé.</div>'; return; }
+  c.innerHTML = `<div class="table-wrap"><table>
+    <thead><tr><th>Photo</th><th>Nom</th><th>Grade</th><th>Dojo</th><th>Catégorie</th><th>Actions</th></tr></thead>
+    <tbody>${_ceintures.map((p,i) => `<tr>
+      <td>${p.photo ? `<img src="${esc(p.photo)}" style="width:40px;height:40px;object-fit:cover;border-radius:50%;border:1px solid var(--line);">` : `<div style="width:40px;height:40px;border-radius:50%;background:${p._src==='ceintures_noires'?'#1a1a1a':'#7b4f2e'};display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:.75rem;color:#fff;">${esc(p.initials||'?')}</div>`}</td>
+      <td>${esc(p.name||'À renseigner')}</td>
+      <td>${esc(p.grade||'—')}</td>
+      <td style="color:var(--ash);font-size:.82rem;">${esc(p.dojo||'—')}</td>
+      <td><span class="badge ${p._src==='ceintures_noires'?'badge--grey':'badge--orange'}">${p._src==='ceintures_noires'?'Noire':'Marron'}</span></td>
+      <td><div style="display:flex;gap:.4rem;">
+        <button class="btn btn--ghost btn--sm" onclick="openCeintureModal(${i})">✏️</button>
+        <button class="btn btn--danger btn--sm" onclick="deleteCeinture(${i})">✕</button>
+      </div></td>
+    </tr>`).join('')}</tbody>
+  </table></div>`;
+}
+function ceintureForm(p) {
+  return `<div style="display:flex;flex-direction:column;gap:.8rem;">
+    <div class="field"><label>Nom complet</label><input id="cb-name" value="${esc(p.name||'')}"></div>
+    <div class="field"><label>Initiales</label><input id="cb-initials" value="${esc(p.initials||'')}" maxlength="2"></div>
+    <div class="field"><label>Grade</label><input id="cb-grade" value="${esc(p.grade||'')}" placeholder="1er Dan, 2e Dan…"></div>
+    <div class="field"><label>Dojo</label><input id="cb-dojo" value="${esc(p.dojo||'')}"></div>
+    <div class="field"><label>Catégorie</label>
+      <select id="cb-src">
+        <option value="ceintures_noires" ${(p._src||'')==='ceintures_noires'?'selected':''}>Ceinture noire</option>
+        <option value="praticiens" ${(p._src||'')==='praticiens'?'selected':''}>Ceinture marron</option>
+      </select>
+    </div>
+    <div class="field"><label>Photo (fichier)</label><input type="file" accept="image/*" id="cb-photo-file" style="background:var(--char-2);border:1px solid var(--line);color:var(--bone);padding:.5rem;"></div>
+    ${p.photo ? `<img src="${esc(p.photo)}" style="width:70px;height:70px;object-fit:cover;border-radius:4px;">` : ''}
+  </div>`;
+}
+function openCeintureModal(i) {
+  const p = i === -1 ? {} : _ceintures[i];
+  openModal(i === -1 ? 'Ajouter un pratiquant' : 'Modifier', ceintureForm(p),
+    `<button class="btn btn--ghost" onclick="closeModal()">Annuler</button>
+     <button class="btn btn--primary" onclick="submitCeinture(${i})">Enregistrer</button>`);
+}
+async function submitCeinture(i) {
+  const btn = document.querySelector('#modalBtns .btn--primary');
+  btn.disabled = true; btn.textContent = 'Enregistrement…';
+  const p = i === -1 ? {} : {..._ceintures[i]};
+  p.name     = document.getElementById('cb-name').value.trim();
+  p.initials = document.getElementById('cb-initials').value.trim().toUpperCase();
+  p.grade    = document.getElementById('cb-grade').value.trim();
+  p.dojo     = document.getElementById('cb-dojo').value.trim();
+  p._src     = document.getElementById('cb-src').value;
+  const fileInput = document.getElementById('cb-photo-file');
+  if (fileInput.files[0]) {
+    try {
+      const slug = (p.name||'pratiquant').toLowerCase().replace(/\s+/g,'-');
+      p.photo = await uploadImage(fileInput.files[0], `grades/grade-${slug}-${Date.now()}.${fileInput.files[0].name.split('.').pop()}`);
+    } catch(e) { toast('Erreur upload : ' + e.message, 'err'); btn.disabled=false; btn.textContent='Enregistrer'; return; }
+  }
+  if (i === -1) _ceintures.push(p); else _ceintures[i] = p;
+  await _saveCeintures();
+  closeModal(); toast('Enregistré.', 'ok'); renderCeintures();
+}
+async function deleteCeinture(i) {
+  if (!confirm('Supprimer ce pratiquant ?')) return;
+  _ceintures.splice(i, 1);
+  await _saveCeintures();
+  toast('Supprimé.', 'ok'); renderCeintures();
+}
+async function _saveCeintures() {
+  const noires = _ceintures.filter(p=>p._src==='ceintures_noires').map(({_src,...p})=>p);
+  const marrons = _ceintures.filter(p=>p._src==='praticiens').map(({_src,...p})=>p);
+  await Promise.all([dsSet('ceintures_noires', noires), dsSet('praticiens', marrons)]);
+}
+
+/* ════════════════════════════════════════
+   TARIFS
+════════════════════════════════════════ */
+let _tarifs = [];
+async function loadTarifs() {
+  const raw = await dsGet('tarifs');
+  _tarifs = JSON.parse(JSON.stringify(raw || []));
+  renderTarifs();
+}
+function renderTarifs() {
+  const c = document.getElementById('tarifsContainer');
+  if (!_tarifs.length) { c.innerHTML = '<div class="empty"><div class="empty__icon">💰</div>Aucun tarif.</div>'; return; }
+  c.innerHTML = `<div class="table-wrap"><table>
+    <thead><tr><th>Nom</th><th>Prix</th><th>Période</th><th>Mis en avant</th><th>Avantages</th><th>Actions</th></tr></thead>
+    <tbody>${_tarifs.map((t,i) => `<tr>
+      <td><strong>${esc(t.name)}</strong></td>
+      <td style="font-family:var(--mono);color:var(--crimson-2);">${esc(t.price)}</td>
+      <td style="color:var(--ash);font-size:.82rem;">${esc(t.period||'')}</td>
+      <td>${t.featured?'<span class="badge badge--green">✓ Oui</span>':'<span class="badge badge--grey">Non</span>'}</td>
+      <td style="color:var(--ash);font-size:.78rem;">${(t.features||[]).slice(0,2).map(f=>esc(f)).join('<br>')}</td>
+      <td><div style="display:flex;gap:.4rem;">
+        <button class="btn btn--ghost btn--sm" onclick="openTarifModal(${i})">✏️</button>
+        <button class="btn btn--danger btn--sm" onclick="deleteTarif(${i})">✕</button>
+      </div></td>
+    </tr>`).join('')}</tbody>
+  </table></div>`;
+}
+function tarifForm(t) {
+  const features = (t.features||['','','']).concat(['','','']).slice(0,4);
+  return `<div style="display:flex;flex-direction:column;gap:.8rem;">
+    <div class="field"><label>Nom de la formule</label><input id="tf-name" value="${esc(t.name||'')}"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem;">
+      <div class="field"><label>Prix</label><input id="tf-price" value="${esc(t.price||'')}" placeholder="180€"></div>
+      <div class="field"><label>Période</label><input id="tf-period" value="${esc(t.period||'')}" placeholder="/an"></div>
+    </div>
+    <div class="field"><label><input type="checkbox" id="tf-featured" ${t.featured?'checked':''} style="width:auto;margin-right:.5rem;">Mettre en avant (carte dorée)</label></div>
+    <div style="font-family:var(--eyebrow);font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ash-2);">Avantages (4 max)</div>
+    ${features.map((f,i)=>`<div class="field"><input id="tf-feat${i}" value="${esc(f)}" placeholder="Avantage ${i+1}"></div>`).join('')}
+  </div>`;
+}
+function openTarifModal(i) {
+  const t = i === -1 ? {} : _tarifs[i];
+  openModal(i === -1 ? 'Ajouter une formule' : 'Modifier la formule', tarifForm(t),
+    `<button class="btn btn--ghost" onclick="closeModal()">Annuler</button>
+     <button class="btn btn--primary" onclick="submitTarif(${i})">Enregistrer</button>`);
+}
+async function submitTarif(i) {
+  const t = i === -1 ? {} : {..._tarifs[i]};
+  t.name     = document.getElementById('tf-name').value.trim();
+  t.price    = document.getElementById('tf-price').value.trim();
+  t.period   = document.getElementById('tf-period').value.trim();
+  t.featured = document.getElementById('tf-featured').checked;
+  t.features = [0,1,2,3].map(j => document.getElementById(`tf-feat${j}`).value.trim()).filter(Boolean);
+  if (!t.name) { toast('Le nom est obligatoire.', 'err'); return; }
+  if (i === -1) _tarifs.push(t); else _tarifs[i] = t;
+  await dsSet('tarifs', _tarifs);
+  closeModal(); toast('Tarif enregistré.', 'ok'); renderTarifs();
+}
+async function deleteTarif(i) {
+  if (!confirm(`Supprimer la formule "${_tarifs[i].name}" ?`)) return;
+  _tarifs.splice(i, 1);
+  await dsSet('tarifs', _tarifs);
+  toast('Tarif supprimé.', 'ok'); renderTarifs();
+}
+
+/* ════════════════════════════════════════
+   COMPTEURS HOMEPAGE
+════════════════════════════════════════ */
+let _stats = [];
+async function loadStats() {
+  const raw = await dsGet('stats');
+  _stats = JSON.parse(JSON.stringify(raw || []));
+  renderStats();
+}
+function renderStats() {
+  const c = document.getElementById('statsContainer');
+  c.innerHTML = `<div style="display:flex;flex-direction:column;gap:1rem;max-width:600px;">
+    ${_stats.map((s,i) => `<div class="card" style="display:grid;grid-template-columns:100px 80px 1fr auto;gap:.8rem;align-items:center;padding:1rem 1.4rem;">
+      <div class="field" style="margin:0;"><label>Valeur</label><input id="st-val${i}" type="number" value="${esc(String(s.value||0))}" style="text-align:center;font-family:var(--mono);font-size:1.1rem;"></div>
+      <div class="field" style="margin:0;"><label>Suffixe</label><input id="st-suf${i}" value="${esc(s.suffix||'')}" placeholder="+, e Dan…"></div>
+      <div class="field" style="margin:0;"><label>Libellé</label><input id="st-lbl${i}" value="${esc(s.label||'')}"></div>
+      <button class="btn btn--danger btn--sm" onclick="deleteStat(${i})" title="Supprimer">✕</button>
+    </div>`).join('')}
+    <div style="display:flex;gap:.8rem;margin-top:.5rem;">
+      <button class="btn btn--ghost" onclick="addStat()">+ Ajouter un compteur</button>
+      <button class="btn btn--primary" onclick="saveStats()">💾 Enregistrer tout</button>
+    </div>
+  </div>`;
+}
+function addStat() { _stats.push({ value: 0, suffix: '', label: '' }); renderStats(); }
+async function deleteStat(i) { _stats.splice(i,1); renderStats(); }
+async function saveStats() {
+  _stats.forEach((s,i) => {
+    s.value  = parseInt(document.getElementById(`st-val${i}`)?.value)||0;
+    s.suffix = document.getElementById(`st-suf${i}`)?.value.trim()||'';
+    s.label  = document.getElementById(`st-lbl${i}`)?.value.trim()||'';
+  });
+  await dsSet('stats', _stats);
+  toast('Compteurs enregistrés.', 'ok');
+}
+
+/* ════════════════════════════════════════
+   PDF INSCRIPTION
+════════════════════════════════════════ */
+async function loadPdf() {
+  const settings = await dsGet('settings') || {};
+  const url = settings.inscriptionPdfUrl || '';
+  document.getElementById('pdfCurrentUrl').innerHTML = url
+    ? `PDF actuel : <a href="${esc(url)}" target="_blank" style="color:var(--crimson-2);">${esc(url.split('?')[0].split('/').pop())}</a>`
+    : '<span style="color:var(--ash-2);font-style:italic;">Aucun PDF uploadé</span>';
+}
+async function uploadPdfDash() {
+  const file = document.getElementById('pdfDashInput').files[0];
+  const msg  = document.getElementById('pdfDashMsg');
+  if (!file) { msg.textContent = 'Sélectionnez un fichier PDF.'; return; }
+  msg.textContent = 'Upload en cours…';
+  try {
+    const url = await uploadImage(file, 'inscription/dossier-inscription.pdf');
+    const settings = (await dsGet('settings')) || {};
+    settings.inscriptionPdfUrl = url;
+    await dsSet('settings', settings);
+    msg.textContent = '✓ PDF mis en ligne !';
+    loadPdf();
+  } catch(e) { msg.textContent = 'Erreur : ' + e.message; }
 }
 
 /* ── Escape ── */
