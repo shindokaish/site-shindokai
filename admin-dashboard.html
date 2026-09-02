@@ -209,6 +209,7 @@ tr:hover td{background:rgba(255,255,255,.02);}
     <div class="nav-item" onclick="showSection('pdf')"><span class="nav-item__icon">📄</span>PDF Inscription</div>
 
     <div class="sidebar__section" style="margin-top:.8rem;">Administration</div>
+    <div class="nav-item" onclick="showSection('apparence')"><span class="nav-item__icon">🎨</span>Apparence</div>
     <div class="nav-item" onclick="showSection('parametres')"><span class="nav-item__icon">⚙️</span>Paramètres</div>
     <div class="nav-item" onclick="showSection('motdepasse')"><span class="nav-item__icon">🔑</span>Mot de passe</div>
 
@@ -373,6 +374,28 @@ tr:hover td{background:rgba(255,255,255,.02);}
       </div>
     </div>
 
+    <!-- ══════════ APPARENCE ══════════ -->
+    <div class="section" id="sec-apparence">
+      <div class="page-header"><h1>Apparence</h1><p>Tailles et proportions des images affichées sur le site</p></div>
+      <div class="card" style="max-width:600px;">
+        <div class="card__title">Logo du header</div>
+        <div style="margin-bottom:1.4rem;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem;">
+            <label style="font-family:var(--eyebrow);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ash-2);">Hauteur du logo</label>
+            <span id="app-logoH-val" style="font-family:var(--mono);font-size:.85rem;color:var(--gold);min-width:40px;text-align:right;">80px</span>
+          </div>
+          <input type="range" id="app-logoH" min="40" max="140" step="2" value="80"
+            style="width:100%;accent-color:var(--crimson-2);"
+            oninput="document.getElementById('app-logoH-val').textContent=this.value+'px'">
+          <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:.6rem;color:var(--ash-2);margin-top:.3rem;"><span>40px</span><span>140px</span></div>
+        </div>
+        <div style="background:var(--char-2);border:1px solid var(--line);padding:1.2rem;display:flex;align-items:center;justify-content:center;margin-bottom:1.4rem;">
+          <img src="img/logo-shindokai-nord.png" id="app-logo-preview" style="height:80px;width:auto;object-fit:contain;transition:height .2s;" alt="Aperçu logo">
+        </div>
+        <button class="btn btn--primary" onclick="saveApparence()">💾 Enregistrer</button>
+      </div>
+    </div>
+
     <!-- ══════════ MOT DE PASSE ══════════ -->
     <div class="section" id="sec-motdepasse">
       <div class="page-header">
@@ -518,6 +541,7 @@ function showSection(id) {
   if (id === 'stats')        loadStats();
   if (id === 'pdf')          loadPdf();
   if (id === 'cours')        loadCoursMgr();
+  if (id === 'apparence')    loadApparence();
 }
 
 /* ── Modal ── */
@@ -1445,6 +1469,31 @@ async function deleteCours(idx) {
   _cours.splice(idx, 1);
   await dsSet('cours', _cours);
   toast('Cours supprimé.','ok'); renderCoursMgr();
+}
+
+/* ════════════════════════════════════════
+   APPARENCE
+════════════════════════════════════════ */
+async function loadApparence() {
+  const settings = await dsGet('settings') || {};
+  const h = settings.logoHeight || 80;
+  const slider = document.getElementById('app-logoH');
+  if (slider) {
+    slider.value = h;
+    document.getElementById('app-logoH-val').textContent = h + 'px';
+    document.getElementById('app-logo-preview').style.height = h + 'px';
+    slider.oninput = function() {
+      document.getElementById('app-logoH-val').textContent = this.value + 'px';
+      document.getElementById('app-logo-preview').style.height = this.value + 'px';
+    };
+  }
+}
+async function saveApparence() {
+  const h = parseInt(document.getElementById('app-logoH').value);
+  const settings = await dsGet('settings') || {};
+  settings.logoHeight = h;
+  await dsSet('settings', settings);
+  toast('Apparence enregistrée. Rechargez le site pour voir le résultat.', 'ok');
 }
 
 /* ── Escape ── */

@@ -55,6 +55,13 @@ function renderNav(activePage) {
   const placeholder = document.getElementById('nav-placeholder');
   if (placeholder) placeholder.innerHTML = html;
 
+  // Taille logo dynamique (depuis settings.logoHeight)
+  const settings = getSection('settings');
+  if (settings?.logoHeight) {
+    const logoImg = document.querySelector('.nav__logo-img');
+    if (logoImg) logoImg.style.height = settings.logoHeight + 'px';
+  }
+
   // Comportement nav scroll
   const navbar = document.getElementById('navbar');
   if (navbar) {
