@@ -249,12 +249,17 @@ tr:hover td{background:rgba(255,255,255,.02);}
       <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
         <div>
           <h1>Membres</h1>
-          <p>Comptes de l'espace membre (Supabase Auth)</p>
+          <p>Comptes de l'espace membre</p>
         </div>
-        <div style="display:flex;gap:.6rem;">
-          <input id="membreSearch" class="field input" style="background:var(--char-2);border:1px solid var(--line);color:var(--bone);padding:.5rem .8rem;font-size:.82rem;width:200px;" placeholder="Rechercher…" oninput="filterMembres()">
+        <div style="display:flex;gap:.6rem;flex-wrap:wrap;">
+          <input id="membreSearch" style="background:var(--char-2);border:1px solid var(--line);color:var(--bone);padding:.5rem .8rem;font-size:.82rem;width:200px;" placeholder="Rechercher…" oninput="filterMembres()">
+          <button class="btn btn--success" onclick="syncFromAuth()" title="Importer tous les comptes depuis Supabase Auth">⬇ Sync Auth</button>
           <button class="btn btn--primary" onclick="loadMembres()">↻ Actualiser</button>
         </div>
+      </div>
+      <div id="sync-banner" style="display:none;background:rgba(201,162,39,.08);border:1px solid rgba(201,162,39,.3);padding:.8rem 1rem;margin-bottom:1rem;font-size:.82rem;color:var(--gold);">
+        <strong>⚙ Configuration requise</strong> — Le bouton "Sync Auth" nécessite l'Edge Function <code>list-members</code>.
+        Consultez les <a href="#" onclick="showSection('parametres');return false;" style="color:var(--gold);">Paramètres</a> pour la configurer.
       </div>
       <div id="membresContainer"><div class="loader"></div></div>
     </div>
@@ -330,6 +335,28 @@ tr:hover td{background:rgba(255,255,255,.02);}
             <div style="display:flex;flex-direction:column;gap:.8rem;">
               <div class="field"><label>Clé Web3Forms (formulaire de contact)</label><input id="p-web3forms" type="text" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"></div>
               <button class="btn btn--primary" onclick="saveSettings()">Enregistrer</button>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card__title">Edge Function — Synchronisation membres</div>
+            <p style="font-size:.82rem;color:var(--ash);margin-bottom:1rem;line-height:1.6;">
+              Permet au dashboard d'importer <strong>tous</strong> les comptes Supabase Auth (y compris les anciens membres).
+              À configurer une fois dans le dashboard Supabase.
+            </p>
+            <div style="display:flex;flex-direction:column;gap:.8rem;">
+              <div class="field"><label>URL Edge Function list-members</label><input id="p-edgeFnUrl" type="url" placeholder="https://jcfltkuobbjqicczpsjn.supabase.co/functions/v1/list-members"></div>
+              <div class="field"><label>Token secret (ADMIN_SECRET_TOKEN)</label><input id="p-edgeToken" type="password" placeholder="••••••••••••••••"></div>
+              <button class="btn btn--primary" onclick="saveEdgeFn()">Enregistrer</button>
+              <details style="font-size:.78rem;color:var(--ash-2);">
+                <summary style="cursor:pointer;color:var(--ash);">Instructions de déploiement →</summary>
+                <div style="margin-top:.8rem;padding:.8rem;background:var(--char-2);border:1px solid var(--line);font-family:var(--mono);font-size:.72rem;line-height:1.7;">
+                  1. Ouvre <a href="https://supabase.com/dashboard" target="_blank" style="color:var(--crimson-2);">supabase.com/dashboard</a><br>
+                  2. Projet shindokai → Edge Functions → New function → nom : <strong>list-members</strong><br>
+                  3. Colle le code depuis <code>supabase/functions/list-members/index.ts</code><br>
+                  4. Settings → Secrets → ajoute <strong>ADMIN_SECRET_TOKEN</strong> = un mot de passe de ton choix<br>
+                  5. Reviens ici, entre l'URL et ce token, Enregistre
+                </div>
+              </details>
             </div>
           </div>
         </div>
@@ -466,6 +493,39 @@ async function loadOverview() {
 ════════════════════════════════════════ */
 let _allMembres = [];
 let _disabledMembers = [];
+
+async function syncFromAuth() {
+  const settings = await dsGet('settings') || {};
+  const url   = settings.edgeFnUrl;
+  const token = settings.edgeToken;
+  if (!url || !token) {
+    document.getElementById('sync-banner').style.display = 'block';
+    showSection('parametres');
+    return;
+  }
+  toast('Synchronisation en cours…', 'ok');
+  try {
+    const res = await fetch(url, { headers: { 'x-admin-token': token } });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const { users } = await res.json();
+    // Fusionner avec member_profiles existants (pas d'écrasement des données manuelles)
+    const existing = await dsGet('member_profiles') || [];
+    const merged = [...users];
+    existing.forEach(p => {
+      if (!merged.find(u => u.id === p.id)) merged.push(p);
+    });
+    merged.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+    await dsSet('member_profiles', merged);
+    _allMembres = merged;
+    _disabledMembers = settings.disabledMembers || [];
+    toast(`✓ ${merged.length} membres synchronisés.`, 'ok');
+    renderMembresTable(_allMembres);
+    document.getElementById('ov-membres') && (document.getElementById('ov-membres').textContent = merged.length);
+  } catch(e) {
+    toast('Erreur sync : ' + e.message, 'err');
+    document.getElementById('sync-banner').style.display = 'block';
+  }
+}
 
 async function loadMembres() {
   document.getElementById('membresContainer').innerHTML = '<div class="loader"></div>';
@@ -828,6 +888,15 @@ async function loadParametres() {
   const fields = ['name','shortName','email','phone','founded','facebook','instagram'];
   fields.forEach(f => { const el = document.getElementById('p-'+f); if(el) el.value = c[f] || ''; });
   document.getElementById('p-web3forms').value = s.web3formsKey || '';
+  document.getElementById('p-edgeFnUrl').value  = s.edgeFnUrl   || '';
+  document.getElementById('p-edgeToken').value  = s.edgeToken   || '';
+}
+async function saveEdgeFn() {
+  const settings = (await dsGet('settings')) || {};
+  settings.edgeFnUrl  = document.getElementById('p-edgeFnUrl').value.trim();
+  settings.edgeToken  = document.getElementById('p-edgeToken').value.trim();
+  await dsSet('settings', settings);
+  toast('Configuration Edge Function enregistrée.', 'ok');
 }
 async function saveClub() {
   const club = (await dsGet('club')) || {};
