@@ -505,7 +505,7 @@ async function syncFromAuth() {
   }
   toast('Synchronisation en cours…', 'ok');
   try {
-    const res = await fetch(url, { headers: { 'x-admin-token': token } });
+    const res = await fetch(url, { headers: { 'x-admin-token': token, 'Authorization': 'Bearer ' + SB_KEY } });
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const { users } = await res.json();
     // Fusionner avec member_profiles existants (pas d'écrasement des données manuelles)
