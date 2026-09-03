@@ -196,6 +196,7 @@ tr:hover td{background:rgba(255,255,255,.02);}
     <div class="sidebar__section" style="margin-top:.8rem;">Contenu</div>
     <div class="nav-item" onclick="showSection('planning')"><span class="nav-item__icon">📅</span>Planning</div>
     <div class="nav-item" onclick="showSection('actus')"><span class="nav-item__icon">📰</span>Actualités</div>
+    <div class="nav-item" onclick="showSection('faq')"><span class="nav-item__icon">❓</span>FAQ</div>
     <div class="nav-item" onclick="showSection('galerie')"><span class="nav-item__icon">🖼️</span>Galerie</div>
     <div class="nav-item" onclick="showSection('dojos-mgr')"><span class="nav-item__icon">🏯</span>Dojos</div>
 
@@ -346,6 +347,8 @@ tr:hover td{background:rgba(255,255,255,.02);}
           <div class="card">
             <div class="card__title">Intégrations</div>
             <div style="display:flex;flex-direction:column;gap:.8rem;">
+              <div class="field"><label>WhatsApp (numéro international, ex: 33612345678)</label><input id="p-whatsapp" type="text" placeholder="336XXXXXXXX"></div>
+              <div class="field"><label>Message WhatsApp pré-rempli</label><input id="p-whatsappMsg" type="text" placeholder="Bonjour, je souhaite un essai gratuit…"></div>
               <div class="field"><label>Clé Web3Forms (formulaire de contact)</label><input id="p-web3forms" type="text" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"></div>
               <button class="btn btn--primary" onclick="saveSettings()">Enregistrer</button>
             </div>
@@ -464,6 +467,15 @@ tr:hover td{background:rgba(255,255,255,.02);}
       <div id="coursMgrContent"></div>
     </div>
 
+    <!-- ══════════ FAQ ══════════ -->
+    <div class="section" id="sec-faq">
+      <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
+        <div><h1>FAQ</h1><p>Questions fréquentes affichées sur le site</p></div>
+        <button class="btn btn--primary" onclick="openFaqModal()">+ Ajouter une question</button>
+      </div>
+      <div id="faqContainer"></div>
+    </div>
+
     <!-- ══════════ GALERIE ══════════ -->
     <div class="section" id="sec-galerie">
       <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
@@ -561,6 +573,7 @@ function showSection(id) {
   if (id === 'stats')        loadStats();
   if (id === 'pdf')          loadPdf();
   if (id === 'cours')        loadCoursMgr();
+  if (id === 'faq')          loadFaq();
   if (id === 'galerie')      loadGalerie();
   if (id === 'documents')    loadDocuments();
   if (id === 'apparence')    loadApparence();
@@ -1127,9 +1140,11 @@ async function loadParametres() {
   const s = settings || {};
   const fields = ['name','shortName','email','phone','founded','facebook','instagram'];
   fields.forEach(f => { const el = document.getElementById('p-'+f); if(el) el.value = c[f] || ''; });
-  document.getElementById('p-web3forms').value = s.web3formsKey || '';
-  document.getElementById('p-edgeFnUrl').value  = s.edgeFnUrl   || '';
-  document.getElementById('p-edgeToken').value  = s.edgeToken   || '';
+  document.getElementById('p-web3forms').value   = s.web3formsKey  || '';
+  document.getElementById('p-whatsapp').value    = s.whatsapp      || '';
+  document.getElementById('p-whatsappMsg').value = s.whatsappMsg   || 'Bonjour, je souhaite un essai gratuit !';
+  document.getElementById('p-edgeFnUrl').value   = s.edgeFnUrl    || '';
+  document.getElementById('p-edgeToken').value   = s.edgeToken    || '';
 }
 async function saveEdgeFn() {
   const settings = (await dsGet('settings')) || {};
@@ -1150,6 +1165,8 @@ async function saveClub() {
 async function saveSettings() {
   const settings = (await dsGet('settings')) || {};
   settings.web3formsKey = document.getElementById('p-web3forms').value.trim();
+  settings.whatsapp     = document.getElementById('p-whatsapp').value.trim();
+  settings.whatsappMsg  = document.getElementById('p-whatsappMsg').value.trim();
   await dsSet('settings', settings);
   toast('Paramètres enregistrés.', 'ok');
 }
@@ -1583,6 +1600,81 @@ async function deleteCours(idx) {
 /* ════════════════════════════════════════
    APPARENCE
 ════════════════════════════════════════ */
+/* ════════════════════════════════════════
+   FAQ
+════════════════════════════════════════ */
+const FAQ_DEFAULT = [
+  { q: "À partir de quel âge peut-on pratiquer ?", r: "Nous accueillons les enfants à partir de 5 ans. Des cours adaptés existent pour chaque tranche d'âge : éveil martial (5-7 ans), enfants (8-12 ans), ados (13-17 ans) et adultes." },
+  { q: "Faut-il être en forme pour commencer ?", r: "Pas du tout ! Le karaté s'adapte à tous les niveaux. Vous progressez à votre rythme, et la condition physique s'améliore naturellement avec la pratique." },
+  { q: "Quel équipement faut-il au départ ?", r: "Pour les premiers cours, une tenue de sport confortable suffit. Le kimono (karategi) est ensuite conseillé — nous vous guidons pour l'achat." },
+  { q: "Peut-on faire un cours d'essai ?", r: "Oui, le premier cours est gratuit et sans engagement. Contactez-nous ou passez directement au dojo le soir d'un entraînement." },
+  { q: "Le Shindokai est-il dangereux ?", r: "Le karaté est une discipline encadrée avec des règles de sécurité strictes. La progression se fait par étapes et les contacts sont contrôlés selon le niveau de chaque pratiquant." },
+];
+let _faq = [];
+async function loadFaq() {
+  const raw = await dsGet('faq');
+  _faq = raw && raw.length ? JSON.parse(JSON.stringify(raw)) : JSON.parse(JSON.stringify(FAQ_DEFAULT));
+  renderFaq();
+}
+function renderFaq() {
+  const c = document.getElementById('faqContainer');
+  if (!_faq.length) { c.innerHTML = '<div class="empty"><div class="empty__icon">❓</div>Aucune question.</div>'; return; }
+  c.innerHTML = `<div style="display:flex;flex-direction:column;gap:.6rem;max-width:780px;">
+    ${_faq.map((f,i) => `
+      <div style="background:var(--char-2);border:1px solid var(--line);border-radius:6px;padding:1rem 1.2rem;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;">
+          <div style="flex:1;">
+            <div style="font-weight:600;margin-bottom:.4rem;">${esc(f.q)}</div>
+            <div style="font-size:.83rem;color:var(--ash);line-height:1.6;">${esc(f.r)}</div>
+          </div>
+          <div style="display:flex;gap:.4rem;flex-shrink:0;">
+            <button class="btn btn--ghost btn--sm" onclick="moveFaq(${i},-1)" ${i===0?'disabled':''}>↑</button>
+            <button class="btn btn--ghost btn--sm" onclick="moveFaq(${i},1)" ${i===_faq.length-1?'disabled':''}>↓</button>
+            <button class="btn btn--ghost btn--sm" onclick="editFaq(${i})">✏️</button>
+            <button class="btn btn--danger btn--sm" onclick="deleteFaq(${i})">✕</button>
+          </div>
+        </div>
+      </div>`).join('')}
+  </div>
+  <div style="margin-top:1.2rem;">
+    <button class="btn btn--primary" onclick="saveFaq()">💾 Enregistrer l'ordre</button>
+  </div>`;
+}
+function faqForm(f) {
+  return `<div style="display:flex;flex-direction:column;gap:.8rem;">
+    <div class="field"><label>Question</label><input id="ff-q" value="${esc(f.q||'')}"></div>
+    <div class="field"><label>Réponse</label><textarea id="ff-r" rows="4">${esc(f.r||'')}</textarea></div>
+  </div>`;
+}
+function openFaqModal() { openModal('Ajouter une question', faqForm({}), `<button class="btn btn--ghost" onclick="closeModal()">Annuler</button><button class="btn btn--primary" onclick="submitFaq(-1)">Ajouter</button>`); }
+function editFaq(i) { openModal('Modifier la question', faqForm(_faq[i]), `<button class="btn btn--ghost" onclick="closeModal()">Annuler</button><button class="btn btn--primary" onclick="submitFaq(${i})">Enregistrer</button>`); }
+async function submitFaq(i) {
+  const q = document.getElementById('ff-q').value.trim();
+  const r = document.getElementById('ff-r').value.trim();
+  if (!q) { toast('La question est obligatoire.', 'err'); return; }
+  if (i===-1) _faq.push({ q, r });
+  else _faq[i] = { q, r };
+  await dsSet('faq', _faq);
+  closeModal(); toast('FAQ mise à jour.', 'ok'); renderFaq();
+}
+async function deleteFaq(i) {
+  if (!confirm('Supprimer cette question ?')) return;
+  _faq.splice(i, 1);
+  await dsSet('faq', _faq);
+  toast('Question supprimée.', 'ok'); renderFaq();
+}
+async function moveFaq(i, dir) {
+  const j = i + dir;
+  if (j < 0 || j >= _faq.length) return;
+  [_faq[i], _faq[j]] = [_faq[j], _faq[i]];
+  await dsSet('faq', _faq);
+  renderFaq();
+}
+async function saveFaq() {
+  await dsSet('faq', _faq);
+  toast('FAQ enregistrée.', 'ok');
+}
+
 /* ════════════════════════════════════════
    GALERIE
 ════════════════════════════════════════ */

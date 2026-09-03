@@ -61,6 +61,14 @@
   <div id="actus-container"></div>
 </section>
 
+<!-- ============ FAQ ============ -->
+<section style="padding:4rem 0 5rem;background:var(--char-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line);">
+  <div class="wrap">
+    <h2 id="faq-section" style="font-family:var(--display);font-size:clamp(1.8rem,3.5vw,2.8rem);margin-bottom:2.5rem;text-transform:uppercase;letter-spacing:.04em;display:none;">Questions fréquentes</h2>
+    <div id="faq-container" style="max-width:720px;"></div>
+  </div>
+</section>
+
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
@@ -81,6 +89,27 @@ initData().then(() => {
   setEl('idx-heroSub',         club.heroSub);
 
   initAdminBar('index');
+
+  // FAQ
+  (async () => {
+    const { createClient } = window.supabase;
+    const SB = createClient('https://jcfltkuobbjqicczpsjn.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impjdmx0a3VvYmJqcWljY3pwc2puIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI2NzQ5NTIsImV4cCI6MjA2ODI1MDk1Mn0.nHnGFqC99RjseBxdwQNPzOkiOlCDhJeNdJkdQBuvMME');
+    const { data } = await SB.from('data_store').select('value').eq('key','faq').single();
+    const faq = data?.value || [];
+    if (!faq.length) return;
+    document.getElementById('faq-section').style.display = '';
+    const fc = document.getElementById('faq-container');
+    fc.innerHTML = faq.map((f,i) => `
+      <div style="border-bottom:1px solid var(--line);overflow:hidden;">
+        <button onclick="toggleFaq(${i})" style="width:100%;text-align:left;background:none;border:none;color:var(--bone);padding:1.1rem 0;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:1rem;font-family:var(--body);font-size:1rem;">
+          <span style="font-weight:600;">${f.q}</span>
+          <span id="faq-icon-${i}" style="font-size:1.3rem;flex-shrink:0;transition:transform .25s;">+</span>
+        </button>
+        <div id="faq-ans-${i}" style="max-height:0;overflow:hidden;transition:max-height .35s ease,padding .25s;">
+          <p style="padding-bottom:1.2rem;color:var(--ash);font-size:.9rem;line-height:1.75;margin:0;">${f.r}</p>
+        </div>
+      </div>`).join('');
+  })();
 
   // Actualités
   (async () => {
@@ -109,6 +138,19 @@ initData().then(() => {
       </div>`;
   })();
 });
+let _faqOpen = null;
+function toggleFaq(i) {
+  const ans = document.getElementById('faq-ans-' + i);
+  const ico = document.getElementById('faq-icon-' + i);
+  if (_faqOpen !== null && _faqOpen !== i) {
+    document.getElementById('faq-ans-' + _faqOpen).style.maxHeight = '0';
+    document.getElementById('faq-icon-' + _faqOpen).textContent = '+';
+    document.getElementById('faq-icon-' + _faqOpen).style.transform = '';
+  }
+  const open = ans.style.maxHeight !== '0px' && ans.style.maxHeight !== '';
+  if (open) { ans.style.maxHeight = '0'; ico.textContent = '+'; ico.style.transform = ''; _faqOpen = null; }
+  else { ans.style.maxHeight = ans.scrollHeight + 200 + 'px'; ico.textContent = '−'; ico.style.transform = 'rotate(0deg)'; _faqOpen = i; }
+}
 </script>
 </body>
 </html>
