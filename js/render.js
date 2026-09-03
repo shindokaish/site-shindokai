@@ -42,6 +42,9 @@ function renderNav(activePage) {
       <a href="membres/index.html" title="Espace Membres" style="display:flex;align-items:center;justify-content:center;width:36px;height:36px;border:1px solid var(--line);border-radius:50%;color:var(--ash);transition:color .2s,border-color .2s;flex-shrink:0;" onmouseover="this.style.color='var(--gold)';this.style.borderColor='var(--gold)';" onmouseout="this.style.color='var(--ash)';this.style.borderColor='var(--line)';">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
       </a>
+      <a href="admin.html" title="Administration" id="nav-admin-btn" style="display:flex;align-items:center;justify-content:center;width:36px;height:36px;border:1px solid var(--line);border-radius:50%;color:var(--ash);transition:color .2s,border-color .2s;flex-shrink:0;" onmouseover="this.style.color='var(--crimson-2)';this.style.borderColor='var(--crimson-2)';" onmouseout="this.style.color='var(--ash)';this.style.borderColor='var(--line)';">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </a>
       <a href="inscription.html" class="btn btn--primary" style="padding:.55rem 1.1rem;font-size:.72rem;white-space:nowrap;flex-shrink:0;">S'inscrire</a>
       <button class="nav__burger" id="burger" aria-label="Menu"><span></span><span></span><span></span></button>
     </div>
@@ -155,13 +158,7 @@ function renderFooter() {
 
 /* ============ BOUTON ADMIN ============ */
 function renderAdminTrigger() {
-  const btn = document.createElement('button');
-  btn.className = 'admin-trigger';
-  btn.setAttribute('aria-label', 'Administration');
-  btn.title = 'Administration';
-  btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>`;
-  btn.addEventListener('click', () => { window.location.href = 'admin.html'; });
-  document.body.appendChild(btn);
+  // Bouton déplacé dans la navbar (voir renderNav)
 }
 
 /* ============ SCROLL REVEAL ============ */
@@ -378,18 +375,17 @@ function renderFloatingButtons() {
     document.body.appendChild(a);
   }
 
-  // WhatsApp
+  // WhatsApp — toujours visible
   const num = settings.whatsapp;
-  if (num) {
-    const msg = encodeURIComponent(settings.whatsappMsg || 'Bonjour, je souhaite un essai gratuit !');
-    makeBtn({
-      href:   `https://wa.me/${num}?text=${msg}`,
-      bg:     '#25D366',
-      label:  'Nous contacter sur WhatsApp',
-      bottom: '1.4rem',
-      svg: `<svg viewBox="0 0 24 24" fill="currentColor" width="28" height="28"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.558 4.112 1.528 5.836L.057 23.572a.5.5 0 0 0 .614.614l5.735-1.471A11.94 11.94 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 0 1-5.013-1.374l-.36-.213-3.738.979.997-3.647-.235-.374A9.818 9.818 0 1 1 12 21.818z"/></svg>`,
-    });
-  }
+  const msg = encodeURIComponent(settings.whatsappMsg || 'Bonjour, je souhaite un essai gratuit !');
+  const waHref = num ? `https://wa.me/${num}?text=${msg}` : '#';
+  makeBtn({
+    href:   waHref,
+    bg:     '#25D366',
+    label:  'Nous contacter sur WhatsApp',
+    bottom: '1.4rem',
+    svg: `<svg viewBox="0 0 24 24" fill="currentColor" width="28" height="28"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.558 4.112 1.528 5.836L.057 23.572a.5.5 0 0 0 .614.614l5.735-1.471A11.94 11.94 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 0 1-5.013-1.374l-.36-.213-3.738.979.997-3.647-.235-.374A9.818 9.818 0 1 1 12 21.818z"/></svg>`,
+  });
 
   // Facebook
   const fb = club.facebook;
