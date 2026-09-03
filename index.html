@@ -56,19 +56,6 @@
   </div>
 </section>
 
-<!-- ============ ACTUALITÉS ============ -->
-<section class="wrap" id="actus" style="padding:5rem 0 4rem;">
-  <div id="actus-container"></div>
-</section>
-
-<!-- ============ FAQ ============ -->
-<section style="padding:4rem 0 5rem;background:var(--char-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line);">
-  <div class="wrap">
-    <h2 id="faq-section" style="font-family:var(--display);font-size:clamp(1.8rem,3.5vw,2.8rem);margin-bottom:2.5rem;text-transform:uppercase;letter-spacing:.04em;display:none;">Questions fréquentes</h2>
-    <div id="faq-container" style="max-width:720px;"></div>
-  </div>
-</section>
-
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
@@ -89,68 +76,7 @@ initData().then(() => {
   setEl('idx-heroSub',         club.heroSub);
 
   initAdminBar('index');
-
-  // FAQ
-  (async () => {
-    const { createClient } = window.supabase;
-    const SB = createClient('https://jcfltkuobbjqicczpsjn.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impjdmx0a3VvYmJqcWljY3pwc2puIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI2NzQ5NTIsImV4cCI6MjA2ODI1MDk1Mn0.nHnGFqC99RjseBxdwQNPzOkiOlCDhJeNdJkdQBuvMME');
-    const { data } = await SB.from('data_store').select('value').eq('key','faq').single();
-    const faq = data?.value || [];
-    if (!faq.length) return;
-    document.getElementById('faq-section').style.display = '';
-    const fc = document.getElementById('faq-container');
-    fc.innerHTML = faq.map((f,i) => `
-      <div style="border-bottom:1px solid var(--line);overflow:hidden;">
-        <button onclick="toggleFaq(${i})" style="width:100%;text-align:left;background:none;border:none;color:var(--bone);padding:1.1rem 0;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:1rem;font-family:var(--body);font-size:1rem;">
-          <span style="font-weight:600;">${f.q}</span>
-          <span id="faq-icon-${i}" style="font-size:1.3rem;flex-shrink:0;transition:transform .25s;">+</span>
-        </button>
-        <div id="faq-ans-${i}" style="max-height:0;overflow:hidden;transition:max-height .35s ease,padding .25s;">
-          <p style="padding-bottom:1.2rem;color:var(--ash);font-size:.9rem;line-height:1.75;margin:0;">${f.r}</p>
-        </div>
-      </div>`).join('');
-  })();
-
-  // Actualités
-  (async () => {
-    const { createClient } = window.supabase;
-    const SB = createClient('https://jcfltkuobbjqicczpsjn.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impjdmx0a3VvYmJqcWljY3pwc2puIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI2NzQ5NTIsImV4cCI6MjA2ODI1MDk1Mn0.nHnGFqC99RjseBxdwQNPzOkiOlCDhJeNdJkdQBuvMME');
-    const { data } = await SB.from('data_store').select('value').eq('key','actus').single();
-    const actus = (data?.value || []).slice(0, 6);
-    const c = document.getElementById('actus-container');
-    if (!actus.length) { c.style.display='none'; return; }
-    c.innerHTML = `
-      <h2 style="font-family:var(--display);font-size:clamp(1.8rem,3.5vw,2.8rem);margin-bottom:2rem;text-transform:uppercase;letter-spacing:.04em;">Actualités</h2>
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.5rem;">
-      ${actus.map(a => `
-        <article style="background:var(--char-2);border:1px solid var(--line);border-radius:8px;overflow:hidden;display:flex;flex-direction:column;">
-          ${a.image ? `<img src="${a.image}" alt="${a.title}" style="width:100%;height:160px;object-fit:cover;">` : ''}
-          <div style="padding:1.2rem 1.4rem;flex:1;display:flex;flex-direction:column;">
-            ${a.tag ? `<span style="font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--crimson-2);margin-bottom:.4rem;">${a.tag}</span>` : ''}
-            <h3 style="font-family:var(--display);font-size:1.1rem;margin:0 0 .6rem;line-height:1.3;">${a.title}</h3>
-            ${a.text ? `<p style="font-size:.85rem;color:var(--ash);flex:1;overflow:hidden;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;">${a.text}</p>` : ''}
-            <div style="margin-top:.8rem;display:flex;justify-content:space-between;align-items:center;">
-              <span style="font-size:.75rem;color:var(--ash-2);">${a.date||''}</span>
-              ${a.lien ? `<a href="${a.lien}" target="_blank" style="font-size:.8rem;color:var(--crimson-2);">Lire →</a>` : ''}
-            </div>
-          </div>
-        </article>`).join('')}
-      </div>`;
-  })();
 });
-let _faqOpen = null;
-function toggleFaq(i) {
-  const ans = document.getElementById('faq-ans-' + i);
-  const ico = document.getElementById('faq-icon-' + i);
-  if (_faqOpen !== null && _faqOpen !== i) {
-    document.getElementById('faq-ans-' + _faqOpen).style.maxHeight = '0';
-    document.getElementById('faq-icon-' + _faqOpen).textContent = '+';
-    document.getElementById('faq-icon-' + _faqOpen).style.transform = '';
-  }
-  const open = ans.style.maxHeight !== '0px' && ans.style.maxHeight !== '';
-  if (open) { ans.style.maxHeight = '0'; ico.textContent = '+'; ico.style.transform = ''; _faqOpen = null; }
-  else { ans.style.maxHeight = ans.scrollHeight + 200 + 'px'; ico.textContent = '−'; ico.style.transform = 'rotate(0deg)'; _faqOpen = i; }
-}
 </script>
 </body>
 </html>
