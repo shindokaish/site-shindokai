@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guide Technique — Espace Membres EKSN</title>
+<link rel="icon" href="../shinodkai.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@400;500;600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --void:    #0a0a0c;
+  --char:    #131316;
+  --char-2:  #1a1a1f;
+  --line:    rgba(255,255,255,.08);
+  --bone:    #f0ede8;
+  --ash:     #9a9aa8;
+  --ash-2:   #6a6a78;
+  --crimson: #c8241b;
+  --crimson-2: #e0241b;
+  --gold:    #c9a227;
+  --display: 'Oswald', sans-serif;
+  --body:    'Inter', sans-serif;
+  --mono:    'JetBrains Mono', monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; background: var(--void); color: var(--bone); font-family: var(--body); overflow: hidden; }
+
+/* ── Layout ── */
+.layout { display: flex; height: 100vh; }
+
+/* ── Sidebar ── */
+.sidebar {
+  width: 280px; flex-shrink: 0;
+  background: var(--char); border-right: 1px solid var(--line);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
+.sidebar__header {
+  padding: 1rem 1.2rem .8rem;
+  border-bottom: 1px solid var(--line);
+  flex-shrink: 0;
+}
+.sidebar__back {
+  display: flex; align-items: center; gap: .5rem;
+  font-size: .75rem; color: var(--ash); text-decoration: none;
+  margin-bottom: .8rem; transition: color .2s;
+}
+.sidebar__back:hover { color: var(--crimson-2); }
+.sidebar__title { font-family: var(--display); font-size: 1rem; text-transform: uppercase; letter-spacing: .06em; line-height: 1.2; }
+.sidebar__sub { font-size: .72rem; color: var(--ash); margin-top: .25rem; font-family: var(--mono); }
+
+.sidebar__nav { flex: 1; overflow-y: auto; padding: .6rem 0; }
+.sidebar__nav::-webkit-scrollbar { width: 4px; }
+.sidebar__nav::-webkit-scrollbar-thumb { background: rgba(255,255,255,.1); border-radius: 2px; }
+
+.nav-group { margin-bottom: .2rem; }
+.nav-group__label {
+  font-size: .62rem; text-transform: uppercase; letter-spacing: .12em;
+  color: var(--ash-2); padding: .8rem 1.2rem .3rem;
+  font-family: var(--mono);
+}
+.nav-item {
+  display: flex; align-items: center; gap: .6rem;
+  padding: .5rem 1.2rem; cursor: pointer;
+  font-size: .82rem; color: var(--ash);
+  transition: color .15s, background .15s;
+  border-left: 2px solid transparent;
+}
+.nav-item:hover { color: var(--bone); background: rgba(255,255,255,.03); }
+.nav-item.active { color: var(--bone); border-left-color: var(--crimson-2); background: rgba(224,36,27,.06); }
+.nav-item__belt {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+}
+.nav-item__page { margin-left: auto; font-family: var(--mono); font-size: .65rem; color: var(--ash-2); }
+
+.sidebar__footer { padding: .8rem 1.2rem; border-top: 1px solid var(--line); flex-shrink: 0; }
+.sidebar__dl { display: flex; align-items: center; gap: .5rem; font-size: .75rem; color: var(--ash); text-decoration: none; transition: color .2s; }
+.sidebar__dl:hover { color: var(--gold); }
+
+/* ── Viewer ── */
+.viewer { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: #1c1c22; }
+
+.viewer__toolbar {
+  display: flex; align-items: center; gap: .8rem;
+  padding: .6rem 1rem; background: var(--char);
+  border-bottom: 1px solid var(--line); flex-shrink: 0;
+}
+.tb-btn {
+  background: rgba(255,255,255,.06); border: 1px solid var(--line);
+  color: var(--bone); border-radius: 4px; padding: .35rem .6rem;
+  cursor: pointer; font-size: .8rem; transition: background .15s;
+  display: flex; align-items: center; justify-content: center;
+}
+.tb-btn:hover { background: rgba(255,255,255,.12); }
+.tb-btn:disabled { opacity: .3; cursor: default; }
+.tb-sep { width: 1px; height: 20px; background: var(--line); flex-shrink: 0; }
+.tb-info { font-family: var(--mono); font-size: .75rem; color: var(--ash); }
+.tb-page { display: flex; align-items: center; gap: .4rem; }
+.tb-page input {
+  width: 40px; background: var(--char-2); border: 1px solid var(--line);
+  color: var(--bone); text-align: center; padding: .25rem; border-radius: 3px;
+  font-family: var(--mono); font-size: .78rem;
+}
+.tb-zoom { display: flex; align-items: center; gap: .4rem; margin-left: auto; }
+.tb-zoom select {
+  background: var(--char-2); border: 1px solid var(--line); color: var(--bone);
+  padding: .25rem .4rem; border-radius: 3px; font-size: .75rem; font-family: var(--mono);
+}
+
+.viewer__canvas-wrap {
+  flex: 1; overflow-y: auto; overflow-x: auto;
+  display: flex; justify-content: center; align-items: flex-start;
+  padding: 1.5rem;
+}
+.viewer__canvas-wrap::-webkit-scrollbar { width: 6px; height: 6px; }
+.viewer__canvas-wrap::-webkit-scrollbar-thumb { background: rgba(255,255,255,.1); border-radius: 3px; }
+
+#pdf-canvas {
+  box-shadow: 0 8px 40px rgba(0,0,0,.6);
+  border-radius: 2px;
+  max-width: 100%;
+}
+
+.loader-wrap {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 1rem; height: 100%; color: var(--ash);
+}
+.spinner {
+  width: 36px; height: 36px; border: 3px solid rgba(255,255,255,.1);
+  border-top-color: var(--crimson-2); border-radius: 50%;
+  animation: spin .8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Mobile ── */
+@media (max-width: 700px) {
+  .sidebar { width: 240px; position: fixed; left: 0; top: 0; bottom: 0; z-index: 50; transform: translateX(-100%); transition: transform .3s; }
+  .sidebar.open { transform: translateX(0); box-shadow: 4px 0 20px rgba(0,0,0,.5); }
+  .mob-toggle { display: flex !important; }
+  .viewer { width: 100%; }
+}
+.mob-toggle { display: none; }
+.mob-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 40; }
+.mob-overlay.show { display: block; }
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar__header">
+      <a href="espace.html" class="sidebar__back">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+        Espace membres
+      </a>
+      <div class="sidebar__title">Guide Technique<br>& Référentiel</div>
+      <div class="sidebar__sub">Passage de grade Shindokaï</div>
+    </div>
+
+    <nav class="sidebar__nav" id="toc">
+
+      <div class="nav-group">
+        <div class="nav-group__label">Introduction</div>
+        <div class="nav-item" data-page="4"><span>Qu'est-ce que le Shindokaï</span><span class="nav-item__page">4</span></div>
+        <div class="nav-item" data-page="5"><span>Kanji & traduction</span><span class="nav-item__page">5</span></div>
+        <div class="nav-item" data-page="6"><span>Code moral & symboles</span><span class="nav-item__page">6</span></div>
+        <div class="nav-item" data-page="7"><span>Histoire</span><span class="nav-item__page">7</span></div>
+      </div>
+
+      <div class="nav-group">
+        <div class="nav-group__label">Fondamentaux</div>
+        <div class="nav-item" data-page="9"><span>Lexique du karaté</span><span class="nav-item__page">9</span></div>
+        <div class="nav-item" data-page="11"><span>Terminologie</span><span class="nav-item__page">11</span></div>
+        <div class="nav-item" data-page="12"><span>Niveaux & déplacements</span><span class="nav-item__page">12</span></div>
+        <div class="nav-item" data-page="13"><span>OSU & KIAI</span><span class="nav-item__page">13</span></div>
+        <div class="nav-item" data-page="14"><span>Nœud de ceinture</span><span class="nav-item__page">14</span></div>
+      </div>
+
+      <div class="nav-group">
+        <div class="nav-group__label">Techniques</div>
+        <div class="nav-item" data-page="17"><span>Les armes (mains)</span><span class="nav-item__page">17</span></div>
+        <div class="nav-item" data-page="18"><span>Positions — Dachi</span><span class="nav-item__page">18</span></div>
+        <div class="nav-item" data-page="21"><span>Les frappes</span><span class="nav-item__page">21</span></div>
+        <div class="nav-item" data-page="28"><span>Les blocages</span><span class="nav-item__page">28</span></div>
+        <div class="nav-item" data-page="31"><span>Les jambes (kicks)</span><span class="nav-item__page">31</span></div>
+        <div class="nav-item" data-page="36"><span>Les katas</span><span class="nav-item__page">36</span></div>
+      </div>
+
+      <div class="nav-group">
+        <div class="nav-group__label">Passage de grade</div>
+        <div class="nav-item" data-page="46">
+          <span class="nav-item__belt" style="background:#f3efe7;"></span>
+          <span>10e & 9e KYU — Blanche</span><span class="nav-item__page">46</span>
+        </div>
+        <div class="nav-item" data-page="48">
+          <span class="nav-item__belt" style="background:#1a5fa8;"></span>
+          <span>8e KYU — Bleue</span><span class="nav-item__page">48</span>
+        </div>
+        <div class="nav-item" data-page="50">
+          <span class="nav-item__belt" style="background:#1a5fa8;border:2px solid #888;"></span>
+          <span>7e KYU — Bleue 2 bar.</span><span class="nav-item__page">50</span>
+        </div>
+        <div class="nav-item" data-page="52">
+          <span class="nav-item__belt" style="background:#f5d020;"></span>
+          <span>6e KYU — Jaune</span><span class="nav-item__page">52</span>
+        </div>
+        <div class="nav-item" data-page="54">
+          <span class="nav-item__belt" style="background:#f5d020;border:2px solid #888;"></span>
+          <span>5e KYU — Jaune 2 bar.</span><span class="nav-item__page">54</span>
+        </div>
+        <div class="nav-item" data-page="56">
+          <span class="nav-item__belt" style="background:#2d8a4e;"></span>
+          <span>4e KYU — Verte</span><span class="nav-item__page">56</span>
+        </div>
+        <div class="nav-item" data-page="58">
+          <span class="nav-item__belt" style="background:#2d8a4e;border:2px solid #888;"></span>
+          <span>3e KYU — Verte 2 bar.</span><span class="nav-item__page">58</span>
+        </div>
+        <div class="nav-item" data-page="60">
+          <span class="nav-item__belt" style="background:#7b4f2e;"></span>
+          <span>2e KYU — Marron</span><span class="nav-item__page">60</span>
+        </div>
+        <div class="nav-item" data-page="62">
+          <span class="nav-item__belt" style="background:#7b4f2e;border:2px solid #888;"></span>
+          <span>1er KYU — Marron 2 bar.</span><span class="nav-item__page">62</span>
+        </div>
+        <div class="nav-item" data-page="64">
+          <span class="nav-item__belt" style="background:#16161a;border:1px solid #555;"></span>
+          <span>Shodan, Nidan & Sandan</span><span class="nav-item__page">64</span>
+        </div>
+      </div>
+
+    </nav>
+
+    <div class="sidebar__footer">
+      <a href="guide-technique.pdf" download class="sidebar__dl">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Télécharger le PDF
+      </a>
+    </div>
+  </aside>
+
+  <!-- OVERLAY MOBILE -->
+  <div class="mob-overlay" id="overlay" onclick="closeSidebar()"></div>
+
+  <!-- VIEWER -->
+  <div class="viewer">
+    <div class="viewer__toolbar">
+      <button class="tb-btn mob-toggle" onclick="openSidebar()" title="Sommaire">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div class="tb-sep mob-toggle"></div>
+
+      <button class="tb-btn" id="btn-prev" onclick="changePage(-1)" title="Page précédente">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <div class="tb-page">
+        <input type="number" id="page-input" min="1" value="1" onchange="goToPage(parseInt(this.value))">
+        <span class="tb-info">/ <span id="page-total">—</span></span>
+      </div>
+      <button class="tb-btn" id="btn-next" onclick="changePage(1)" title="Page suivante">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+
+      <div class="tb-sep"></div>
+      <span class="tb-info" id="chapter-label" style="font-size:.72rem;max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></span>
+
+      <div class="tb-zoom">
+        <button class="tb-btn" onclick="changeZoom(-0.25)">−</button>
+        <select id="zoom-select" onchange="setZoom(parseFloat(this.value))">
+          <option value="0.75">75%</option>
+          <option value="1" selected>100%</option>
+          <option value="1.25">125%</option>
+          <option value="1.5">150%</option>
+          <option value="1.75">175%</option>
+          <option value="2">200%</option>
+        </select>
+        <button class="tb-btn" onclick="changeZoom(0.25)">+</button>
+      </div>
+    </div>
+
+    <div class="viewer__canvas-wrap" id="canvas-wrap">
+      <div class="loader-wrap" id="loader">
+        <div class="spinner"></div>
+        <div style="font-family:var(--mono);font-size:.78rem;">Chargement du guide…</div>
+      </div>
+      <canvas id="pdf-canvas" style="display:none;"></canvas>
+    </div>
+  </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+const PDF_URL = 'guide-technique.pdf';
+
+// Sommaire : page → label
+const TOC = [
+  { page: 4,  label: "Qu'est-ce que le Shindokaï" },
+  { page: 5,  label: "Kanji & traduction" },
+  { page: 6,  label: "Code moral & symboles" },
+  { page: 7,  label: "Histoire" },
+  { page: 9,  label: "Lexique du karaté" },
+  { page: 11, label: "Terminologie" },
+  { page: 12, label: "Niveaux & déplacements" },
+  { page: 13, label: "OSU & KIAI" },
+  { page: 14, label: "Nœud de ceinture" },
+  { page: 17, label: "Les armes (mains)" },
+  { page: 18, label: "Positions — Dachi" },
+  { page: 21, label: "Les frappes" },
+  { page: 28, label: "Les blocages" },
+  { page: 31, label: "Les jambes (kicks)" },
+  { page: 36, label: "Les katas" },
+  { page: 46, label: "10e & 9e KYU — Blanche" },
+  { page: 48, label: "8e KYU — Bleue" },
+  { page: 50, label: "7e KYU — Bleue 2 barrettes" },
+  { page: 52, label: "6e KYU — Jaune" },
+  { page: 54, label: "5e KYU — Jaune 2 barrettes" },
+  { page: 56, label: "4e KYU — Verte" },
+  { page: 58, label: "3e KYU — Verte 2 barrettes" },
+  { page: 60, label: "2e KYU — Marron" },
+  { page: 62, label: "1er KYU — Marron 2 barrettes" },
+  { page: 64, label: "Shodan, Nidan & Sandan" },
+];
+
+let _pdf = null;
+let _currentPage = 1;
+let _scale = 1;
+let _rendering = false;
+
+function getChapterLabel(page) {
+  let label = '';
+  for (const c of TOC) { if (c.page <= page) label = c.label; else break; }
+  return label;
+}
+
+function updateTocActive(page) {
+  document.querySelectorAll('.nav-item').forEach(el => {
+    el.classList.toggle('active', parseInt(el.dataset.page) === page || (
+      parseInt(el.dataset.page) < page &&
+      [...document.querySelectorAll('.nav-item')].filter(e => parseInt(e.dataset.page) > parseInt(el.dataset.page) && parseInt(e.dataset.page) <= page).length === 0
+    ));
+  });
+  // Simplifier : active = le dernier item dont la page <= currentPage
+  let activeEl = null;
+  document.querySelectorAll('.nav-item').forEach(el => {
+    el.classList.remove('active');
+    if (parseInt(el.dataset.page) <= page) activeEl = el;
+  });
+  if (activeEl) {
+    activeEl.classList.add('active');
+    activeEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }
+}
+
+async function renderPage(num) {
+  if (!_pdf || _rendering) return;
+  _rendering = true;
+  const page = await _pdf.getPage(num);
+  const canvas = document.getElementById('pdf-canvas');
+  const ctx = canvas.getContext('2d');
+
+  // Adapter au conteneur
+  const wrap = document.getElementById('canvas-wrap');
+  const maxW = wrap.clientWidth - 48;
+  const viewport = page.getViewport({ scale: 1 });
+  const autoScale = Math.min(maxW / viewport.width, 1.4);
+  const finalScale = _scale * autoScale;
+  const vp = page.getViewport({ scale: finalScale });
+
+  canvas.width  = vp.width;
+  canvas.height = vp.height;
+  canvas.style.display = 'block';
+  document.getElementById('loader').style.display = 'none';
+
+  await page.render({ canvasContext: ctx, viewport: vp }).promise;
+  _rendering = false;
+
+  // UI
+  document.getElementById('page-input').value = num;
+  document.getElementById('btn-prev').disabled = num <= 1;
+  document.getElementById('btn-next').disabled = num >= _pdf.numPages;
+  document.getElementById('chapter-label').textContent = getChapterLabel(num);
+  updateTocActive(num);
+}
+
+async function goToPage(num) {
+  if (!_pdf) return;
+  num = Math.max(1, Math.min(_pdf.numPages, num || 1));
+  _currentPage = num;
+  await renderPage(_currentPage);
+  document.getElementById('canvas-wrap').scrollTop = 0;
+}
+
+function changePage(dir) { goToPage(_currentPage + dir); }
+
+function setZoom(val) {
+  _scale = Math.max(0.5, Math.min(3, val));
+  const sel = document.getElementById('zoom-select');
+  if (sel) sel.value = _scale;
+  renderPage(_currentPage);
+}
+function changeZoom(delta) { setZoom(_scale + delta); }
+
+// Navigation clavier
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') changePage(1);
+  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   changePage(-1);
+});
+
+// Swipe mobile
+let _touchX = null;
+document.getElementById('canvas-wrap').addEventListener('touchstart', e => { _touchX = e.touches[0].clientX; }, { passive: true });
+document.getElementById('canvas-wrap').addEventListener('touchend', e => {
+  if (_touchX === null) return;
+  const dx = e.changedTouches[0].clientX - _touchX;
+  if (Math.abs(dx) > 60) changePage(dx < 0 ? 1 : -1);
+  _touchX = null;
+}, { passive: true });
+
+// Clic sur TOC
+document.querySelectorAll('.nav-item[data-page]').forEach(el => {
+  el.addEventListener('click', () => { goToPage(parseInt(el.dataset.page)); closeSidebar(); });
+});
+
+// Mobile sidebar
+function openSidebar()  { document.getElementById('sidebar').classList.add('open'); document.getElementById('overlay').classList.add('show'); }
+function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('overlay').classList.remove('show'); }
+
+// Chargement
+(async () => {
+  try {
+    _pdf = await pdfjsLib.getDocument(PDF_URL).promise;
+    document.getElementById('page-total').textContent = _pdf.numPages;
+    document.getElementById('page-input').max = _pdf.numPages;
+    await renderPage(1);
+  } catch(e) {
+    document.getElementById('loader').innerHTML = '<div style="color:#e0241b;font-family:var(--mono);font-size:.8rem;text-align:center;">Erreur de chargement du guide.<br><small>' + e.message + '</small></div>';
+  }
+})();
+</script>
+</body>
+</html>
