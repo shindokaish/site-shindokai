@@ -120,7 +120,9 @@ html, body { height: 100%; background: var(--void); color: var(--bone); font-fam
   box-shadow: 0 8px 40px rgba(0,0,0,.6);
   border-radius: 2px;
   max-width: 100%;
+  transition: opacity .18s ease;
 }
+#pdf-canvas.fading { opacity: 0; }
 
 .loader-wrap {
   display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -279,6 +281,10 @@ html, body { height: 100%; background: var(--void); color: var(--bone); font-fam
           <option value="2">200%</option>
         </select>
         <button class="tb-btn" onclick="changeZoom(0.25)">+</button>
+        <div class="tb-sep"></div>
+        <button class="tb-btn" id="btn-fs" onclick="toggleFullscreen()" title="Plein écran">
+          <svg id="fs-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+        </button>
       </div>
     </div>
 
@@ -332,6 +338,8 @@ let _pdf = null;
 let _currentPage = 1;
 let _scale = 1;
 let _rendering = false;
+let _pageCache = {}; // cache des pages rendues
+let _prefetchTimer = null;
 
 function getChapterLabel(page) {
   let label = '';
@@ -365,8 +373,8 @@ async function renderPage(num) {
   const canvas = document.getElementById('pdf-canvas');
   const ctx = canvas.getContext('2d');
 
-  // Adapter au conteneur + devicePixelRatio pour rendu HD
-  const dpr = window.devicePixelRatio || 1;
+  // Adapter au conteneur + dpr forcé à 2 min pour rendu HD universel
+  const dpr = Math.max(window.devicePixelRatio || 1, 2);
   const wrap = document.getElementById('canvas-wrap');
   const maxW = wrap.clientWidth - 48;
   const viewport = page.getViewport({ scale: 1 });
@@ -374,15 +382,17 @@ async function renderPage(num) {
   const finalScale = _scale * autoScale;
   const vp = page.getViewport({ scale: finalScale * dpr });
 
-  // Canvas physique en haute résolution, CSS en taille logique
+  // Canvas physique haute résolution, CSS en taille logique
   canvas.width  = vp.width;
   canvas.height = vp.height;
   canvas.style.width  = (vp.width  / dpr) + 'px';
   canvas.style.height = (vp.height / dpr) + 'px';
+  canvas.style.imageRendering = 'high-quality';
   canvas.style.display = 'block';
   document.getElementById('loader').style.display = 'none';
 
-  await page.render({ canvasContext: ctx, viewport: vp }).promise;
+  // intent:'print' = pipeline haute qualité PDF.js (anti-aliasing maximal)
+  await page.render({ canvasContext: ctx, viewport: vp, intent: 'print' }).promise;
   _rendering = false;
 
   // UI
@@ -391,13 +401,35 @@ async function renderPage(num) {
   document.getElementById('btn-next').disabled = num >= _pdf.numPages;
   document.getElementById('chapter-label').textContent = getChapterLabel(num);
   updateTocActive(num);
+
+  // Pré-charger la page suivante en arrière-plan
+  clearTimeout(_prefetchTimer);
+  _prefetchTimer = setTimeout(() => prefetchPage(num + 1), 300);
+}
+
+async function prefetchPage(num) {
+  if (!_pdf || num < 1 || num > _pdf.numPages || _pageCache[num]) return;
+  const page = await _pdf.getPage(num);
+  const dpr = Math.max(window.devicePixelRatio || 1, 2);
+  const wrap = document.getElementById('canvas-wrap');
+  const maxW = wrap.clientWidth - 48;
+  const vp0 = page.getViewport({ scale: 1 });
+  const autoScale = Math.min(maxW / vp0.width, 1.4);
+  const vp = page.getViewport({ scale: _scale * autoScale * dpr });
+  const offscreen = document.createElement('canvas');
+  offscreen.width = vp.width; offscreen.height = vp.height;
+  await page.render({ canvasContext: offscreen.getContext('2d'), viewport: vp, intent: 'print' }).promise;
+  _pageCache[num] = { canvas: offscreen, dpr };
 }
 
 async function goToPage(num) {
   if (!_pdf) return;
   num = Math.max(1, Math.min(_pdf.numPages, num || 1));
   _currentPage = num;
+  const canvas = document.getElementById('pdf-canvas');
+  canvas.classList.add('fading');
   await renderPage(_currentPage);
+  canvas.classList.remove('fading');
   document.getElementById('canvas-wrap').scrollTop = 0;
 }
 
@@ -405,11 +437,29 @@ function changePage(dir) { goToPage(_currentPage + dir); }
 
 function setZoom(val) {
   _scale = Math.max(0.5, Math.min(3, val));
+  _pageCache = {}; // vider le cache si zoom change
   const sel = document.getElementById('zoom-select');
   if (sel) sel.value = _scale;
   renderPage(_currentPage);
 }
 function changeZoom(delta) { setZoom(_scale + delta); }
+
+function toggleFullscreen() {
+  const el = document.getElementById('viewer') || document.documentElement;
+  if (!document.fullscreenElement) {
+    (el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen).call(el);
+  } else {
+    (document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen).call(document);
+  }
+}
+document.addEventListener('fullscreenchange', () => {
+  const icon = document.getElementById('fs-icon');
+  if (document.fullscreenElement) {
+    icon.innerHTML = '<path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/>';
+  } else {
+    icon.innerHTML = '<path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>';
+  }
+});
 
 // Navigation clavier
 document.addEventListener('keydown', e => {
