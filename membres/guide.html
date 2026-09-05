@@ -365,16 +365,20 @@ async function renderPage(num) {
   const canvas = document.getElementById('pdf-canvas');
   const ctx = canvas.getContext('2d');
 
-  // Adapter au conteneur
+  // Adapter au conteneur + devicePixelRatio pour rendu HD
+  const dpr = window.devicePixelRatio || 1;
   const wrap = document.getElementById('canvas-wrap');
   const maxW = wrap.clientWidth - 48;
   const viewport = page.getViewport({ scale: 1 });
   const autoScale = Math.min(maxW / viewport.width, 1.4);
   const finalScale = _scale * autoScale;
-  const vp = page.getViewport({ scale: finalScale });
+  const vp = page.getViewport({ scale: finalScale * dpr });
 
+  // Canvas physique en haute résolution, CSS en taille logique
   canvas.width  = vp.width;
   canvas.height = vp.height;
+  canvas.style.width  = (vp.width  / dpr) + 'px';
+  canvas.style.height = (vp.height / dpr) + 'px';
   canvas.style.display = 'block';
   document.getElementById('loader').style.display = 'none';
 
