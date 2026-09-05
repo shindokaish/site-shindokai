@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fiches de Passage de Grade — EKSN</title>
+<link rel="icon" href="../shinodkai.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@400;500;600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --void:    #0a0a0c;
+  --char:    #131316;
+  --char-2:  #1a1a1f;
+  --char-3:  #222228;
+  --line:    rgba(255,255,255,.08);
+  --line-2:  rgba(255,255,255,.04);
+  --bone:    #f0ede8;
+  --ash:     #9a9aa8;
+  --ash-2:   #6a6a78;
+  --crimson: #c8241b;
+  --crimson-2: #e0241b;
+  --gold:    #c9a227;
+  --display: 'Oswald', sans-serif;
+  --body:    'Inter', sans-serif;
+  --mono:    'JetBrains Mono', monospace;
+  --belt:    #f5f5f5;
+  --belt-dim: rgba(245,245,245,.12);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; background: var(--void); color: var(--bone); font-family: var(--body); overflow: hidden; }
+
+/* ── Layout ── */
+.layout { display: flex; height: 100vh; }
+
+/* ── Sidebar ── */
+.sidebar {
+  width: 260px; flex-shrink: 0;
+  background: var(--char); border-right: 1px solid var(--line);
+  display: flex; flex-direction: column; overflow: hidden;
+}
+.sidebar__header {
+  padding: 1rem 1.2rem .8rem;
+  border-bottom: 1px solid var(--line); flex-shrink: 0;
+}
+.sidebar__back {
+  display: flex; align-items: center; gap: .5rem;
+  font-size: .75rem; color: var(--ash); text-decoration: none;
+  margin-bottom: .8rem; transition: color .2s;
+}
+.sidebar__back:hover { color: var(--crimson-2); }
+.sidebar__title { font-family: var(--display); font-size: 1rem; text-transform: uppercase; letter-spacing: .06em; }
+.sidebar__sub { font-size: .7rem; color: var(--ash); margin-top: .2rem; font-family: var(--mono); }
+
+.sidebar__nav { flex: 1; overflow-y: auto; padding: .5rem 0; }
+.sidebar__nav::-webkit-scrollbar { width: 4px; }
+.sidebar__nav::-webkit-scrollbar-thumb { background: rgba(255,255,255,.1); border-radius: 2px; }
+
+.belt-item {
+  display: flex; align-items: center; gap: .75rem;
+  padding: .65rem 1.2rem; cursor: pointer;
+  transition: background .15s; border-left: 3px solid transparent;
+}
+.belt-item:hover { background: rgba(255,255,255,.03); }
+.belt-item.active { background: var(--belt-dim); border-left-color: var(--belt); }
+.belt-dot {
+  width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+}
+.belt-info { flex: 1; min-width: 0; }
+.belt-name { font-size: .82rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.belt-kyu { font-size: .68rem; color: var(--ash); font-family: var(--mono); margin-top: .1rem; }
+
+/* ── Main ── */
+.main { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
+.main::-webkit-scrollbar { width: 6px; }
+.main::-webkit-scrollbar-thumb { background: rgba(255,255,255,.1); border-radius: 3px; }
+
+/* ── Grade header ── */
+.grade-header {
+  padding: 2.5rem 2.5rem 2rem;
+  border-bottom: 1px solid var(--line);
+  background: linear-gradient(135deg, var(--char) 0%, var(--void) 100%);
+  flex-shrink: 0;
+  position: relative; overflow: hidden;
+}
+.grade-header::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  background: radial-gradient(ellipse at top left, var(--belt-dim) 0%, transparent 60%);
+  pointer-events: none;
+}
+.grade-header__kyu {
+  font-family: var(--mono); font-size: .7rem; color: var(--ash); text-transform: uppercase;
+  letter-spacing: .14em; margin-bottom: .5rem;
+}
+.grade-header__title {
+  font-family: var(--display); font-size: 2rem; text-transform: uppercase;
+  letter-spacing: .04em; line-height: 1.1; margin-bottom: .5rem;
+}
+.grade-header__belt {
+  display: inline-flex; align-items: center; gap: .5rem;
+  padding: .3rem .8rem; border-radius: 2rem;
+  background: var(--belt-dim); border: 1px solid var(--belt);
+  font-size: .78rem; font-weight: 600;
+  color: var(--belt);
+}
+.grade-header__belt-bar {
+  width: 28px; height: 6px; border-radius: 3px; background: var(--belt);
+}
+.grade-header__quote {
+  margin-top: 1rem; font-style: italic; color: var(--ash);
+  font-size: .88rem; border-left: 2px solid var(--belt); padding-left: .8rem;
+}
+
+/* ── Grid de sections ── */
+.grade-body { padding: 2rem 2.5rem 3rem; }
+.sections-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+/* ── Section card ── */
+.sec-card {
+  background: var(--char); border: 1px solid var(--line);
+  border-radius: .75rem; padding: 1.2rem 1.4rem;
+  transition: border-color .2s;
+}
+.sec-card:hover { border-color: rgba(255,255,255,.15); }
+.sec-card--full { grid-column: 1 / -1; }
+.sec-card__head {
+  display: flex; align-items: center; gap: .6rem;
+  margin-bottom: .9rem; padding-bottom: .7rem;
+  border-bottom: 1px solid var(--line);
+}
+.sec-card__icon { font-size: 1.1rem; line-height: 1; }
+.sec-card__title { font-family: var(--display); font-size: .88rem; text-transform: uppercase; letter-spacing: .08em; }
+.sec-card__num { margin-left: auto; font-family: var(--mono); font-size: .65rem; color: var(--ash-2); }
+
+/* ── Physique ── */
+.physique-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: .5rem; }
+.physique-item {
+  background: var(--char-3); border-radius: .5rem; padding: .7rem;
+  text-align: center;
+}
+.physique-count { font-family: var(--display); font-size: 1.6rem; color: var(--belt); line-height: 1; }
+.physique-label { font-size: .7rem; color: var(--ash); text-transform: uppercase; letter-spacing: .08em; margin-top: .2rem; }
+
+/* ── Tag list ── */
+.tag-list { display: flex; flex-wrap: wrap; gap: .4rem; }
+.tag {
+  padding: .3rem .65rem; border-radius: .35rem;
+  background: var(--char-3); border: 1px solid var(--line);
+  font-size: .78rem; color: var(--bone);
+}
+.tag--accent { background: var(--belt-dim); border-color: var(--belt); color: var(--belt); font-weight: 600; }
+
+/* ── Text list ── */
+.text-list { list-style: none; display: flex; flex-direction: column; gap: .4rem; }
+.text-list li {
+  padding: .35rem .6rem; border-radius: .35rem;
+  background: var(--char-3); font-size: .82rem; color: var(--ash);
+  display: flex; align-items: flex-start; gap: .5rem;
+}
+.text-list li::before { content: '—'; color: var(--belt); flex-shrink: 0; }
+
+/* ── Combat / Tamashiwari stats ── */
+.stat-row { display: flex; flex-wrap: wrap; gap: .5rem; }
+.stat-badge {
+  display: flex; align-items: center; gap: .4rem;
+  padding: .4rem .8rem; border-radius: 2rem;
+  background: var(--char-3); border: 1px solid var(--line);
+  font-size: .82rem;
+}
+.stat-badge strong { color: var(--belt); font-family: var(--display); font-size: 1rem; }
+
+/* ── Note block ── */
+.note-block {
+  background: var(--char-3); border-left: 3px solid var(--belt);
+  border-radius: 0 .5rem .5rem 0; padding: .8rem 1rem;
+  font-size: .83rem; color: var(--ash); line-height: 1.5;
+}
+.note-block strong { color: var(--bone); display: block; margin-bottom: .3rem; font-size: .75rem; text-transform: uppercase; letter-spacing: .08em; }
+
+/* ── Special shodan ── */
+.shodan-desc { font-size: .88rem; line-height: 1.7; color: var(--ash); }
+.shodan-desc strong { color: var(--bone); }
+
+/* ── Mobile sidebar ── */
+.mob-toggle {
+  display: none; position: fixed; bottom: 1.2rem; right: 1.2rem; z-index: 50;
+  width: 48px; height: 48px; border-radius: 50%;
+  background: var(--crimson-2); border: none; cursor: pointer;
+  align-items: center; justify-content: center; color: #fff; font-size: 1.3rem;
+  box-shadow: 0 4px 20px rgba(0,0,0,.5);
+}
+.sidebar-overlay {
+  display: none; position: fixed; inset: 0; background: rgba(0,0,0,.6);
+  z-index: 40; backdrop-filter: blur(2px);
+}
+
+@media (max-width: 720px) {
+  .sidebar {
+    position: fixed; inset: 0 auto 0 0; z-index: 45;
+    transform: translateX(-100%); transition: transform .25s ease;
+    width: 280px;
+  }
+  .sidebar.open { transform: translateX(0); }
+  .sidebar-overlay { display: block; }
+  .sidebar-overlay.open { display: block; pointer-events: auto; }
+  .sidebar-overlay:not(.open) { pointer-events: none; opacity: 0; }
+  .mob-toggle { display: flex; }
+  .grade-header { padding: 1.5rem 1.2rem 1.2rem; }
+  .grade-body { padding: 1.2rem; }
+  .sections-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+<!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar__header">
+    <a href="espace.html" class="sidebar__back">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      Espace membre
+    </a>
+    <div class="sidebar__title">Passages de grade</div>
+    <div class="sidebar__sub">Shindokai — Référentiel technique</div>
+  </div>
+  <nav class="sidebar__nav" id="beltNav"></nav>
+</aside>
+
+<div class="sidebar-overlay" id="overlay"></div>
+
+<!-- Main -->
+<main class="main" id="main">
+  <div id="gradeContent"></div>
+</main>
+
+</div>
+
+<button class="mob-toggle" id="mobToggle" aria-label="Menu">☰</button>
+
+<script>
+const BELTS = [
+  {
+    id: 'b10',
+    kyu: '10e & 9e KYU',
+    name: 'Ceinture Blanche',
+    short: 'Blanche',
+    color: '#e8e8e8',
+    barettes: 0,
+    physique: [30, 30, 30, 30],
+    sections: [
+      { icon: '🧍', title: 'Positions', num: '2', items: ['Heiko Dachi', 'Musubi Dachi', 'Fudo Dachi', 'Zenkutsu Dachi', 'Heisoku Dachi'] },
+      { icon: '👊', title: 'Techniques de poings', num: '3', items: ['Oi Tsuki', 'Gyaku Tsuki', 'Seiken Tsuki', 'Morote Seiken Tsuki'] },
+      { icon: '🦵', title: 'Techniques de jambes', num: '4', items: ['Mae Keri Kekome (pousser)', 'Keage (Fouetté)', 'Kinté Keri', 'Isa Keri'] },
+      { icon: '🛡️', title: 'Techniques de blocages', num: '5', items: ['Seiken Mawashi Gedan Barai', 'Morote Seiken Mawashi Gedan Barai', 'Seiken Jodan Agé Uké'] },
+      { icon: '🔄', title: 'Travail en Kihon', num: '6', text: 'En Zenkutsu Dachi.' },
+      { icon: '🤼', title: 'Travail en Tori et Uke', num: '7', text: 'En Zenkutsu pour TORI, Heiko Dachi pour UKE. Oi Tsuki Jodan, Chudan et Gedan, Mae Keri Kekome.' },
+      { icon: '🎯', title: 'Kihon Kata', num: '8', items: ['Seiken Mawashi Gedan Barai', 'Morote Seiken Mawashi Gedan Barai', 'Seiken Jodan Agé Uké', 'Morote Seiken Jodan, Chudan, Gedan'] },
+    ]
+  },
+  {
+    id: 'b8',
+    kyu: '8e KYU',
+    name: 'Ceinture Bleue',
+    short: 'Bleue',
+    color: '#1a5fa8',
+    physique: [40, 40, 40, 40],
+    sections: [
+      { icon: '🧍', title: 'Positions', num: '2', items: ['Uchi-Achi Ji Dachi', 'Sanchin Dachi', 'Kokutsu Dachi'] },
+      { icon: '👊', title: 'Techniques de poings', num: '3', items: ['Uraken Shomen Uchi', 'Uraken Sayo Uchi', 'Uraken Iso Uchi'] },
+      { icon: '🦵', title: 'Techniques de jambes', num: '4', items: ['Mae Kakato Geri', 'Uchi Mawashi Keri', 'Soto Mawashi Keri', 'Mawashi Chisoku Keri'] },
+      { icon: '🛡️', title: 'Techniques de blocages', num: '5', items: ['Seiken Soto Uke', 'Seiken Uchi Uke', 'Morote Uchi Uke', 'Morote Uchi Uke simultané'] },
+      { icon: '🔄', title: 'Travail en Kihon', num: '6', items: ['En Zenkutsu Dachi', 'En Kiba Dachi', 'En Sanchin Dachi'] },
+      { icon: '🤼', title: 'Travail en Tori et Uke', num: '7', text: 'Travail en blocage et contre.' },
+      { icon: '🎯', title: 'Kata', num: '8', items: ['Taikyoku Sono Ichi', 'Taikyoku Sono Ni', 'Taikyoku Sono San'] },
+      { icon: '🔗', title: 'Enchainement', num: '9', text: 'Une vingtaine de techniques en Kokutsu avec 1 seul adversaire.' },
+    ]
+  },
+  {
+    id: 'b7',
+    kyu: '7e KYU',
+    name: 'Ceinture Bleue 2 Barrettes',
+    short: 'Bleue ••',
+    color: '#1a5fa8',
+    barettes: 2,
+    physique: [50, 50, 50, 50],
+    sections: [
+      { icon: '🧍', title: 'Positions', num: '2', items: ['Kiba Dachi'] },
+      { icon: '👊', title: 'Techniques de poings', num: '3', items: ['Uraken Mawashi Uchi', 'Seiken Mawashi Tsuki'] },
+      { icon: '🦵', title: 'Techniques de jambes', num: '4', items: ['Mae Kakato Keri', 'Uchi Mawashi Keri', 'Soto Mawashi Keri', 'Mawashi Kubi Keri'] },
+      { icon: '🛡️', title: 'Techniques de blocages', num: '5', items: ['Shuto Uchi Uke', 'Shuto Mawashi Uke'] },
+      { icon: '🔄', title: 'Travail en Kihon', num: '6', items: ['En Zenkutsu Dachi', 'En Kiba Dachi', 'En Sanchin Dachi'] },
+      { icon: '🤼', title: 'Travail en Tori et Uke', num: '7', text: 'Travail de blocage et contre avec projection : Mae Keri, Mawashi Chudan.' },
+      { icon: '🎯', title: 'Kata', num: '8', items: ['Pinan Sino Ichi'] },
+      { icon: '🔗', title: 'Enchainement', num: '9', subitems: ['Jambe uniquement', 'Poings uniquement', 'Toutes techniques avec changement d\'axe'], prefix: '20 techniques :' },
+      { icon: '⚔️', title: 'Combats', num: '10', combats: 2, duree: 2 },
+    ]
+  },
+  {
+    id: 'b6',
+    kyu: '6e KYU',
+    name: 'Ceinture Jaune',
+    short: 'Jaune',
+    color: '#d4a017',
+    physique: [60, 60, 60, 60],
+    sections: [
+      { icon: '🧍', title: 'Positions', num: '2', items: ['Neku Ashi Dachi', 'Shiko Dachi'] },
+      { icon: '👊', title: 'Techniques de poings', num: '3', items: ['Seiken Ago Uchi', 'Seiken Shita Tsuki'] },
+      { icon: '🦵', title: 'Techniques de jambes', num: '4', items: ['Mawashi Chisoku Keri', 'Mawashi Haisoku Keri', 'Mae Tobi Keri'] },
+      { icon: '✋', title: 'Techniques de mains — Shuto', num: '5', items: ['Shuto Sakotsu Uchi', 'Shuto Yoko Ganmen Uchi', 'Shuto Uchi Komi', 'Shuto Hizo Uchi', 'Shuto Jodan Uchi Uchi'] },
+      { icon: '🔄', title: 'Travail en Kihon', num: '6', text: 'Enchainement de plusieurs techniques en avançant et en reculant, travail de jambes avant.' },
+      { icon: '🤼', title: 'Travail en Tori et Uke', num: '7', text: 'Blocage avec déplacement, 2 projections obligatoires.' },
+      { icon: '🎯', title: 'Kata', num: '8', items: ['Pinan Sino Ni'] },
+      { icon: '🔗', title: 'Enchainement', num: '9', subitems: ['Genoux uniquement', 'Blocage et contres', 'Toutes techniques avec changement d\'axe'], prefix: '20 techniques :' },
+      { icon: '⚔️', title: 'Combats', num: '10', combats: 3, duree: 2 },
+    ]
+  },
+  {
+    id: 'b5',
+    kyu: '5e KYU',
+    name: 'Ceinture Jaune 2 Barrettes',
+    short: 'Jaune ••',
+    color: '#d4a017',
+    barettes: 2,
+    physique: [70, 70, 70, 70],
+    sections: [
+      { icon: '🧍', title: 'Positions', num: '2', items: ['Kake Dachi'] },
+      { icon: '👊', title: 'Techniques de poings', num: '3', items: ['Shotei Tsuki', 'Shotei Uke'] },
+      { icon: '🦵', title: 'Techniques de jambes', num: '4', items: ['Yoko Kekomi Keri', 'Yoko Keage Keri', 'Ushiro Keri'] },
+      { icon: '⚡', title: 'Techniques de coudes — Hidji', num: '5', items: ['Chudan Hiji-ate', 'Mae Hiji-ate', 'Age Hiji-ate', 'Ushiro Hiji-ate', 'Otoshi Hiji-ate'] },
+      { icon: '🔄', title: 'Travail en Kihon', num: '6', text: 'Travail avec changement de position en avançant et en reculant.' },
+      { icon: '🤼', title: 'Travail en Tori et Uke', num: '7', items: ['6 attaques membres inférieur', '6 attaques membres supérieur', 'Contres et projections'] },
+      { icon: '🎯', title: 'Kata', num: '8', items: ['Pinan Sino San'] },
+      { icon: '🔗', title: 'Enchainement', num: '9', subitems: ['Coudes', 'Genoux et poings', 'Toutes techniques avec changement d\'axe'], prefix: '20 techniques :' },
+      { icon: '⚔️', title: 'Combats', num: '10', combats: 4, duree: 2 },
+    ]
+  },
+  {
+    id: 'b4',
+    kyu: '4e KYU',
+    name: 'Ceinture Verte',
+    short: 'Verte',
+    color: '#2d8a4e',
+    physique: [80, 80, 80, 80],
+    sections: [
+      { icon: '🧍', title: 'Positions', num: '2', items: ['Tsuru Achi Dachi'] },
+      { icon: '👊', title: 'Techniques de poings', num: '3', items: ['Tetsui Tsuki', 'Yoko Tsuki'] },
+      { icon: '🦵', title: 'Techniques de jambes', num: '4', items: ['Kansetsu Keri', 'Yoko Geri Kekomi', 'Ushiro Keri'] },
+      { icon: '🛡️', title: 'Techniques de blocages', num: '5', items: ['Morote Haito Uchi Jodan', 'Morote Haito Uchi Chudan', 'Haito Uchi Jodan', 'Haito Uchi Chudan', 'Haito Uchi Gedan', 'Judji Uke Jodan', 'Judji Uke Gedan'] },
+      { icon: '🔄', title: 'Travail en Kihon', num: '6', text: 'Travail en reprenant l\'ensemble des techniques.' },
+      { icon: '🤼', title: 'Travail en Tori et Uke', num: '7', items: ['6 attaques membres inférieur', '6 attaques membres supérieur', 'Contres et projections'] },
+      { icon: '🎯', title: 'Kata', num: '8', items: ['Pinan Sino Yon'] },
+      { icon: '🔗', title: 'Enchainement', num: '9', subitems: ['Jambe avant', 'Retournées de jambes', 'Toutes techniques avec changement d\'axe'], prefix: '20 techniques :' },
+      { icon: '⚔️', title: 'Combats', num: '10', combats: 5, duree: 2 },
+    ]
+  },
+  {
+    id: 'b3',
+    kyu: '3e KYU',
+    name: 'Ceinture Verte 2 Barrettes',
+    short: 'Verte ••',
+    color: '#2d8a4e',
+    barettes: 2,
+    physique: [90, 90, 90, 90],
+    sections: [
+      { icon: '🧍', title: 'Positions', num: '2', items: ['Sanchin Dachi'] },
+      { icon: '👊', title: 'Techniques de poings', num: '3', items: ['Yama Tsuki'] },
+      { icon: '🦵', title: 'Techniques de jambes', num: '4', items: ['Mawashi Tobi Keri', 'Yoko Tobi Geri'] },
+      { icon: '🛡️', title: 'Techniques de blocages', num: '5', items: ['Nami Ashi'] },
+      { icon: '🔄', title: 'Travail en Kihon', num: '6', text: 'Travail en reprenant l\'ensemble des techniques.' },
+      { icon: '🤼', title: 'Travail en Tori et Uke', num: '7', items: ['Attaques Seiken 3 niveaux', 'Attaques Keri 3 niveaux', 'Nombre à définir par l\'examinateur'] },
+      { icon: '🎯', title: 'Kata', num: '8', items: ['Pinan Sino Go'] },
+      { icon: '🔗', title: 'Enchainement', num: '9', text: '4 types d\'enchainements de 20 techniques définis par l\'examinateur.' },
+      { icon: '⚔️', title: 'Combats', num: '10', combats: 6, duree: 2 },
+      { icon: '🧱', title: 'Tamashiwari', num: '11', items: ['1 tuile avec Seiken', '1 tuile avec Shuto'] },
+    ]
+  },
+  {
+    id: 'b2',
+    kyu: '2e KYU',
+    name: 'Ceinture Marron',
+    short: 'Marron',
+    color: '#7b4f2e',
+    physique: [100, 100, 100, 100],
+    sections: [
+      { icon: '👊', title: 'Techniques de mains', num: '2', items: ['Mate Tsuki', 'Tate Tsuki', 'Nihon Nukite (Me Tsuki)', 'Yonhon Nukite Jodan', 'Yonhon Nukite Chudan'] },
+      { icon: '🦵', title: 'Techniques de jambes', num: '3', items: ['Ushiro Ura Mawashi Keri'] },
+      { icon: '🛡️', title: 'Techniques de blocages', num: '4', items: ['Koken Uke Jodan', 'Koken Uke Chudan', 'Koken Uke Gedan', 'Nagashi Uke', 'Shuto Mawashi Uke'] },
+      { icon: '🔄', title: 'Techniques de Kihon', num: '5', text: '3 heures de technique.' },
+      { icon: '🤼', title: 'Travail en Tori et Uke', num: '6', items: ['6 attaques membres supérieur (examinateur)', '6 attaques membres inférieur (examinateur)'] },
+      { icon: '🥊', title: 'PAO', num: '7', text: '2 minutes de Pao, techniques annoncées par l\'examinateur.' },
+      { icon: '🎯', title: 'Kata', num: '8', items: ['5 Pinans : 1 aux choix + 1 imposé'] },
+      { icon: '🔗', title: 'Enchainement', num: '9', text: '4 types d\'enchainements de 20 techniques définis par l\'examinateur.' },
+      { icon: '⚔️', title: 'Combats', num: '10', combats: 7, duree: 2 },
+      { icon: '🧱', title: 'Tamashiwari', num: '11', items: ['2 tuiles avec Seiken', '2 tuiles avec Shuto'] },
+    ]
+  },
+  {
+    id: 'b1',
+    kyu: '1er KYU',
+    name: 'Ceinture Marron 2 Barrettes',
+    short: 'Marron ••',
+    color: '#7b4f2e',
+    barettes: 2,
+    physique: [110, 110, 110, 110],
+    sections: [
+      { icon: '👊', title: 'Techniques de mains — Hiraken', num: '2', items: ['Hiraken Tsuki Jodan', 'Hiraken Tsuki Chudan', 'Hiraken Oroshi Uchi', 'Hiraken Mawashi Uchi'] },
+      { icon: '🦵', title: 'Techniques de jambes', num: '3', items: ['Mae Tobi Geri'] },
+      { icon: '🛡️', title: 'Techniques de blocages', num: '4', items: ['Osae Uke', 'Kake Uke', 'Morote Kake Uke'] },
+      { icon: '🔁', title: 'Techniques en Ibiku', num: '5', items: ['Seiken', 'Seiken Mawashi Gedan Barai', 'Seiken Uchi Uke', 'Morote Seiken Uchi Uke'] },
+      { icon: '🔄', title: 'Techniques de Kihon', num: '6', text: '3h30 de technique.' },
+      { icon: '🤼', title: 'Travail en Tori et Uke', num: '7', text: 'Libre choix de l\'examinateur.' },
+      { icon: '🥊', title: 'PAO', num: '8', text: '2 minutes de Pao, techniques annoncées par l\'examinateur.' },
+      { icon: '🎯', title: 'Kata', num: '9', items: ['5 Pinans : 1 aux choix + 1 imposé', 'Kata supérieur autorisé'] },
+      { icon: '🔗', title: 'Enchainement', num: '10', text: '4 types d\'enchainements de 20 techniques définis par l\'examinateur.' },
+      { icon: '⚔️', title: 'Combats', num: '11', combats: 8, duree: 2 },
+      { icon: '🧱', title: 'Tamashiwari', num: '12', items: ['3 tuiles avec Seiken', '3 tuiles avec Shuto'] },
+    ]
+  },
+  {
+    id: 'bdan',
+    kyu: 'Shodan • Nidan • Sandan',
+    name: 'Ceinture Noire',
+    short: 'Noire',
+    color: '#888',
+    special: true,
+    sections: []
+  },
+];
+
+let _current = BELTS[0].id;
+
+// --- Belt color helpers ---
+function beltBg(c) { return `${c}22`; }
+function beltBorder(c) { return c; }
+
+// --- Build sidebar ---
+function buildNav() {
+  const nav = document.getElementById('beltNav');
+  nav.innerHTML = BELTS.map(b => `
+    <div class="belt-item${b.id === _current ? ' active' : ''}" data-id="${b.id}" style="--belt:${b.color};--belt-dim:${beltBg(b.color)}">
+      <div class="belt-dot" style="background:${b.color};${b.barettes ? `box-shadow:0 0 0 2px ${b.color},0 0 0 4px var(--char)` : ''}"></div>
+      <div class="belt-info">
+        <div class="belt-name" style="color:${b.id === _current ? b.color : ''}">${b.name}</div>
+        <div class="belt-kyu">${b.kyu}</div>
+      </div>
+    </div>
+  `).join('');
+  nav.querySelectorAll('.belt-item').forEach(el => {
+    el.addEventListener('click', () => { showGrade(el.dataset.id); closeSidebar(); });
+  });
+}
+
+// --- Render grade ---
+function showGrade(id) {
+  _current = id;
+  buildNav();
+  const belt = BELTS.find(b => b.id === id);
+  const c = belt.color;
+  document.documentElement.style.setProperty('--belt', c);
+  document.documentElement.style.setProperty('--belt-dim', beltBg(c));
+
+  if (belt.special) { renderShodan(belt); return; }
+  renderGrade(belt);
+}
+
+function renderGrade(belt) {
+  const physLabels = ['Pompes', 'Abdos', 'Squats', 'Jumps'];
+  const physHtml = belt.physique ? `
+    <div class="sec-card">
+      <div class="sec-card__head">
+        <span class="sec-card__icon">💪</span>
+        <span class="sec-card__title">Physique</span>
+        <span class="sec-card__num">1</span>
+      </div>
+      <div class="physique-grid">
+        ${belt.physique.map((n, i) => `
+          <div class="physique-item">
+            <div class="physique-count">${n}</div>
+            <div class="physique-label">${physLabels[i]}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  ` : '';
+
+  const sectionsHtml = belt.sections.map(s => {
+    let content = '';
+    if (s.combats) {
+      content = `<div class="stat-row">
+        <div class="stat-badge"><strong>${s.combats}</strong> combat${s.combats > 1 ? 's' : ''}</div>
+        <div class="stat-badge"><strong>${s.duree} min</strong> chacun</div>
+      </div>`;
+    } else if (s.items) {
+      content = `<div class="tag-list">${s.items.map(i => `<span class="tag">${i}</span>`).join('')}</div>`;
+    } else if (s.subitems) {
+      content = `<ul class="text-list">
+        ${s.prefix ? `<li style="color:var(--bone);font-weight:600">${s.prefix}</li>` : ''}
+        ${s.subitems.map(i => `<li>${i}</li>`).join('')}
+      </ul>`;
+    } else if (s.text) {
+      content = `<p style="font-size:.84rem;color:var(--ash);line-height:1.55">${s.text}</p>`;
+    }
+    return `
+      <div class="sec-card">
+        <div class="sec-card__head">
+          <span class="sec-card__icon">${s.icon}</span>
+          <span class="sec-card__title">${s.title}</span>
+          <span class="sec-card__num">${s.num}</span>
+        </div>
+        ${content}
+      </div>
+    `;
+  }).join('');
+
+  document.getElementById('gradeContent').innerHTML = `
+    <div class="grade-header">
+      <div class="grade-header__kyu">${belt.kyu}</div>
+      <div class="grade-header__title">${belt.name}</div>
+      <div class="grade-header__belt">
+        <div class="grade-header__belt-bar"></div>
+        ${belt.barettes ? `<div class="grade-header__belt-bar" style="background:rgba(255,255,255,.4)"></div>`.repeat(belt.barettes) : ''}
+        Ceinture ${belt.short}
+      </div>
+    </div>
+    <div class="grade-body">
+      <div class="sections-grid">
+        ${physHtml}
+        ${sectionsHtml}
+      </div>
+    </div>
+  `;
+}
+
+function renderShodan(belt) {
+  const c = belt.color;
+  document.getElementById('gradeContent').innerHTML = `
+    <div class="grade-header">
+      <div class="grade-header__kyu">${belt.kyu}</div>
+      <div class="grade-header__title">${belt.name}</div>
+      <div class="grade-header__belt">
+        <div class="grade-header__belt-bar"></div>
+        Shodan • Nidan • Sandan
+      </div>
+      <div class="grade-header__quote">« On ne passe pas sa ceinture, on va la chercher dans l'effort »</div>
+    </div>
+    <div class="grade-body">
+      <div class="sections-grid">
+        <div class="sec-card sec-card--full">
+          <div class="sec-card__head">
+            <span class="sec-card__icon">📋</span>
+            <span class="sec-card__title">Présentation</span>
+          </div>
+          <p class="shodan-desc">Le passage <strong>Shodan, Nidan & Sandan</strong> est un vrai test d'aptitude physique et mentale. Il se déroule <strong>en une journée</strong> et se divise en plusieurs sections toutes <strong>éliminatoires</strong>. Il reprend l'intégralité du référentiel technique du 10e au 1er KYU.</p>
+        </div>
+        <div class="sec-card">
+          <div class="sec-card__head"><span class="sec-card__icon">💪</span><span class="sec-card__title">Physique</span><span class="sec-card__num">1</span></div>
+          <p style="font-size:.84rem;color:var(--ash)">Pompes, Abdos, Squats, Jumps — <em>nombres en fonction du niveau</em>.</p>
+        </div>
+        <div class="sec-card">
+          <div class="sec-card__head"><span class="sec-card__icon">🔄</span><span class="sec-card__title">Technique Kihon</span><span class="sec-card__num">2</span></div>
+          <div class="stat-row"><div class="stat-badge"><strong>~4h</strong> de technique</div></div>
+        </div>
+        <div class="sec-card">
+          <div class="sec-card__head"><span class="sec-card__icon">🤼</span><span class="sec-card__title">Technique Projection</span><span class="sec-card__num">3</span></div>
+          <div class="stat-row"><div class="stat-badge"><strong>×100</strong> projections</div></div>
+        </div>
+        <div class="sec-card">
+          <div class="sec-card__head"><span class="sec-card__icon">🔗</span><span class="sec-card__title">Enchainement personnel</span><span class="sec-card__num">4</span></div>
+          <div class="stat-row"><div class="stat-badge"><strong>10 à 20</strong> techniques</div></div>
+        </div>
+        <div class="sec-card sec-card--full">
+          <div class="sec-card__head"><span class="sec-card__icon">🤼</span><span class="sec-card__title">Ippon Kumite — Tori et Uke</span><span class="sec-card__num">5</span></div>
+          <div class="tag-list">
+            <span class="tag">Oi Tsuki Jodan</span><span class="tag">Oi Tsuki Chudan</span>
+            <span class="tag">Mae Geri Chudan</span><span class="tag">Mawashi Geri Chudan</span><span class="tag">Yoko Geri Chudan</span>
+          </div>
+        </div>
+        <div class="sec-card">
+          <div class="sec-card__head"><span class="sec-card__icon">🎯</span><span class="sec-card__title">Kata</span><span class="sec-card__num">6</span></div>
+          <div class="tag-list"><span class="tag tag--accent">1 choix libre</span><span class="tag tag--accent">1 imposé</span></div>
+        </div>
+        <div class="sec-card">
+          <div class="sec-card__head"><span class="sec-card__icon">🥊</span><span class="sec-card__title">PAO</span><span class="sec-card__num">7</span></div>
+          <div class="stat-row"><div class="stat-badge"><strong>2, 3</strong> ou <strong>4 min</strong></div></div>
+        </div>
+        <div class="sec-card">
+          <div class="sec-card__head"><span class="sec-card__icon">⚔️</span><span class="sec-card__title">Combat</span><span class="sec-card__num">8</span></div>
+          <div class="stat-row">
+            <div class="stat-badge">2 min <strong>sans protections</strong></div>
+            <div class="stat-badge"><strong>×10 / ×15 / ×20</strong></div>
+          </div>
+        </div>
+        <div class="sec-card">
+          <div class="sec-card__head"><span class="sec-card__icon">🧱</span><span class="sec-card__title">Tamashiwari</span><span class="sec-card__num">9</span></div>
+          <p style="font-size:.84rem;color:var(--ash)">Nombre à définir selon le niveau.</p>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// --- Mobile sidebar ---
+document.getElementById('mobToggle').addEventListener('click', () => {
+  document.getElementById('sidebar').classList.add('open');
+  document.getElementById('overlay').classList.add('open');
+});
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('open');
+}
+document.getElementById('overlay').addEventListener('click', closeSidebar);
+
+// --- Init ---
+buildNav();
+showGrade(_current);
+</script>
+</body>
+</html>
